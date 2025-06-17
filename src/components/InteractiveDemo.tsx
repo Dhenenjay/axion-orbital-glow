@@ -151,7 +151,7 @@ export const InteractiveDemo = () => {
                       </div>
                       <div className="bg-gradient-to-br from-green-500/20 to-emerald-500/20 rounded-lg p-4">
                         <h4 className="text-white font-semibold mb-2">Processing Time</h4>
-                        <p className="text-2xl font-bold text-green-400">< 90s</p>
+                        <p className="text-2xl font-bold text-green-400">&lt; 90s</p>
                         <p className="text-gray-400 text-sm">Average query to insight</p>
                       </div>
                     </div>
