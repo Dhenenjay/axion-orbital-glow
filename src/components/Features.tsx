@@ -1,11 +1,10 @@
-
 import { Brain, Layers, Zap, Globe, BarChart3, Shield } from "lucide-react";
 import { Card, CardContent } from "@/components/ui/card";
 
 const features = [
   {
     icon: Brain,
-    title: "AI-Powered Analysis",
+    title: "Access to multiple datasets",
     description: "Advanced machine learning algorithms automatically detect patterns, changes, and anomalies in satellite imagery."
   },
   {
