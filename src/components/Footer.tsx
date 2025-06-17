@@ -1,9 +1,6 @@
-
 import { Satellite, Mail, MapPin } from "lucide-react";
-
 export const Footer = () => {
-  return (
-    <footer className="py-12 border-t border-slate-800">
+  return <footer className="py-12 border-t border-slate-800">
       <div className="container mx-auto px-4">
         <div className="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div className="col-span-1 md:col-span-2">
@@ -18,7 +15,7 @@ export const Footer = () => {
             <div className="flex items-center space-x-4 text-gray-400">
               <div className="flex items-center space-x-2">
                 <Mail className="h-4 w-4" />
-                <span>hello@axionorbital.space</span>
+                <span>dhenenjay@axionorbital.space</span>
               </div>
             </div>
           </div>
@@ -45,9 +42,8 @@ export const Footer = () => {
         </div>
         
         <div className="border-t border-slate-800 mt-8 pt-8 text-center text-gray-400">
-          <p>&copy; 2024 Axion Orbital. All rights reserved.</p>
+          <p>© 2025 Axion Orbital. All rights reserved.</p>
         </div>
       </div>
-    </footer>
-  );
+    </footer>;
 };
