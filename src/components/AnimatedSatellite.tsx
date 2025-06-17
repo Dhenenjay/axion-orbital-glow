@@ -1,9 +1,14 @@
 
 import { Satellite } from "lucide-react";
 
-export const AnimatedSatellite = ({ className = "" }: { className?: string }) => {
+interface AnimatedSatelliteProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export const AnimatedSatellite = ({ className = "", style }: AnimatedSatelliteProps) => {
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} style={style}>
       <div className="animate-pulse">
         <Satellite className="h-6 w-6 text-blue-400" />
       </div>

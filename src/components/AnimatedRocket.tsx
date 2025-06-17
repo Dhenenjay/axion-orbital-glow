@@ -1,9 +1,14 @@
 
 import { Rocket } from "lucide-react";
 
-export const AnimatedRocket = ({ className = "" }: { className?: string }) => {
+interface AnimatedRocketProps {
+  className?: string;
+  style?: React.CSSProperties;
+}
+
+export const AnimatedRocket = ({ className = "", style }: AnimatedRocketProps) => {
   return (
-    <div className={`relative ${className}`}>
+    <div className={`relative ${className}`} style={style}>
       <div className="animate-bounce">
         <Rocket className="h-8 w-8 text-cyan-400 transform rotate-45" />
       </div>

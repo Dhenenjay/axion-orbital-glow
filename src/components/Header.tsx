@@ -23,6 +23,7 @@ export const Header = () => {
             <a href="#features" className="text-gray-300 hover:text-cyan-400 transition-colors">Features</a>
             <a href="#use-cases" className="text-gray-300 hover:text-cyan-400 transition-colors">Use Cases</a>
             <a href="#technology" className="text-gray-300 hover:text-cyan-400 transition-colors">Technology</a>
+            <a href="#pricing" className="text-gray-300 hover:text-cyan-400 transition-colors">Pricing</a>
             <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950">
               Get Started
             </Button>
@@ -44,6 +45,7 @@ export const Header = () => {
               <a href="#features" className="text-gray-300 hover:text-cyan-400 transition-colors">Features</a>
               <a href="#use-cases" className="text-gray-300 hover:text-cyan-400 transition-colors">Use Cases</a>
               <a href="#technology" className="text-gray-300 hover:text-cyan-400 transition-colors">Technology</a>
+              <a href="#pricing" className="text-gray-300 hover:text-cyan-400 transition-colors">Pricing</a>
               <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 w-fit">
                 Get Started
               </Button>
