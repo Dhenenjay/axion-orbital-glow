@@ -7,11 +7,6 @@ const partners = [
     subtitle: "ESA" 
   },
   { 
-    name: "Japanese Space Agency", 
-    logo: "/lovable-uploads/47dfb494-c80b-48d4-a600-73b8ffa28b45.png", 
-    subtitle: "JAXA" 
-  },
-  { 
     name: "ISRO", 
     logo: "/lovable-uploads/7603c0d1-90b2-43fe-900a-9880b854fcdc.png", 
     subtitle: "India" 
