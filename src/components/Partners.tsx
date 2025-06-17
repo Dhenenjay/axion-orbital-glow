@@ -4,42 +4,42 @@ import { Badge } from "@/components/ui/badge";
 const partners = [
   { 
     name: "European Space Agency", 
-    logo: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=200&h=200&fit=crop&crop=center", 
+    logo: "/lovable-uploads/37eaa453-89d8-4d2e-9e9a-e5550494c456.png", 
     subtitle: "ESA" 
   },
   { 
     name: "Japanese Space Agency", 
-    logo: "https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=200&h=200&fit=crop&crop=center", 
+    logo: "/lovable-uploads/47dfb494-c80b-48d4-a600-73b8ffa28b45.png", 
     subtitle: "JAXA" 
   },
   { 
     name: "ISRO", 
-    logo: "https://images.unsplash.com/photo-1446776653964-20c1d3a81b06?w=200&h=200&fit=crop&crop=center", 
+    logo: "/lovable-uploads/7603c0d1-90b2-43fe-900a-9880b854fcdc.png", 
     subtitle: "India" 
   },
   { 
     name: "PierSight Space", 
-    logo: "https://images.unsplash.com/photo-1517976547714-720226b864c1?w=200&h=200&fit=crop&crop=center", 
+    logo: "/lovable-uploads/5f9b800d-a625-44d1-adb3-5eb3fde1aea8.png", 
     subtitle: "Satellite Analytics" 
   },
   { 
     name: "Pixxel", 
-    logo: "https://images.unsplash.com/photo-1611273426858-450d8e3c9fce?w=200&h=200&fit=crop&crop=center", 
+    logo: "/lovable-uploads/768d12d6-d437-4db3-b6d7-b9f37bf2ad66.png", 
     subtitle: "Hyperspectral Imaging" 
   },
   { 
     name: "Auburn University", 
-    logo: "https://images.unsplash.com/photo-1562774053-701939374585?w=200&h=200&fit=crop&crop=center", 
+    logo: "/lovable-uploads/250cc0f1-7ff9-46e8-8f74-6bdda883cd97.png", 
     subtitle: "Research" 
   },
   { 
     name: "ETG", 
-    logo: "https://images.unsplash.com/photo-1487958449943-2429e8be8625?w=200&h=200&fit=crop&crop=center", 
+    logo: "/lovable-uploads/29205bf2-3745-4332-85b2-a57982b7e560.png", 
     subtitle: "Technology Solutions" 
   },
   { 
     name: "ICAR", 
-    logo: "https://images.unsplash.com/photo-1574263867128-b2c5a94e4e5d?w=200&h=200&fit=crop&crop=center", 
+    logo: "/lovable-uploads/8589714b-18c4-4f58-88c5-04974f9dbef9.png", 
     subtitle: "Agricultural Research" 
   }
 ];
