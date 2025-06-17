@@ -85,6 +85,7 @@ export const Hero = () => {
                   autoplay={true}
                   muted={true}
                   loop={true}
+                  playbackRate={5}
                   className="aspect-video shadow-2xl transform group-hover:scale-105 transition-transform duration-500"
                 />
               </div>

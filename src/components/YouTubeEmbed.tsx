@@ -4,6 +4,7 @@ interface YouTubeEmbedProps {
   autoplay?: boolean;
   muted?: boolean;
   loop?: boolean;
+  playbackRate?: number;
   className?: string;
 }
 
@@ -12,6 +13,7 @@ export const YouTubeEmbed = ({
   autoplay = false, 
   muted = true, 
   loop = false, 
+  playbackRate = 1,
   className = "" 
 }: YouTubeEmbedProps) => {
   const embedUrl = `https://www.youtube.com/embed/${videoId}?${new URLSearchParams({
@@ -23,6 +25,7 @@ export const YouTubeEmbed = ({
     rel: '0',
     showinfo: '0',
     playlist: loop ? videoId : '',
+    playbackRate: playbackRate.toString(),
   }).toString()}`;
 
   return (
