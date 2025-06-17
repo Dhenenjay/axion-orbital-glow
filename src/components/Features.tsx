@@ -4,12 +4,12 @@ import { Card, CardContent } from "@/components/ui/card";
 const features = [
   {
     icon: Brain,
-    title: "Access to multiple datasets",
+    title: "AI-Powered Analysis",
     description: "Advanced machine learning algorithms automatically detect patterns, changes, and anomalies in satellite imagery."
   },
   {
     icon: Layers,
-    title: "Multi-Spectral Processing",
+    title: "Access to multiple datasets",
     description: "Process data across visible, infrared, and radar spectrums with intuitive visual tools."
   },
   {
