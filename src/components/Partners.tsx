@@ -1,4 +1,3 @@
-
 import { Badge } from "@/components/ui/badge";
 
 const partners = [
@@ -41,6 +40,11 @@ const partners = [
     name: "ICAR", 
     logo: "/lovable-uploads/8589714b-18c4-4f58-88c5-04974f9dbef9.png", 
     subtitle: "Agricultural Research" 
+  },
+  { 
+    name: "IIM Ahmedabad", 
+    logo: "/lovable-uploads/4e2e3e5f-83bc-4266-b549-155f0c9a5786.png", 
+    subtitle: "Management Education" 
   }
 ];
 
