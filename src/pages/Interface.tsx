@@ -60,10 +60,10 @@ const Interface = () => {
               onClick={() => setDevMode(!devMode)}
               variant="outline"
               size="sm"
-              className={`border-slate-600 text-gray-300 hover:text-white transition-all duration-300 ${
+              className={`transition-all duration-300 ${
                 devMode 
                   ? 'bg-orange-500/20 border-orange-400/50 text-orange-300 hover:bg-orange-500/30' 
-                  : 'hover:bg-slate-700/50'
+                  : 'bg-blue-500/20 border-blue-400/50 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200'
               }`}
             >
               <Code className="h-4 w-4 mr-2" />
