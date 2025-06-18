@@ -1,14 +1,11 @@
 
-import { useRef, useState } from 'react';
+import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere, useTexture } from '@react-three/drei';
+import { OrbitControls, Sphere } from '@react-three/drei';
 import * as THREE from 'three';
 
 function EarthSphere({ isHovered }: { isHovered: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null);
-  
-  // Use a high-quality Earth texture from NASA
-  const earthTexture = useTexture('https://images.unsplash.com/photo-1614730321146-b6fa6a46bcb4?w=2048&h=1024&fit=crop');
   
   // Auto-rotate the Earth
   useFrame((state, delta) => {
@@ -20,7 +17,7 @@ function EarthSphere({ isHovered }: { isHovered: boolean }) {
   return (
     <Sphere ref={meshRef} args={[2, 64, 32]} scale={isHovered ? 1.1 : 1}>
       <meshStandardMaterial 
-        map={earthTexture} 
+        color="#4a90e2"
         roughness={0.8}
         metalness={0.1}
       />
@@ -70,17 +67,26 @@ function Satellites() {
 }
 
 export const Globe3D = ({ isHovered, zoom }: { isHovered: boolean; zoom: number }) => {
+  const cameraDistance = Math.max(3, 8 / zoom);
+  
   return (
     <div className="w-96 h-96">
-      <Canvas camera={{ position: [0, 0, 8 / zoom], fov: 50 }}>
+      <Canvas 
+        camera={{ 
+          position: [0, 0, cameraDistance], 
+          fov: 50 
+        }}
+        gl={{ 
+          antialias: true,
+          alpha: true,
+          preserveDrawingBuffer: true
+        }}
+      >
         {/* Lighting */}
         <ambientLight intensity={0.3} />
         <directionalLight 
           position={[5, 5, 5]} 
-          intensity={1} 
-          castShadow
-          shadow-mapSize-width={1024}
-          shadow-mapSize-height={1024}
+          intensity={1}
         />
         <pointLight position={[-5, -5, -5]} intensity={0.3} color="#4f46e5" />
         
