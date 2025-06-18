@@ -107,7 +107,7 @@ export const Pricing = () => {
               key={index}
               className={`relative ${
                 plan.highlighted 
-                  ? 'bg-gradient-to-b from-cyan-900/30 to-blue-900/30 border-cyan-400/50 scale-105' 
+                  ? 'bg-gradient-to-b from-slate-800/90 to-slate-900/90 border-cyan-400/60 scale-105 shadow-2xl shadow-cyan-500/20' 
                   : 'bg-slate-900/50 border-slate-700/50'
               } backdrop-blur-sm transition-all duration-300 hover:scale-105`}
             >
@@ -119,17 +119,25 @@ export const Pricing = () => {
                 </div>
               )}
               <CardHeader>
-                <CardTitle className="text-white text-xl">{plan.name}</CardTitle>
+                <CardTitle className={`text-xl ${plan.highlighted ? 'text-cyan-100' : 'text-white'}`}>
+                  {plan.name}
+                </CardTitle>
                 <div className="flex items-baseline">
-                  <span className="text-4xl font-bold text-white">{plan.price}</span>
-                  <span className="text-gray-400 ml-1">{plan.period}</span>
+                  <span className={`text-4xl font-bold ${plan.highlighted ? 'text-white' : 'text-white'}`}>
+                    {plan.price}
+                  </span>
+                  <span className={`ml-1 ${plan.highlighted ? 'text-cyan-200' : 'text-gray-400'}`}>
+                    {plan.period}
+                  </span>
                 </div>
-                <p className="text-gray-300">{plan.description}</p>
+                <p className={`${plan.highlighted ? 'text-cyan-200' : 'text-gray-300'}`}>
+                  {plan.description}
+                </p>
               </CardHeader>
               <CardContent>
                 <ul className="space-y-3 mb-6">
                   {plan.features.map((feature, featureIndex) => (
-                    <li key={featureIndex} className="flex items-center text-gray-300">
+                    <li key={featureIndex} className={`flex items-center ${plan.highlighted ? 'text-gray-200' : 'text-gray-300'}`}>
                       <Check className="h-4 w-4 text-cyan-400 mr-3 flex-shrink-0" />
                       {feature}
                     </li>
@@ -138,8 +146,8 @@ export const Pricing = () => {
                 <Button 
                   className={`w-full ${
                     plan.highlighted
-                      ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600'
-                      : 'bg-slate-800 hover:bg-slate-700 border border-slate-600'
+                      ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white'
+                      : 'bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white'
                   }`}
                 >
                   {plan.name === 'Enterprise' ? 'Contact Sales' : 'Get Started'}
