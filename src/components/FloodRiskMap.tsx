@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -13,6 +14,7 @@ const FloodRiskMap = () => {
   const [panPosition, setPanPosition] = useState({ x: 0, y: 0 });
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
+  const [isMouseOverMap, setIsMouseOverMap] = useState(false);
 
   const handleZoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.2, 3));
@@ -63,10 +65,22 @@ const FloodRiskMap = () => {
     setIsPanning(false);
   };
 
+  const handleMouseEnter = () => {
+    setIsMouseOverMap(true);
+  };
+
+  const handleMouseLeave = () => {
+    setIsMouseOverMap(false);
+    setIsDragging(false);
+    setIsPanning(false);
+  };
+
   const handleWheel = (e: React.WheelEvent) => {
-    e.preventDefault();
-    const delta = e.deltaY > 0 ? -0.1 : 0.1;
-    setZoomLevel(prev => Math.max(0.5, Math.min(3, prev + delta)));
+    if (isMouseOverMap) {
+      e.preventDefault();
+      const delta = e.deltaY > 0 ? -0.1 : 0.1;
+      setZoomLevel(prev => Math.max(0.5, Math.min(3, prev + delta)));
+    }
   };
 
   return (
@@ -76,7 +90,8 @@ const FloodRiskMap = () => {
         className="relative h-[600px] bg-slate-900/20 rounded-lg border border-slate-600/50 overflow-hidden cursor-grab active:cursor-grabbing"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseUp}
+        onMouseLeave={handleMouseLeave}
+        onMouseEnter={handleMouseEnter}
         onMouseDown={handleMouseDown}
         onWheel={handleWheel}
       >
