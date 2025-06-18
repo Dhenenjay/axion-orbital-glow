@@ -4,8 +4,11 @@ import { Button } from "@/components/ui/button";
 import { OrbitingElements } from "@/components/OrbitingElements";
 import { FloatingElements } from "@/components/FloatingElements";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
+import { useNavigate } from "react-router-dom";
 
 export const Hero = () => {
+  const navigate = useNavigate();
+
   return (
     <section className="relative min-h-screen flex items-center justify-center pt-20 overflow-hidden">
       {/* Animated Background */}
@@ -43,7 +46,7 @@ export const Hero = () => {
               <Button 
                 size="lg" 
                 className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-3 text-lg group transform hover:scale-105 transition-all duration-200"
-                onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSeOyi8U2DOuTBeqc_f8_4cGDzFrTkmoAxx54IEINz2NDDoCFA/viewform', '_blank')}
+                onClick={() => navigate('/signup')}
               >
                 Start Building
                 <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
@@ -52,9 +55,9 @@ export const Hero = () => {
                 variant="outline" 
                 size="lg" 
                 className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-purple-400/50 text-white px-8 py-3 text-lg transform hover:scale-105 transition-all duration-200"
-                onClick={() => window.open('https://www.youtube.com/watch?v=LouUEF38ezk&t=1s', '_blank')}
+                onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSeOyi8U2DOuTBeqc_f8_4cGDzFrTkmoAxx54IEINz2NDDoCFA/viewform', '_blank')}
               >
-                Watch Demo
+                Enterprise Waitlist
               </Button>
             </div>
             
