@@ -1,7 +1,7 @@
-
 import { Check, X, Sparkles } from "lucide-react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 const pricingPlans = [
   {
@@ -80,6 +80,16 @@ const competitors = [
 ];
 
 export const Pricing = () => {
+  const navigate = useNavigate();
+
+  const handleButtonClick = (planName: string) => {
+    if (planName === 'Free') {
+      navigate('/signup');
+    } else if (planName === 'Pro' || planName === 'Enterprise') {
+      window.open('https://calendly.com/dhenenjay-2001/30min?month=2025-06', '_blank');
+    }
+  };
+
   return (
     <section id="pricing" className="py-20 relative">
       <div className="absolute inset-0 bg-gradient-to-r from-purple-950/20 via-blue-950/20 to-cyan-950/20"></div>
@@ -149,8 +159,9 @@ export const Pricing = () => {
                       ? 'bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white'
                       : 'bg-slate-800 hover:bg-slate-700 border border-slate-600 text-white'
                   }`}
+                  onClick={() => handleButtonClick(plan.name)}
                 >
-                  {plan.name === 'Enterprise' ? 'Contact Sales' : 'Get Started'}
+                  {plan.name === 'Free' ? 'Get Started' : 'Contact Sales'}
                 </Button>
               </CardContent>
             </Card>
