@@ -37,7 +37,7 @@ const Interface = () => {
   };
 
   const handleDevModeClick = () => {
-    navigate('/dev-mode');
+    navigate('/dev-mode', { state: { hasSubmittedQuery } });
   };
 
   return (
