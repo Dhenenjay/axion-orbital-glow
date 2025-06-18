@@ -26,7 +26,7 @@ export const InteractiveEarth = () => {
     const animate = () => {
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Create realistic Earth gradient (blue oceans to darker space)
+      // Create realistic Earth gradient
       const earthGradient = ctx.createRadialGradient(
         centerX - radius * 0.3,
         centerY - radius * 0.3,
@@ -35,16 +35,106 @@ export const InteractiveEarth = () => {
         centerY,
         radius
       );
-      earthGradient.addColorStop(0, '#87CEEB'); // Light blue (ocean)
-      earthGradient.addColorStop(0.3, '#4682B4'); // Steel blue
-      earthGradient.addColorStop(0.7, '#2F4F4F'); // Dark slate gray
-      earthGradient.addColorStop(1, '#191970'); // Midnight blue
+      earthGradient.addColorStop(0, '#4A90E2'); // Ocean blue
+      earthGradient.addColorStop(0.4, '#2E5C8A'); // Deeper ocean
+      earthGradient.addColorStop(0.8, '#1A365D'); // Deep ocean
+      earthGradient.addColorStop(1, '#0D1B2A'); // Ocean edge
 
       // Draw Earth sphere
       ctx.beginPath();
       ctx.arc(centerX, centerY, radius, 0, Math.PI * 2);
       ctx.fillStyle = earthGradient;
       ctx.fill();
+
+      const currentRotation = rotation * 0.002 + rotationOffset;
+      
+      // Draw realistic continents with proper shapes
+      ctx.fillStyle = '#2D5016'; // Dark forest green for land
+      ctx.globalAlpha = 0.9;
+
+      // North America (more detailed shape)
+      ctx.beginPath();
+      const naBaseX = centerX + Math.cos(currentRotation - 1.8) * radius * 0.45;
+      const naBaseY = centerY - radius * 0.25;
+      // Create a more realistic North America shape
+      ctx.moveTo(naBaseX - radius * 0.15, naBaseY + radius * 0.1);
+      ctx.quadraticCurveTo(naBaseX - radius * 0.2, naBaseY - radius * 0.2, naBaseX - radius * 0.05, naBaseY - radius * 0.3);
+      ctx.quadraticCurveTo(naBaseX + radius * 0.1, naBaseY - radius * 0.35, naBaseX + radius * 0.2, naBaseY - radius * 0.15);
+      ctx.quadraticCurveTo(naBaseX + radius * 0.25, naBaseY + radius * 0.05, naBaseX + radius * 0.15, naBaseY + radius * 0.25);
+      ctx.quadraticCurveTo(naBaseX - radius * 0.05, naBaseY + radius * 0.3, naBaseX - radius * 0.15, naBaseY + radius * 0.1);
+      ctx.fill();
+
+      // South America (elongated shape)
+      ctx.beginPath();
+      const saBaseX = centerX + Math.cos(currentRotation - 1.3) * radius * 0.35;
+      const saBaseY = centerY + radius * 0.1;
+      ctx.moveTo(saBaseX - radius * 0.08, saBaseY - radius * 0.1);
+      ctx.quadraticCurveTo(saBaseX - radius * 0.12, saBaseY + radius * 0.1, saBaseX - radius * 0.1, saBaseY + radius * 0.35);
+      ctx.quadraticCurveTo(saBaseX - radius * 0.05, saBaseY + radius * 0.45, saBaseX + radius * 0.05, saBaseY + radius * 0.4);
+      ctx.quadraticCurveTo(saBaseX + radius * 0.1, saBaseY + radius * 0.2, saBaseX + radius * 0.08, saBaseY);
+      ctx.quadraticCurveTo(saBaseX + radius * 0.05, saBaseY - radius * 0.15, saBaseX - radius * 0.08, saBaseY - radius * 0.1);
+      ctx.fill();
+
+      // Africa (distinctive shape)
+      ctx.beginPath();
+      const afBaseX = centerX + Math.cos(currentRotation + 0.1) * radius * 0.15;
+      const afBaseY = centerY - radius * 0.05;
+      ctx.moveTo(afBaseX - radius * 0.1, afBaseY - radius * 0.3);
+      ctx.quadraticCurveTo(afBaseX + radius * 0.12, afBaseY - radius * 0.35, afBaseX + radius * 0.15, afBaseY - radius * 0.1);
+      ctx.quadraticCurveTo(afBaseX + radius * 0.18, afBaseY + radius * 0.1, afBaseX + radius * 0.12, afBaseY + radius * 0.35);
+      ctx.quadraticCurveTo(afBaseX + radius * 0.05, afBaseY + radius * 0.45, afBaseX - radius * 0.05, afBaseY + radius * 0.4);
+      ctx.quadraticCurveTo(afBaseX - radius * 0.15, afBaseY + radius * 0.1, afBaseX - radius * 0.12, afBaseY - radius * 0.15);
+      ctx.quadraticCurveTo(afBaseX - radius * 0.1, afBaseY - radius * 0.25, afBaseX - radius * 0.1, afBaseY - radius * 0.3);
+      ctx.fill();
+
+      // Europe (smaller, detailed)
+      ctx.beginPath();
+      const euBaseX = centerX + Math.cos(currentRotation + 0.2) * radius * 0.1;
+      const euBaseY = centerY - radius * 0.35;
+      ctx.ellipse(euBaseX, euBaseY, radius * 0.12, radius * 0.15, currentRotation + 0.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Asia (large landmass)
+      ctx.beginPath();
+      const asBaseX = centerX + Math.cos(currentRotation + 0.8) * radius * 0.25;
+      const asBaseY = centerY - radius * 0.15;
+      ctx.moveTo(asBaseX - radius * 0.2, asBaseY - radius * 0.25);
+      ctx.quadraticCurveTo(asBaseX + radius * 0.3, asBaseY - radius * 0.3, asBaseX + radius * 0.4, asBaseY - radius * 0.1);
+      ctx.quadraticCurveTo(asBaseX + radius * 0.35, asBaseY + radius * 0.1, asBaseX + radius * 0.25, asBaseY + radius * 0.25);
+      ctx.quadraticCurveTo(asBaseX, asBaseY + radius * 0.3, asBaseX - radius * 0.25, asBaseY + radius * 0.2);
+      ctx.quadraticCurveTo(asBaseX - radius * 0.3, asBaseY, asBaseX - radius * 0.2, asBaseY - radius * 0.25);
+      ctx.fill();
+
+      // Australia (smaller island)
+      ctx.beginPath();
+      const auBaseX = centerX + Math.cos(currentRotation + 1.2) * radius * 0.4;
+      const auBaseY = centerY + radius * 0.35;
+      ctx.ellipse(auBaseX, auBaseY, radius * 0.08, radius * 0.06, currentRotation + 1.2, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Additional islands and details
+      // Greenland
+      ctx.beginPath();
+      const grBaseX = centerX + Math.cos(currentRotation - 1.5) * radius * 0.2;
+      const grBaseY = centerY - radius * 0.45;
+      ctx.ellipse(grBaseX, grBaseY, radius * 0.05, radius * 0.08, currentRotation - 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Madagascar
+      ctx.beginPath();
+      const mgBaseX = centerX + Math.cos(currentRotation + 0.4) * radius * 0.25;
+      const mgBaseY = centerY + radius * 0.2;
+      ctx.ellipse(mgBaseX, mgBaseY, radius * 0.02, radius * 0.06, currentRotation + 0.4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // British Isles
+      ctx.beginPath();
+      const biBaseX = centerX + Math.cos(currentRotation + 0.05) * radius * 0.05;
+      const biBaseY = centerY - radius * 0.4;
+      ctx.ellipse(biBaseX, biBaseY, radius * 0.025, radius * 0.04, currentRotation + 0.05, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.globalAlpha = 1;
 
       // Add subtle shadow for 3D effect
       const shadowGradient = ctx.createRadialGradient(
@@ -81,63 +171,13 @@ export const InteractiveEarth = () => {
       ctx.fillStyle = atmosphereGradient;
       ctx.fill();
 
-      // Draw realistic continents
-      ctx.fillStyle = '#228B22'; // Forest green for land
-      ctx.globalAlpha = 0.9;
-      
-      const currentRotation = rotation * 0.002 + rotationOffset;
-      
-      // North America
-      ctx.beginPath();
-      const naX = centerX + Math.cos(currentRotation - 1.5) * radius * 0.4;
-      const naY = centerY - radius * 0.3;
-      ctx.ellipse(naX, naY, radius * 0.25, radius * 0.4, currentRotation - 1.5, 0, Math.PI * 2);
-      ctx.fill();
-
-      // South America
-      ctx.beginPath();
-      const saX = centerX + Math.cos(currentRotation - 1.3) * radius * 0.35;
-      const saY = centerY + radius * 0.2;
-      ctx.ellipse(saX, saY, radius * 0.15, radius * 0.5, currentRotation - 1.3, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Africa
-      ctx.beginPath();
-      const afX = centerX + Math.cos(currentRotation) * radius * 0.15;
-      const afY = centerY;
-      ctx.ellipse(afX, afY, radius * 0.2, radius * 0.6, currentRotation, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Europe
-      ctx.beginPath();
-      const euX = centerX + Math.cos(currentRotation + 0.2) * radius * 0.1;
-      const euY = centerY - radius * 0.4;
-      ctx.ellipse(euX, euY, radius * 0.15, radius * 0.2, currentRotation + 0.2, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Asia
-      ctx.beginPath();
-      const asX = centerX + Math.cos(currentRotation + 0.8) * radius * 0.3;
-      const asY = centerY - radius * 0.2;
-      ctx.ellipse(asX, asY, radius * 0.35, radius * 0.4, currentRotation + 0.8, 0, Math.PI * 2);
-      ctx.fill();
-
-      // Australia
-      ctx.beginPath();
-      const auX = centerX + Math.cos(currentRotation + 1.2) * radius * 0.45;
-      const auY = centerY + radius * 0.4;
-      ctx.ellipse(auX, auY, radius * 0.1, radius * 0.08, currentRotation + 1.2, 0, Math.PI * 2);
-      ctx.fill();
-
-      ctx.globalAlpha = 1;
-
       // Draw latitude and longitude grid
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
       ctx.lineWidth = 1;
       
       // Latitude lines
       for (let i = -3; i <= 3; i++) {
-        if (i === 0) continue; // Skip equator for now
+        if (i === 0) continue;
         const y = centerY + (i * radius * 0.25);
         const ellipseWidth = Math.sqrt(Math.max(0, radius * radius - (i * radius * 0.25) * (i * radius * 0.25)));
         
@@ -147,14 +187,14 @@ export const InteractiveEarth = () => {
       }
 
       // Equator (more prominent)
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.4)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.3)';
       ctx.lineWidth = 2;
       ctx.beginPath();
       ctx.ellipse(centerX, centerY, radius, radius * 0.1, 0, 0, Math.PI * 2);
       ctx.stroke();
 
       // Longitude lines
-      ctx.strokeStyle = 'rgba(255, 255, 255, 0.2)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.15)';
       ctx.lineWidth = 1;
       for (let i = 0; i < 12; i++) {
         const angle = (i / 12) * Math.PI * 2 + currentRotation;
@@ -174,7 +214,7 @@ export const InteractiveEarth = () => {
         for (let i = 0; i < orbit.count; i++) {
           const angle = (i / orbit.count) * Math.PI * 2 + rotation * orbit.speed + orbitIndex;
           const x = centerX + Math.cos(angle) * orbit.distance;
-          const y = centerY + Math.sin(angle) * orbit.distance * 0.3; // Flattened orbit
+          const y = centerY + Math.sin(angle) * orbit.distance * 0.3;
 
           // Satellite body
           ctx.fillStyle = orbit.color;

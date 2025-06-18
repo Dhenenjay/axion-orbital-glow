@@ -62,7 +62,7 @@ const Interface = () => {
               size="sm"
               className={`border-slate-600 text-gray-300 hover:text-white transition-all duration-300 ${
                 devMode 
-                  ? 'bg-purple-500/20 border-purple-400/50 text-purple-300' 
+                  ? 'bg-orange-500/20 border-orange-400/50 text-orange-300 hover:bg-orange-500/30' 
                   : 'hover:bg-slate-700/50'
               }`}
             >
@@ -156,9 +156,9 @@ const Interface = () => {
                 </div>
                 {/* Developer Mode Indicator */}
                 {devMode && (
-                  <div className="bg-purple-900/70 backdrop-blur-sm rounded-lg px-4 py-2 border border-purple-400/50">
-                    <div className="text-purple-300 text-sm font-semibold">Dev Mode</div>
-                    <div className="text-purple-100 text-xs">Debug: Active</div>
+                  <div className="bg-orange-900/70 backdrop-blur-sm rounded-lg px-4 py-2 border border-orange-400/50">
+                    <div className="text-orange-300 text-sm font-semibold">Dev Mode</div>
+                    <div className="text-orange-100 text-xs">Debug: Active</div>
                   </div>
                 )}
               </div>
