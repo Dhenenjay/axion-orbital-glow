@@ -37,7 +37,12 @@ const Interface = () => {
   };
 
   const handleDevModeClick = () => {
-    navigate('/dev-mode', { state: { hasSubmittedQuery } });
+    navigate('/dev-mode', { 
+      state: { 
+        hasSubmittedQuery,
+        query: query.trim() || "Jakarta flood risk analysis with Sentinel-1 SAR data"
+      } 
+    });
   };
 
   return (

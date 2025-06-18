@@ -18,19 +18,27 @@ import {
   Layers,
   BarChart3,
   Bug,
-  Zap
+  Zap,
+  Loader2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
+import { useClaudeApi } from '@/hooks/useClaudeApi';
+import { useToast } from '@/hooks/use-toast';
 
 const DevMode = () => {
   const navigate = useNavigate();
   const location = useLocation();
+  const { toast } = useToast();
+  const { generateCode, isGenerating, error } = useClaudeApi();
   const [activeTab, setActiveTab] = useState('code-editor');
   const [selectedDataset, setSelectedDataset] = useState('');
-
-  // Check if user has submitted a query from the Interface page
+  const [generatedCode, setGeneratedCode] = useState('');
+  
+  // Get query and state from Interface page
   const hasSubmittedQuery = location.state?.hasSubmittedQuery || false;
+  const initialQuery = location.state?.query || '';
+  const [currentQuery, setCurrentQuery] = useState(initialQuery);
 
   const datasets = [
     'Landsat 8',
@@ -39,7 +47,7 @@ const DevMode = () => {
     'DEM'
   ];
 
-  const codeContent = `// Earth Engine JavaScript Code for Jakarta Flood Analysis
+  const defaultCode = `// Earth Engine JavaScript Code for Jakarta Flood Analysis
 var jakarta = ee.Geometry.Rectangle([106.6922, -6.3713, 107.1576, -5.9969]);
 
 // Load Sentinel-1 SAR data for flood detection
@@ -80,10 +88,36 @@ Map.addLayer(floodMask, {palette: ['white', 'blue']}, 'Flood Risk');
 Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, 'Population at Risk');`;
 
   const emptyCodePlaceholder = `// Code editor ready...
-// Submit a query from the Interface to generate Earth Engine code
-// Or start writing your own analysis code here`;
+// Submit a query from the Interface or use the Generate Code button
+// to create Earth Engine analysis code`;
 
-  const displayedCode = hasSubmittedQuery ? codeContent : emptyCodePlaceholder;
+  const displayedCode = generatedCode || (hasSubmittedQuery ? defaultCode : emptyCodePlaceholder);
+
+  const handleGenerateCode = async () => {
+    if (!currentQuery.trim()) {
+      toast({
+        title: "Query Required",
+        description: "Please enter a query to generate code",
+        variant: "destructive"
+      });
+      return;
+    }
+
+    try {
+      const code = await generateCode(currentQuery);
+      setGeneratedCode(code);
+      toast({
+        title: "Code Generated",
+        description: "Earth Engine code has been generated successfully",
+      });
+    } catch (err) {
+      toast({
+        title: "Generation Failed",
+        description: error || "Failed to generate code. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <div className="h-screen bg-slate-900 flex flex-col">
@@ -126,13 +160,33 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
       <div className="h-16 bg-slate-850 border-b border-slate-700 flex items-center px-4 space-x-4">
         <div className="flex-1 flex items-center space-x-4">
           <span className="text-gray-300 text-sm">Query:</span>
-          <div className="flex-1 bg-slate-800 rounded px-3 py-2 text-gray-300 text-sm">
-            {hasSubmittedQuery ? "Jakarta flood risk analysis with Sentinel-1 SAR data" : "No query submitted - submit from Interface to generate code"}
-          </div>
+          <input
+            type="text"
+            className="flex-1 bg-slate-800 rounded px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+            placeholder="Enter your satellite data analysis query..."
+            value={currentQuery}
+            onChange={(e) => setCurrentQuery(e.target.value)}
+            defaultValue={hasSubmittedQuery ? "Jakarta flood risk analysis with Sentinel-1 SAR data" : ""}
+          />
         </div>
         <div className="flex items-center space-x-2">
-          <Button size="sm" className="bg-blue-600 hover:bg-blue-700">
-            Generate Code
+          <Button 
+            size="sm" 
+            className="bg-blue-600 hover:bg-blue-700"
+            onClick={handleGenerateCode}
+            disabled={isGenerating}
+          >
+            {isGenerating ? (
+              <>
+                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
+                Generating...
+              </>
+            ) : (
+              <>
+                <Zap className="w-4 h-4 mr-1" />
+                Generate Code
+              </>
+            )}
           </Button>
         </div>
       </div>
@@ -249,8 +303,8 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
                   <textarea
                     className="w-full h-full bg-slate-900 text-gray-300 font-mono text-sm pl-16 p-4 resize-none focus:outline-none"
                     value={displayedCode}
-                    onChange={() => {}}
-                    placeholder={hasSubmittedQuery ? "" : "Submit a query from the Interface to generate code..."}
+                    onChange={(e) => setGeneratedCode(e.target.value)}
+                    placeholder="Submit a query or use Generate Code to create Earth Engine code..."
                   />
                 </>
               )}
@@ -258,6 +312,9 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
               {activeTab === 'console' && (
                 <div className="p-4 bg-slate-900 text-gray-300 font-mono text-sm">
                   <div className="text-green-400">$ Ready for execution</div>
+                  {error && (
+                    <div className="text-red-400 mt-2">Error: {error}</div>
+                  )}
                   <div className="text-gray-500 mt-2">Console output will appear here...</div>
                 </div>
               )}
@@ -282,16 +339,16 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
                 <div className="space-y-2 text-sm text-gray-400">
                   <div className="flex justify-between">
                     <span>Map Layers:</span>
-                    <span className="text-white">{hasSubmittedQuery ? '2' : '0'}</span>
+                    <span className="text-white">{generatedCode || hasSubmittedQuery ? '2' : '0'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Export Tasks:</span>
-                    <span className="text-white">{hasSubmittedQuery ? '1' : '0'}</span>
+                    <span className="text-white">{generatedCode || hasSubmittedQuery ? '1' : '0'}</span>
                   </div>
                   <div className="flex justify-between">
                     <span>Status:</span>
-                    <span className={hasSubmittedQuery ? "text-green-400" : "text-yellow-400"}>
-                      {hasSubmittedQuery ? 'Ready' : 'Waiting'}
+                    <span className={generatedCode || hasSubmittedQuery ? "text-green-400" : "text-yellow-400"}>
+                      {isGenerating ? 'Generating...' : (generatedCode || hasSubmittedQuery ? 'Ready' : 'Waiting')}
                     </span>
                   </div>
                 </div>
@@ -308,10 +365,10 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
                 <div className="text-sm text-gray-400">
                   <div className="bg-slate-700 rounded p-3">
                     <div className="text-cyan-400 mb-1">
-                      {hasSubmittedQuery ? 'Suggestion:' : 'Status:'}
+                      {generatedCode ? 'Generated:' : (hasSubmittedQuery ? 'Suggestion:' : 'Status:')}
                     </div>
                     <div>
-                      {hasSubmittedQuery ? 'Add cloud masking for better results' : 'Submit query to get suggestions'}
+                      {generatedCode ? 'Code generated by Claude AI' : (hasSubmittedQuery ? 'Add cloud masking for better results' : 'Enter query to get AI-generated code')}
                     </div>
                   </div>
                 </div>
@@ -324,14 +381,14 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
       {/* Bottom Status Bar */}
       <div className="h-8 bg-slate-800 border-t border-slate-700 flex items-center justify-between px-4 text-xs">
         <div className="flex items-center space-x-4 text-gray-400">
-          <span>Ln {hasSubmittedQuery ? '24, Col 15' : '1, Col 1'}</span>
+          <span>Ln {generatedCode || hasSubmittedQuery ? '24, Col 15' : '1, Col 1'}</span>
           <span>JavaScript</span>
           <span>UTF-8</span>
         </div>
         <div className="flex items-center space-x-4 text-gray-400">
           <div className="flex items-center space-x-1">
-            <div className="w-2 h-2 bg-green-400 rounded-full"></div>
-            <span>Connected</span>
+            <div className={`w-2 h-2 rounded-full ${isGenerating ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`}></div>
+            <span>{isGenerating ? 'Generating' : 'Connected'}</span>
           </div>
         </div>
       </div>
