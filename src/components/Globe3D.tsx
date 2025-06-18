@@ -1,11 +1,14 @@
 
 import { useRef } from 'react';
-import { Canvas, useFrame } from '@react-three/fiber';
+import { Canvas, useFrame, useLoader } from '@react-three/fiber';
 import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
 function EarthSphere({ isHovered }: { isHovered: boolean }) {
   const meshRef = useRef<THREE.Mesh>(null);
+  
+  // Load Earth texture - using a NASA Blue Marble image URL
+  const earthTexture = useLoader(THREE.TextureLoader, 'https://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/WorldMap-A_non-Frame.png/1024px-WorldMap-A_non-Frame.png');
   
   // Auto-rotate the Earth
   useFrame((state, delta) => {
@@ -20,7 +23,7 @@ function EarthSphere({ isHovered }: { isHovered: boolean }) {
     <mesh ref={meshRef} scale={[scale, scale, scale]}>
       <sphereGeometry args={[2, 64, 32]} />
       <meshStandardMaterial 
-        color="#4a90e2"
+        map={earthTexture}
         roughness={0.8}
         metalness={0.1}
       />
@@ -109,13 +112,16 @@ export const Globe3D = ({ isHovered, zoom }: { isHovered: boolean; zoom: number 
           <meshBasicMaterial color="#3b82f6" transparent opacity={0.15} />
         </mesh>
         
-        {/* Controls */}
+        {/* Controls - Enable zoom and interaction */}
         <OrbitControls 
-          enableZoom={false}
+          enableZoom={true}
           enablePan={false}
           autoRotate={false}
-          minPolarAngle={Math.PI / 3}
-          maxPolarAngle={Math.PI - Math.PI / 3}
+          minDistance={2}
+          maxDistance={15}
+          minPolarAngle={Math.PI / 6}
+          maxPolarAngle={Math.PI - Math.PI / 6}
+          zoomSpeed={0.5}
         />
       </Canvas>
     </div>

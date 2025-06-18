@@ -6,19 +6,12 @@ export const InteractiveEarth = () => {
   const [isHovered, setIsHovered] = useState(false);
   const [zoom, setZoom] = useState(1);
 
-  const handleWheel = (e: React.WheelEvent<HTMLDivElement>) => {
-    e.preventDefault();
-    const zoomFactor = e.deltaY > 0 ? 0.9 : 1.1;
-    setZoom(prev => Math.max(0.5, Math.min(3, prev * zoomFactor)));
-  };
-
   return (
     <div className="relative flex items-center justify-center h-full">
       <div
         className="relative group cursor-pointer transition-transform duration-300"
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
-        onWheel={handleWheel}
       >
         {/* 3D Globe */}
         <Globe3D isHovered={isHovered} zoom={zoom} />
@@ -33,7 +26,7 @@ export const InteractiveEarth = () => {
       <div className="absolute top-4 left-4 space-y-2">
         <div className="bg-slate-900/80 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-white">
           <div>🌍 Real 3D Earth Globe</div>
-          <div>Scroll to zoom • Drag to rotate</div>
+          <div>Mouse wheel to zoom • Drag to rotate</div>
         </div>
       </div>
 
@@ -56,14 +49,7 @@ export const InteractiveEarth = () => {
       {/* Status indicator */}
       {isHovered && (
         <div className="absolute bottom-4 right-4 bg-slate-800/90 backdrop-blur-sm text-white px-4 py-2 rounded-lg text-sm animate-fade-in">
-          🛰️ Interactive 3D Earth • Zoom: {Math.round(zoom * 100)}%
-        </div>
-      )}
-
-      {/* Zoom indicator */}
-      {zoom !== 1 && (
-        <div className="absolute top-4 right-4 bg-slate-900/80 backdrop-blur-sm rounded-lg px-3 py-2 text-xs text-white">
-          Zoom: {(zoom * 100).toFixed(0)}%
+          🛰️ Interactive 3D Earth • Use mouse wheel to zoom
         </div>
       )}
     </div>
