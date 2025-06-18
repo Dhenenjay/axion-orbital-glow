@@ -1,9 +1,9 @@
-
 import { useState, useEffect } from "react";
 import { Play, Zap, Brain, Satellite, CheckCircle, ArrowRight, Sparkles, Database } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Card, CardContent } from "@/components/ui/card";
 import { Progress } from "@/components/ui/progress";
+import { useNavigate } from "react-router-dom";
 
 const demoSteps = [
   {
@@ -33,6 +33,7 @@ const demoSteps = [
 ];
 
 export const InteractiveDemo = () => {
+  const navigate = useNavigate();
   const [activeStep, setActiveStep] = useState(1);
   const [isProcessing, setIsProcessing] = useState(false);
   const [progress, setProgress] = useState(0);
@@ -329,7 +330,7 @@ export const InteractiveDemo = () => {
                   <div className="flex gap-3">
                     <Button 
                       className="flex-1 bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 group"
-                      onClick={() => window.open('/interface', '_blank')}
+                      onClick={() => navigate('/signup')}
                     >
                       View Full Results
                       <ArrowRight className="ml-2 h-4 w-4 group-hover:translate-x-1 transition-transform" />
