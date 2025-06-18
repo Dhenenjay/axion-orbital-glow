@@ -126,7 +126,7 @@ const FloodRiskMap = () => {
           </Button>
         </div>
 
-        {/* Map container with new research paper image */}
+        {/* Map container with new flood risk image */}
         <div 
           ref={mapContainer} 
           className="w-full h-full flex items-center justify-center overflow-hidden"
@@ -135,8 +135,8 @@ const FloodRiskMap = () => {
           }}
         >
           <img
-            src="https://www.mdpi.com/applsci/applsci-12-01679/article_deploy/html/images/applsci-12-01679-g007.png"
-            alt="Jakarta Flood Risk Analysis - Sentinel-1 SAR Data"
+            src="/lovable-uploads/b19b4dc0-559c-488d-9b72-ca43ef69ae53.png"
+            alt="Jakarta Flood Risk Analysis - SAR Data Results"
             className="map-image max-w-none transition-transform duration-200 ease-out"
             style={{
               transform: `scale(${zoomLevel})`,
@@ -225,7 +225,7 @@ const FloodRiskMap = () => {
             {selectedLayer === 'flood-depth' ? (
               <>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-blue-800 rounded border"></div>
+                  <div className="w-4 h-4 bg-red-600 rounded border"></div>
                   <span className="text-gray-700 text-xs">Flooded Areas</span>
                 </div>
                 <div className="flex items-center space-x-3">
@@ -233,12 +233,12 @@ const FloodRiskMap = () => {
                   <span className="text-gray-700 text-xs">Water Bodies</span>
                 </div>
                 <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-green-600 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Urban Areas</span>
+                  <div className="w-4 h-4 bg-white rounded border border-gray-400"></div>
+                  <span className="text-gray-700 text-xs">Non-flooded Areas</span>
                 </div>
                 <div className="flex items-center space-x-3">
                   <div className="w-4 h-4 bg-yellow-400 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Agricultural Land</span>
+                  <span className="text-gray-700 text-xs">Urban Areas</span>
                 </div>
               </>
             ) : (
@@ -313,7 +313,7 @@ const FloodRiskMap = () => {
           </p>
           <p>
             <strong>Classification & Validation:</strong> Machine learning classification combined with optical imagery validation 
-            and ground truth data to achieve >90% accuracy in flood extent mapping.
+            and ground truth data to achieve greater than 90% accuracy in flood extent mapping.
           </p>
         </div>
       </div>
