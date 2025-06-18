@@ -1,7 +1,13 @@
+
 import { ArrowRight, Sparkles } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
+
 export const CTA = () => {
-  return <section className="py-20 relative">
+  const navigate = useNavigate();
+
+  return (
+    <section className="py-20 relative">
       <div className="absolute inset-0 bg-gradient-to-r from-cyan-950/20 via-blue-950/20 to-purple-950/20"></div>
       <div className="container mx-auto px-4 relative z-10">
         <div className="max-w-4xl mx-auto text-center">
@@ -20,11 +26,20 @@ export const CTA = () => {
           <p className="text-xl text-gray-300 mb-8 max-w-2xl mx-auto">Join hundreds of devs & organizations already using Axion Orbital to transform satellite data into actionable insights.</p>
           
           <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">
-            <Button size="lg" className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-3 text-lg group">
+            <Button 
+              size="lg" 
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-3 text-lg group"
+              onClick={() => navigate('/signup')}
+            >
               Get Started Free
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
-            <Button variant="outline" size="lg" className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-purple-400/50 text-white px-8 py-3 text-lg">
+            <Button 
+              variant="outline" 
+              size="lg" 
+              className="bg-gradient-to-r from-purple-500 to-pink-500 hover:from-purple-600 hover:to-pink-600 border-purple-400/50 text-white px-8 py-3 text-lg"
+              onClick={() => window.open('https://calendly.com/dhenenjay-2001/30min?month=2025-06', '_blank')}
+            >
               Schedule Demo
             </Button>
           </div>
@@ -34,5 +49,6 @@ export const CTA = () => {
           </p>
         </div>
       </div>
-    </section>;
+    </section>
+  );
 };
