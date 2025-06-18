@@ -1,3 +1,4 @@
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { 
@@ -14,6 +15,7 @@ import {
   Code
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { ScrollArea } from "@/components/ui/scroll-area";
 import { InteractiveEarth } from "@/components/InteractiveEarth";
 import FloodRiskMap from "@/components/FloodRiskMap";
 
@@ -205,13 +207,15 @@ const Interface = () => {
               </div>
             </>
           ) : (
-            /* Enhanced Output Display */
-            <div className="flex-1 px-8 pb-8 pt-4">
-              {/* Flood Risk Map with enhanced interactivity */}
-              <div className="h-full">
-                <FloodRiskMap />
+            /* Enhanced Output Display with ScrollArea */
+            <ScrollArea className="flex-1">
+              <div className="px-8 pb-8 pt-4">
+                {/* Flood Risk Map with enhanced interactivity */}
+                <div className="min-h-screen">
+                  <FloodRiskMap />
+                </div>
               </div>
-            </div>
+            </ScrollArea>
           )}
         </div>
       </div>

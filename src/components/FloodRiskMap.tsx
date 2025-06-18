@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -71,10 +70,10 @@ const FloodRiskMap = () => {
   };
 
   return (
-    <div className="flex flex-col h-full">
+    <div className="flex flex-col space-y-6">
       {/* Map container */}
       <div 
-        className="relative flex-1 bg-slate-900/20 rounded-lg border border-slate-600/50 overflow-hidden cursor-grab active:cursor-grabbing"
+        className="relative h-[600px] bg-slate-900/20 rounded-lg border border-slate-600/50 overflow-hidden cursor-grab active:cursor-grabbing"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseUp}
@@ -297,7 +296,7 @@ const FloodRiskMap = () => {
       </div>
 
       {/* Methodology Section */}
-      <div className="mt-6 bg-slate-800/30 backdrop-blur-sm rounded-lg border border-slate-600/50 p-6">
+      <div className="bg-slate-800/30 backdrop-blur-sm rounded-lg border border-slate-600/50 p-6">
         <h3 className="text-white text-lg font-semibold mb-4 flex items-center">
           <div className="w-2 h-2 bg-cyan-400 rounded-full mr-3"></div>
           Methodology
