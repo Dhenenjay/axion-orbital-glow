@@ -166,7 +166,6 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
             placeholder="Enter your satellite data analysis query..."
             value={currentQuery}
             onChange={(e) => setCurrentQuery(e.target.value)}
-            defaultValue={hasSubmittedQuery ? "Jakarta flood risk analysis with Sentinel-1 SAR data" : ""}
           />
         </div>
         <div className="flex items-center space-x-2">
