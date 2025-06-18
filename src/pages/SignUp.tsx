@@ -103,9 +103,7 @@ const SignUp = () => {
             <Globe className="h-8 w-8 text-cyan-400 mr-2" />
             <span className="text-2xl font-bold text-white">Axion Orbital Space</span>
           </div>
-          <p className="text-gray-300 text-lg">
-            Democratizing Access to Satellite for Everyone
-          </p>
+          <p className="text-gray-300 text-lg">Democratizing Access to Satellite Intelligence for Everyone</p>
         </div>
 
         {!showEmailForm ? <>
