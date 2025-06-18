@@ -1,5 +1,5 @@
 
-import { ArrowRight, Globe, Zap, Database, Users, Earth, Bucket, Stopwatch } from "lucide-react";
+import { ArrowRight, Globe, Zap, Database, Users, Earth, HardDrive, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
 import { useNavigate } from "react-router-dom";
@@ -83,7 +83,7 @@ export const Hero = () => {
                 <span>Global Coverage</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start space-x-2 text-gray-300 hover:text-cyan-400 transition-colors cursor-pointer">
-                <Bucket className="h-5 w-5 text-cyan-400" />
+                <HardDrive className="h-5 w-5 text-cyan-400" />
                 <span>Petabytes of Data</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start space-x-2 text-gray-300 hover:text-cyan-400 transition-colors cursor-pointer">
@@ -91,7 +91,7 @@ export const Hero = () => {
                 <span>Real Time</span>
               </div>
               <div className="flex items-center justify-center lg:justify-start space-x-2 text-gray-300 hover:text-cyan-400 transition-colors cursor-pointer">
-                <Stopwatch className="h-5 w-5 text-cyan-400" />
+                <Clock className="h-5 w-5 text-cyan-400" />
                 <span>Up to 10x faster</span>
               </div>
             </div>
