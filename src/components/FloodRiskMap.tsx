@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -76,11 +75,15 @@ const FloodRiskMap = () => {
   };
 
   const handleWheel = (e: React.WheelEvent) => {
-    if (isMouseOverMap) {
+    // Only handle zoom if mouse is over the map AND user is holding Ctrl key
+    // This allows normal scrolling while providing zoom functionality with Ctrl+scroll
+    if (isMouseOverMap && e.ctrlKey) {
       e.preventDefault();
+      e.stopPropagation();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       setZoomLevel(prev => Math.max(0.5, Math.min(3, prev + delta)));
     }
+    // If no Ctrl key, let the event bubble up for normal page scrolling
   };
 
   return (
@@ -306,6 +309,9 @@ const FloodRiskMap = () => {
         <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-md z-10">
           <div className="text-gray-700 text-xs font-semibold">
             Zoom: {Math.round(zoomLevel * 100)}%
+          </div>
+          <div className="text-gray-500 text-xs mt-1">
+            Hold Ctrl + scroll to zoom
           </div>
         </div>
       </div>
