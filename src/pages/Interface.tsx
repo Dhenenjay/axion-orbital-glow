@@ -68,16 +68,6 @@ const Interface = () => {
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
               <span className="text-emerald-300 text-sm font-medium">Live</span>
             </div>
-            {showOutput && (
-              <Button
-                onClick={() => setDevMode(!devMode)}
-                variant="outline"
-                size="sm"
-                className="bg-blue-500/20 border-blue-400/50 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200"
-              >
-                Switch to Dev Mode
-              </Button>
-            )}
             <Button
               onClick={() => setDevMode(!devMode)}
               variant="outline"
@@ -123,11 +113,11 @@ const Interface = () => {
             <div className="flex items-center space-x-3 mb-2">
               <Zap className="h-6 w-6 text-yellow-400 animate-pulse" />
               <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                {showOutput ? "Live Output (pans & zooms)" : "No-Code IDE for Planetary Scale Satellite Data Analysis"}
+                {showOutput ? "Live Flood Risk Analysis - Jakarta" : "No-Code IDE for Planetary Scale Satellite Data Analysis"}
               </h1>
             </div>
             <p className="text-gray-400 text-sm">
-              {showOutput ? "Real-time flood risk analysis for Jakarta, Indonesia" : "Harness the power of real-time satellite intelligence with natural language queries"}
+              {showOutput ? "Real-time flood risk mapping with interactive layers and detailed analytics" : "Harness the power of real-time satellite intelligence with natural language queries"}
             </p>
           </div>
 
@@ -213,21 +203,10 @@ const Interface = () => {
               </div>
             </>
           ) : (
-            /* Output Display */
+            /* Enhanced Output Display */
             <div className="flex-1 px-8 pb-8 pt-4">
-              {/* Prompt Overlay */}
-              <div className="mb-4 bg-slate-800/50 rounded-lg p-4 border border-slate-600/50">
-                <h4 className="text-white font-medium mb-2">Prompt Query</h4>
-                <p className="text-gray-300 text-sm">
-                  Map flood risk in Jakarta, Indonesia
-                </p>
-                <p className="text-gray-400 text-xs mt-1">
-                  (Note: The user can re-run & visualize on the Output)
-                </p>
-              </div>
-
-              {/* Flood Risk Map */}
-              <div className="h-[calc(100%-120px)]">
+              {/* Flood Risk Map with enhanced interactivity */}
+              <div className="h-full">
                 <FloodRiskMap />
               </div>
             </div>
