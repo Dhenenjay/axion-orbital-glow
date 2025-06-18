@@ -133,7 +133,7 @@ const FloodRiskMap = () => {
         }}
       >
         <img
-          src="/lovable-uploads/47dfb494-c80b-48d4-a600-73b8ffa28b45.png"
+          src="/lovable-uploads/5979452b-6250-410f-b3ef-afeb28dad473.png"
           alt="Jakarta Flood Risk Map"
           className="map-image max-w-none transition-transform duration-200 ease-out"
           style={{
@@ -179,17 +179,17 @@ const FloodRiskMap = () => {
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            Flood Depth
+            Inundation Depth
           </button>
           <button
-            onClick={() => setSelectedLayer('satellite')}
+            onClick={() => setSelectedLayer('economic')}
             className={`w-full text-left px-2 py-1 rounded text-xs transition-all ${
-              selectedLayer === 'satellite' 
-                ? 'bg-green-500/20 text-green-700' 
+              selectedLayer === 'economic' 
+                ? 'bg-orange-500/20 text-orange-700' 
                 : 'text-gray-600 hover:bg-gray-100'
             }`}
           >
-            Satellite
+            Economic Impact
           </button>
         </div>
       </div>
@@ -214,28 +214,59 @@ const FloodRiskMap = () => {
         </Button>
       </div>
       
-      {/* Legend */}
+      {/* Updated Legend */}
       <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md rounded-lg p-4 border border-gray-300 shadow-md z-10">
         <h4 className="text-gray-700 text-sm font-semibold mb-3">
-          Flood Risk Level (m)
+          {selectedLayer === 'flood-depth' ? 'Inundation Depth (m)' : 'Economic Impact (Million USD)'}
         </h4>
         <div className="space-y-2">
-          <div className="flex items-center space-x-3">
-            <div className="w-4 h-4 bg-red-600 rounded border"></div>
-            <span className="text-gray-700 text-xs">Extreme (3.0+)</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-4 h-4 bg-orange-500 rounded border"></div>
-            <span className="text-gray-700 text-xs">High (2.0-3.0)</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-4 h-4 bg-yellow-500 rounded border"></div>
-            <span className="text-gray-700 text-xs">Medium (1.0-2.0)</span>
-          </div>
-          <div className="flex items-center space-x-3">
-            <div className="w-4 h-4 bg-green-500 rounded border"></div>
-            <span className="text-gray-700 text-xs">Low (0-1.0)</span>
-          </div>
+          {selectedLayer === 'flood-depth' ? (
+            <>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-blue-900 rounded border"></div>
+                <span className="text-gray-700 text-xs">3.5+ m</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-blue-600 rounded border"></div>
+                <span className="text-gray-700 text-xs">3.0 m</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-blue-400 rounded border"></div>
+                <span className="text-gray-700 text-xs">2.0 m</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-blue-200 rounded border"></div>
+                <span className="text-gray-700 text-xs">1.0 m</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-blue-100 rounded border"></div>
+                <span className="text-gray-700 text-xs">0 m</span>
+              </div>
+            </>
+          ) : (
+            <>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-red-600 rounded border"></div>
+                <span className="text-gray-700 text-xs">0.200+</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-orange-500 rounded border"></div>
+                <span className="text-gray-700 text-xs">0.075</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-yellow-400 rounded border"></div>
+                <span className="text-gray-700 text-xs">0.050</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-yellow-200 rounded border"></div>
+                <span className="text-gray-700 text-xs">0.025</span>
+              </div>
+              <div className="flex items-center space-x-3">
+                <div className="w-4 h-4 bg-orange-100 rounded border"></div>
+                <span className="text-gray-700 text-xs">0.000</span>
+              </div>
+            </>
+          )}
         </div>
       </div>
       
@@ -246,7 +277,7 @@ const FloodRiskMap = () => {
         <div className="space-y-1 text-xs text-gray-600">
           <div className="flex justify-between">
             <span>Resolution:</span>
-            <span className="text-blue-600">100m</span>
+            <span className="text-blue-600">High-res</span>
           </div>
           <div className="flex justify-between">
             <span>Area:</span>
