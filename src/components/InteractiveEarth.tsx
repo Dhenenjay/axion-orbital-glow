@@ -58,12 +58,12 @@ export const InteractiveEarth = () => {
       ctx.fillStyle = atmosphereGradient;
       ctx.fill();
 
-      // Draw continents (simplified)
+      // Draw continents (simplified) - much smoother rotation
       ctx.fillStyle = '#2d5a27';
       ctx.globalAlpha = 0.8;
       
-      // Draw landmasses with rotation
-      const rotationOffset = rotation * 0.02;
+      // Smooth rotation offset - reduced speed significantly
+      const rotationOffset = rotation * 0.003; // Much slower rotation
       
       // Africa
       ctx.beginPath();
@@ -136,11 +136,11 @@ export const InteractiveEarth = () => {
         ctx.stroke();
       }
 
-      // Draw satellites
+      // Draw satellites - slower orbital movement
       const satelliteCount = 6;
       for (let i = 0; i < satelliteCount; i++) {
-        const angle = (i / satelliteCount) * Math.PI * 2 + rotation * 0.01;
-        const distance = radius + 40 + Math.sin(rotation * 0.02 + i) * 10;
+        const angle = (i / satelliteCount) * Math.PI * 2 + rotation * 0.005; // Much slower
+        const distance = radius + 40 + Math.sin(rotation * 0.01 + i) * 10; // Smoother oscillation
         const x = centerX + Math.cos(angle) * distance;
         const y = centerY + Math.sin(angle) * distance * 0.5;
 
@@ -168,11 +168,15 @@ export const InteractiveEarth = () => {
       }
     };
 
-    const animationId = requestAnimationFrame(function step() {
+    let animationId: number;
+    
+    const step = () => {
       animate();
-      setRotation(prev => prev + 1);
-      requestAnimationFrame(step);
-    });
+      setRotation(prev => prev + 0.5); // Much slower increment
+      animationId = requestAnimationFrame(step);
+    };
+    
+    animationId = requestAnimationFrame(step);
 
     return () => cancelAnimationFrame(animationId);
   }, [rotation, isHovered]);

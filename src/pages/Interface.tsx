@@ -10,13 +10,15 @@ import {
   User,
   Search,
   Zap,
-  Satellite
+  Satellite,
+  Code
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { InteractiveEarth } from "@/components/InteractiveEarth";
 
 const Interface = () => {
   const [query, setQuery] = useState("");
+  const [devMode, setDevMode] = useState(false);
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950 to-slate-950 relative overflow-hidden">
@@ -53,6 +55,20 @@ const Interface = () => {
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
               <span className="text-emerald-300 text-sm font-medium">Live</span>
             </div>
+            {/* Developer Mode Button */}
+            <Button
+              onClick={() => setDevMode(!devMode)}
+              variant="outline"
+              size="sm"
+              className={`border-slate-600 text-gray-300 hover:text-white transition-all duration-300 ${
+                devMode 
+                  ? 'bg-cyan-500/20 border-cyan-400/50 text-cyan-300' 
+                  : 'hover:bg-slate-700/50'
+              }`}
+            >
+              <Code className="h-4 w-4 mr-2" />
+              Dev Mode
+            </Button>
             <User className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
             <Settings className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
           </div>
@@ -138,6 +154,13 @@ const Interface = () => {
                   <div className="text-blue-400 text-sm font-semibold">Data Points</div>
                   <div className="text-white text-lg font-bold">48.2M</div>
                 </div>
+                {/* Developer Mode Indicator */}
+                {devMode && (
+                  <div className="bg-cyan-900/70 backdrop-blur-sm rounded-lg px-4 py-2 border border-cyan-400/50">
+                    <div className="text-cyan-300 text-sm font-semibold">Dev Mode</div>
+                    <div className="text-cyan-100 text-xs">Debug: Active</div>
+                  </div>
+                )}
               </div>
 
               {/* Interactive Earth Component */}
