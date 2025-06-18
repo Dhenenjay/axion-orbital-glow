@@ -63,7 +63,7 @@ export const Hero = () => {
                 variant="outline" 
                 size="lg" 
                 className="bg-gradient-to-r from-orange-500 to-red-500 hover:from-orange-600 hover:to-red-600 border-orange-400/50 text-white px-8 py-3 text-lg transform hover:scale-105 transition-all duration-200"
-                onClick={() => window.open('https://calendly.com/dhenenjay-2001/30min?month=2025-06', '_blank')}
+                onClick={() => window.open('https://docs.google.com/forms/d/e/1FAIpQLSeOyi8U2DOuTBeqc_f8_4cGDzFrTkmoAxx54IEINz2NDDoCFA/viewform', '_blank')}
               >
                 <Users className="mr-2 h-5 w-5" />
                 Enterprise Waitlist
