@@ -1,7 +1,7 @@
 
 import { useRef } from 'react';
 import { Canvas, useFrame } from '@react-three/fiber';
-import { OrbitControls, Sphere } from '@react-three/drei';
+import { OrbitControls } from '@react-three/drei';
 import * as THREE from 'three';
 
 function EarthSphere({ isHovered }: { isHovered: boolean }) {
@@ -14,14 +14,17 @@ function EarthSphere({ isHovered }: { isHovered: boolean }) {
     }
   });
 
+  const scale = isHovered ? 1.1 : 1;
+
   return (
-    <Sphere ref={meshRef} args={[2, 64, 32]} scale={isHovered ? 1.1 : 1}>
+    <mesh ref={meshRef} scale={[scale, scale, scale]}>
+      <sphereGeometry args={[2, 64, 32]} />
       <meshStandardMaterial 
         color="#4a90e2"
         roughness={0.8}
         metalness={0.1}
       />
-    </Sphere>
+    </mesh>
   );
 }
 
