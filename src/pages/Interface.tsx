@@ -28,6 +28,7 @@ const Interface = () => {
   const [hasSubmittedQuery, setHasSubmittedQuery] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
   const [mapType, setMapType] = useState<'flood' | 'crop'>('flood');
+  const [currentProcessingQuery, setCurrentProcessingQuery] = useState("");
 
   // Handle state restoration when returning from DevMode
   useEffect(() => {
@@ -58,6 +59,7 @@ const Interface = () => {
 
   const handleSubmitQuery = () => {
     if (query.trim()) {
+      setCurrentProcessingQuery(query);
       setIsProcessing(true);
       // Don't immediately show output - wait for processing to complete
     }
@@ -68,14 +70,15 @@ const Interface = () => {
     setShowOutput(true);
     setHasSubmittedQuery(true);
     // Set map type based on the query that was processed
-    setMapType(determineMapType(query || "Jakarta flood risk analysis with Sentinel-1 SAR data"));
+    setMapType(determineMapType(currentProcessingQuery || "Jakarta flood risk analysis with Sentinel-1 SAR data"));
   };
 
   const handleMapQuerySubmit = (mapQuery: string) => {
-    // When query is submitted from the map overlay, update the map type
-    const newMapType = determineMapType(mapQuery);
-    setMapType(newMapType);
-    console.log('Map type changed to:', newMapType, 'based on query:', mapQuery);
+    // When query is submitted from the map overlay, start processing
+    console.log('Map query submitted:', mapQuery);
+    setCurrentProcessingQuery(mapQuery);
+    setIsProcessing(true);
+    // The processing overlay will show and then call handleProcessingComplete when done
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -101,7 +104,7 @@ const Interface = () => {
       <QueryProcessingOverlay 
         isProcessing={isProcessing}
         onComplete={handleProcessingComplete}
-        query={query || "Jakarta flood risk analysis with Sentinel-1 SAR data"}
+        query={currentProcessingQuery || "Jakarta flood risk analysis with Sentinel-1 SAR data"}
       />
 
       {/* Animated background particles */}
