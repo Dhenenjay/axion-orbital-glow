@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -143,109 +142,110 @@ const Interface = () => {
   };
 
   return (
-    <ScrollArea className="h-screen">
-      <div className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950 to-slate-950 relative overflow-hidden">
-        {/* Processing Overlay */}
-        <QueryProcessingOverlay 
-          isProcessing={isProcessing}
-          onComplete={handleProcessingComplete}
-          query={currentProcessingQuery || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data")}
-        />
+    <div className="h-screen bg-gradient-to-b from-slate-950 via-blue-950 to-slate-950 relative overflow-hidden">
+      {/* Processing Overlay */}
+      <QueryProcessingOverlay 
+        isProcessing={isProcessing}
+        onComplete={handleProcessingComplete}
+        query={currentProcessingQuery || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data")}
+      />
 
-        {/* Animated background particles */}
-        <div className="absolute inset-0">
-          {[...Array(50)].map((_, i) => (
-            <div
-              key={i}
-              className="absolute w-1 h-1 bg-cyan-400/30 rounded-full animate-twinkle"
-              style={{
-                left: `${Math.random() * 100}%`,
-                top: `${Math.random() * 100}%`,
-                animationDelay: `${Math.random() * 3}s`,
-                animationDuration: `${2 + Math.random() * 2}s`
-              }}
-            />
-          ))}
+      {/* Animated background particles */}
+      <div className="absolute inset-0">
+        {[...Array(50)].map((_, i) => (
+          <div
+            key={i}
+            className="absolute w-1 h-1 bg-cyan-400/30 rounded-full animate-twinkle"
+            style={{
+              left: `${Math.random() * 100}%`,
+              top: `${Math.random() * 100}%`,
+              animationDelay: `${Math.random() * 3}s`,
+              animationDuration: `${2 + Math.random() * 2}s`
+            }}
+          />
+        ))}
+      </div>
+
+      {/* Header */}
+      <header className="border-b border-slate-700/50 bg-slate-900/30 backdrop-blur-md relative z-10">
+        <div className="flex items-center justify-between px-6 py-4">
+          <div className="flex items-center space-x-4">
+            <Menu className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
+            <div className="flex items-center group">
+              <Globe className="h-6 w-6 text-cyan-400 mr-2 animate-pulse" />
+              <span className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
+                Phoenix 1.0
+              </span>
+            </div>
+          </div>
+          <div className="flex items-center space-x-4">
+            <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-500/20 rounded-full">
+              <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
+              <span className="text-emerald-300 text-sm font-medium">Live</span>
+            </div>
+            <Button
+              onClick={handleDevModeClick}
+              variant="outline"
+              size="sm"
+              className="bg-blue-500/20 border-blue-400/50 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-all duration-300"
+            >
+              <Code className="h-4 w-4 mr-2" />
+              Dev Mode
+            </Button>
+            <User className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
+            <Settings className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
+          </div>
+        </div>
+      </header>
+
+      <div className="flex h-[calc(100vh-73px)]">
+        {/* Enhanced Sidebar */}
+        <div className="w-20 bg-slate-900/50 border-r border-slate-700/50 flex flex-col items-center py-6 space-y-6 relative z-10">
+          <div className="p-3 bg-cyan-500/20 rounded-xl border border-cyan-400/30 group hover:bg-cyan-500/30 transition-all duration-300">
+            <BarChart3 className="h-6 w-6 text-cyan-400 group-hover:scale-110 transition-transform" />
+          </div>
+          <div className="p-3 hover:bg-slate-700/50 rounded-xl cursor-pointer group transition-all duration-300">
+            <Database className="h-6 w-6 text-gray-400 group-hover:text-white group-hover:scale-110 transition-all" />
+          </div>
+          <div className="p-3 hover:bg-slate-700/50 rounded-xl cursor-pointer group transition-all duration-300">
+            <Satellite className="h-6 w-6 text-gray-400 group-hover:text-white group-hover:scale-110 transition-all" />
+          </div>
+          <div className="p-3 hover:bg-slate-700/50 rounded-xl cursor-pointer group transition-all duration-300">
+            <MessageCircle className="h-6 w-6 text-gray-400 group-hover:text-white group-hover:scale-110 transition-all" />
+          </div>
+          
+          <div className="absolute left-0 top-6 w-1 h-12 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-r-full animate-pulse"></div>
         </div>
 
-        {/* Header */}
-        <header className="border-b border-slate-700/50 bg-slate-900/30 backdrop-blur-md relative z-10">
-          <div className="flex items-center justify-between px-6 py-4">
-            <div className="flex items-center space-x-4">
-              <Menu className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
-              <div className="flex items-center group">
-                <Globe className="h-6 w-6 text-cyan-400 mr-2 animate-pulse" />
-                <span className="text-xl font-bold text-white group-hover:text-cyan-300 transition-colors">
-                  Phoenix 1.0
-                </span>
-              </div>
+        {/* Main Content - Enhanced Scrollability */}
+        <div className="flex-1 flex flex-col relative z-10 overflow-hidden">
+          {/* Enhanced Title */}
+          <div className="px-8 py-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/30 to-slate-900/30 backdrop-blur-sm flex-shrink-0">
+            <div className="flex items-center space-x-3 mb-2">
+              <Zap className="h-6 w-6 text-yellow-400 animate-pulse" />
+              <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
+                {getPageTitle()}
+              </h1>
             </div>
-            <div className="flex items-center space-x-4">
-              <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-500/20 rounded-full">
-                <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
-                <span className="text-emerald-300 text-sm font-medium">Live</span>
-              </div>
-              <Button
-                onClick={handleDevModeClick}
-                variant="outline"
-                size="sm"
-                className="bg-blue-500/20 border-blue-400/50 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-all duration-300"
-              >
-                <Code className="h-4 w-4 mr-2" />
-                Dev Mode
-              </Button>
-              <User className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
-              <Settings className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
-            </div>
-          </div>
-        </header>
-
-        <div className="flex h-[calc(100vh-73px)]">
-          {/* Enhanced Sidebar */}
-          <div className="w-20 bg-slate-900/50 border-r border-slate-700/50 flex flex-col items-center py-6 space-y-6 relative z-10">
-            <div className="p-3 bg-cyan-500/20 rounded-xl border border-cyan-400/30 group hover:bg-cyan-500/30 transition-all duration-300">
-              <BarChart3 className="h-6 w-6 text-cyan-400 group-hover:scale-110 transition-transform" />
-            </div>
-            <div className="p-3 hover:bg-slate-700/50 rounded-xl cursor-pointer group transition-all duration-300">
-              <Database className="h-6 w-6 text-gray-400 group-hover:text-white group-hover:scale-110 transition-all" />
-            </div>
-            <div className="p-3 hover:bg-slate-700/50 rounded-xl cursor-pointer group transition-all duration-300">
-              <Satellite className="h-6 w-6 text-gray-400 group-hover:text-white group-hover:scale-110 transition-all" />
-            </div>
-            <div className="p-3 hover:bg-slate-700/50 rounded-xl cursor-pointer group transition-all duration-300">
-              <MessageCircle className="h-6 w-6 text-gray-400 group-hover:text-white group-hover:scale-110 transition-all" />
-            </div>
+            <p className="text-gray-400 text-sm mb-3">
+              {getPageSubtitle()}
+            </p>
             
-            <div className="absolute left-0 top-6 w-1 h-12 bg-gradient-to-b from-cyan-400 to-blue-500 rounded-r-full animate-pulse"></div>
+            {/* Simulated Product UX Notice */}
+            <div className="flex items-center space-x-2 px-3 py-2 bg-amber-500/10 border border-amber-400/20 rounded-lg">
+              <Info className="h-4 w-4 text-amber-400 flex-shrink-0" />
+              <p className="text-amber-200 text-sm">
+                <strong>Note:</strong> This is a simulated product UX demonstration. Try one of the sample queries below to explore the interface.
+              </p>
+            </div>
           </div>
 
-          {/* Main Content */}
-          <div className="flex-1 flex flex-col relative z-10">
-            {/* Enhanced Title */}
-            <div className="px-8 py-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/30 to-slate-900/30 backdrop-blur-sm">
-              <div className="flex items-center space-x-3 mb-2">
-                <Zap className="h-6 w-6 text-yellow-400 animate-pulse" />
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  {getPageTitle()}
-                </h1>
-              </div>
-              <p className="text-gray-400 text-sm mb-3">
-                {getPageSubtitle()}
-              </p>
-              
-              {/* Simulated Product UX Notice */}
-              <div className="flex items-center space-x-2 px-3 py-2 bg-amber-500/10 border border-amber-400/20 rounded-lg">
-                <Info className="h-4 w-4 text-amber-400 flex-shrink-0" />
-                <p className="text-amber-200 text-sm">
-                  <strong>Note:</strong> This is a simulated product UX demonstration. Try one of the sample queries below to explore the interface.
-                </p>
-              </div>
-            </div>
-
-            {!showOutput ? (
-              <>
+          {!showOutput ? (
+            /* Main Content Area with Scroll */
+            <ScrollArea className="flex-1">
+              <div className="px-8 py-8">
                 {/* Query Input */}
-                <div className="px-8 py-8">
+                <div className="mb-8">
                   <div className="relative group">
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-hover:text-cyan-400 transition-colors" />
                     <input
@@ -289,7 +289,7 @@ const Interface = () => {
                 </div>
 
                 {/* Interactive Earth Visualization */}
-                <div className="flex-1 px-8 pb-8">
+                <div className="min-h-[600px]">
                   <div className="bg-slate-800/20 rounded-2xl border border-slate-700/30 h-full relative overflow-hidden backdrop-blur-sm">
                     <div className="absolute top-4 left-6 z-10">
                       <h3 className="text-white font-semibold mb-1">Global Satellite Coverage</h3>
@@ -326,10 +326,12 @@ const Interface = () => {
                     </div>
                   </div>
                 </div>
-              </>
-            ) : (
-              /* Enhanced Output Display with ScrollArea */
-              <ScrollArea className="flex-1">
+              </div>
+            </ScrollArea>
+          ) : (
+            /* Enhanced Output Display with Better Scrollability */
+            <div className="flex-1 overflow-hidden">
+              <ScrollArea className="h-full">
                 <div className="px-8 pb-8 pt-4">
                   {/* Map with enhanced interactivity */}
                   <div className="min-h-screen">
@@ -340,11 +342,11 @@ const Interface = () => {
                   </div>
                 </div>
               </ScrollArea>
-            )}
-          </div>
+            </div>
+          )}
         </div>
       </div>
-    </ScrollArea>
+    </div>
   );
 };
 
