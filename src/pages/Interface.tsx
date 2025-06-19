@@ -12,7 +12,8 @@ import {
   Search,
   Zap,
   Satellite,
-  Code
+  Code,
+  Info
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -29,6 +30,12 @@ const Interface = () => {
   const [isProcessing, setIsProcessing] = useState(false);
   const [mapType, setMapType] = useState<'flood' | 'crop'>('flood');
   const [currentProcessingQuery, setCurrentProcessingQuery] = useState("");
+
+  // Sample queries for demonstration
+  const sampleQueries = [
+    "Build me a Crop Classification Model for Hoshiarpur for the Rabi Season of 2022-23",
+    "Build me a Flood Risk Map for Jakarta for the extreme flood on 20 January 2020"
+  ];
 
   // Handle state restoration when returning from DevMode
   useEffect(() => {
@@ -51,7 +58,9 @@ const Interface = () => {
         lowerQuery.includes('wheat') || 
         lowerQuery.includes('potato') || 
         lowerQuery.includes('plantation') ||
-        lowerQuery.includes('classification')) {
+        lowerQuery.includes('classification') ||
+        lowerQuery.includes('hoshiarpur') ||
+        lowerQuery.includes('rabi')) {
       return 'crop';
     }
     return 'flood';
@@ -103,6 +112,10 @@ const Interface = () => {
 
   const handleNavigateToCropClassification = () => {
     navigate('/crop-classification');
+  };
+
+  const handleSampleQueryClick = (sampleQuery: string) => {
+    setQuery(sampleQuery);
   };
 
   const getPageTitle = () => {
@@ -216,9 +229,17 @@ const Interface = () => {
                   {getPageTitle()}
                 </h1>
               </div>
-              <p className="text-gray-400 text-sm">
+              <p className="text-gray-400 text-sm mb-3">
                 {getPageSubtitle()}
               </p>
+              
+              {/* Simulated Product UX Notice */}
+              <div className="flex items-center space-x-2 px-3 py-2 bg-amber-500/10 border border-amber-400/20 rounded-lg">
+                <Info className="h-4 w-4 text-amber-400 flex-shrink-0" />
+                <p className="text-amber-200 text-sm">
+                  <strong>Note:</strong> This is a simulated product UX demonstration. Try one of the sample queries below to explore the interface.
+                </p>
+              </div>
             </div>
 
             {!showOutput ? (
@@ -229,7 +250,7 @@ const Interface = () => {
                     <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-hover:text-cyan-400 transition-colors" />
                     <input
                       type="text"
-                      placeholder="Give me the raw Sentinel-2 multispectral data for Jalandhar from 25th November 2023 to 30th January 2024"
+                      placeholder="Build me a Crop Classification Model for Hoshiarpur for the Rabi Season of 2022-23"
                       value={query}
                       onChange={(e) => setQuery(e.target.value)}
                       onKeyPress={handleKeyPress}
@@ -237,6 +258,21 @@ const Interface = () => {
                     />
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
+
+                  {/* Sample Queries */}
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm text-gray-400 mb-3">Try these sample queries:</p>
+                    {sampleQueries.map((sampleQuery, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSampleQueryClick(sampleQuery)}
+                        className="block w-full text-left px-4 py-3 bg-slate-800/30 hover:bg-slate-700/50 border border-slate-600/30 rounded-lg text-gray-300 hover:text-white transition-all duration-300 text-sm"
+                      >
+                        {sampleQuery}
+                      </button>
+                    ))}
+                  </div>
+
                   <div className="mt-6 flex items-center space-x-4">
                     <Button 
                       onClick={handleSubmitQuery}
