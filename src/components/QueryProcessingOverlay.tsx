@@ -135,11 +135,7 @@ const QueryProcessingOverlay = ({ isProcessing, onComplete, query }: QueryProces
               
               {/* Moving Light Effect */}
               <div 
-                className="absolute top-0 left-0 h-full w-8 bg-gradient-to-r from-transparent via-white/50 to-transparent transform -skew-x-12 animate-pulse"
-                style={{ 
-                  animation: 'slide-right 2s ease-in-out infinite',
-                  animationDelay: '0.5s'
-                }}
+                className="absolute top-0 left-0 h-full w-8 bg-gradient-to-r from-transparent via-white/50 to-transparent transform -skew-x-12 animate-pulse slide-right"
               ></div>
             </div>
             
@@ -222,10 +218,15 @@ const QueryProcessingOverlay = ({ isProcessing, onComplete, query }: QueryProces
         </div>
       </div>
       
-      <style jsx>{`
+      {/* Custom CSS for the slide animation */}
+      <style>{`
         @keyframes slide-right {
           0% { transform: translateX(-100%) skewX(-12deg); }
           100% { transform: translateX(300%) skewX(-12deg); }
+        }
+        .slide-right {
+          animation: slide-right 2s ease-in-out infinite;
+          animation-delay: 0.5s;
         }
       `}</style>
     </div>
