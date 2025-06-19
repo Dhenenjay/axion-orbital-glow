@@ -2,9 +2,11 @@
 import { useState } from "react";
 import { Menu, X, Satellite } from "lucide-react";
 import { Button } from "@/components/ui/button";
+import { useNavigate } from "react-router-dom";
 
 export const Header = () => {
   const [isMenuOpen, setIsMenuOpen] = useState(false);
+  const navigate = useNavigate();
 
   return (
     <header className="fixed top-0 w-full z-50 bg-slate-950/80 backdrop-blur-lg border-b border-blue-900/20">
@@ -24,7 +26,11 @@ export const Header = () => {
             <a href="#use-cases" className="text-gray-300 hover:text-cyan-400 transition-colors">Use Cases</a>
             <a href="#technology" className="text-gray-300 hover:text-cyan-400 transition-colors">Technology</a>
             <a href="#pricing" className="text-gray-300 hover:text-cyan-400 transition-colors">Pricing</a>
-            <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950">
+            <Button 
+              variant="outline" 
+              className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950"
+              onClick={() => navigate('/signup')}
+            >
               Get Started
             </Button>
           </nav>
@@ -46,7 +52,11 @@ export const Header = () => {
               <a href="#use-cases" className="text-gray-300 hover:text-cyan-400 transition-colors">Use Cases</a>
               <a href="#technology" className="text-gray-300 hover:text-cyan-400 transition-colors">Technology</a>
               <a href="#pricing" className="text-gray-300 hover:text-cyan-400 transition-colors">Pricing</a>
-              <Button variant="outline" className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 w-fit">
+              <Button 
+                variant="outline" 
+                className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 w-fit"
+                onClick={() => navigate('/signup')}
+              >
                 Get Started
               </Button>
             </nav>
