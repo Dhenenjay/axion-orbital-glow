@@ -1,3 +1,4 @@
+
 import { ArrowRight, Globe, Zap, Database, Users, Earth, HardDrive, Clock } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { YouTubeEmbed } from "@/components/YouTubeEmbed";
@@ -95,7 +96,7 @@ export const Hero = () => {
               <div className="absolute -inset-1 bg-gradient-to-r from-cyan-500 to-blue-500 rounded-xl blur opacity-15 group-hover:opacity-30 transition duration-1000"></div>
               <div className="relative">
                 <YouTubeEmbed
-                  videoId="LouUEF38ezk"
+                  videoId="JGqeHa6Fa_s"
                   autoplay={true}
                   muted={true}
                   loop={true}
