@@ -17,38 +17,32 @@ const QueryProcessingOverlay = ({ isProcessing, onComplete, query }: QueryProces
   const processingSteps = [
     { 
       icon: Database, 
-      title: "Connecting to Satellite Networks",
-      description: "Establishing secure connection to Sentinel-1 constellation",
+      title: "Connecting to Satellites",
       duration: 3000
     },
     { 
       icon: Satellite, 
       title: "Acquiring SAR Data",
-      description: "Downloading multi-temporal radar imagery",
       duration: 8000
     },
     { 
       icon: Globe, 
-      title: "Preprocessing Raw Data",
-      description: "Calibrating backscatter coefficients and applying filters",
+      title: "Processing Data",
       duration: 6000
     },
     { 
       icon: BarChart3, 
-      title: "Running Flood Detection Algorithm",
-      description: "Applying machine learning classification models",
+      title: "Running Analysis",
       duration: 7000
     },
     { 
       icon: Zap, 
       title: "Validating Results",
-      description: "Cross-referencing with ground truth data",
       duration: 4000
     },
     { 
       icon: CheckCircle2, 
-      title: "Generating Interactive Map",
-      description: "Rendering final flood risk visualization",
+      title: "Generating Map",
       duration: 2000
     }
   ];
@@ -119,30 +113,58 @@ const QueryProcessingOverlay = ({ isProcessing, onComplete, query }: QueryProces
           <p className="text-gray-400 text-sm max-w-md mx-auto">{query}</p>
         </div>
 
-        {/* Progress Bar */}
-        <div className="mb-8">
-          <div className="flex justify-between items-center mb-2">
+        {/* Enhanced Progress Bar */}
+        <div className="mb-8 relative">
+          <div className="flex justify-between items-center mb-4">
             <span className="text-sm text-gray-400">Overall Progress</span>
             <span className="text-sm text-cyan-400 font-semibold">{Math.round(progress)}%</span>
           </div>
-          <Progress 
-            value={progress} 
-            className="h-3 bg-slate-800 border border-slate-700"
-          />
+          
+          {/* Custom Progress Bar Container */}
+          <div className="relative h-6 bg-slate-800/80 rounded-full border border-slate-700/50 overflow-hidden backdrop-blur-sm">
+            {/* Animated Background Pattern */}
+            <div className="absolute inset-0 bg-gradient-to-r from-slate-800 via-slate-700 to-slate-800 animate-pulse opacity-30"></div>
+            
+            {/* Progress Fill with Gradient and Glow */}
+            <div 
+              className="h-full bg-gradient-to-r from-cyan-500 via-blue-500 to-purple-500 transition-all duration-300 ease-out relative overflow-hidden"
+              style={{ width: `${progress}%` }}
+            >
+              {/* Animated Shimmer Effect */}
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white/30 to-transparent animate-pulse"></div>
+              
+              {/* Moving Light Effect */}
+              <div 
+                className="absolute top-0 left-0 h-full w-8 bg-gradient-to-r from-transparent via-white/50 to-transparent transform -skew-x-12 animate-pulse"
+                style={{ 
+                  animation: 'slide-right 2s ease-in-out infinite',
+                  animationDelay: '0.5s'
+                }}
+              ></div>
+            </div>
+            
+            {/* Outer Glow Effect */}
+            <div 
+              className="absolute -inset-1 bg-gradient-to-r from-cyan-500/20 via-blue-500/20 to-purple-500/20 rounded-full blur-sm opacity-60"
+              style={{ width: `${Math.max(progress, 10)}%` }}
+            ></div>
+          </div>
+          
+          {/* Pulsing Ring Animation */}
+          <div className="absolute -inset-4 rounded-full border border-cyan-500/20 animate-ping opacity-20"></div>
         </div>
 
         {/* Processing Steps */}
-        <div className="space-y-4">
+        <div className="space-y-3">
           {processingSteps.map((step, index) => {
             const StepIcon = step.icon;
             const isActive = currentStep === index;
             const isCompleted = completedSteps.includes(index);
-            const isPending = currentStep < index;
 
             return (
               <div 
                 key={index}
-                className={`flex items-center p-4 rounded-lg border transition-all duration-500 ${
+                className={`flex items-center p-3 rounded-lg border transition-all duration-500 ${
                   isActive 
                     ? 'bg-cyan-500/10 border-cyan-400/50 shadow-lg shadow-cyan-500/20' 
                     : isCompleted
@@ -150,57 +172,62 @@ const QueryProcessingOverlay = ({ isProcessing, onComplete, query }: QueryProces
                       : 'bg-slate-800/30 border-slate-700/50'
                 }`}
               >
-                <div className={`flex-shrink-0 w-12 h-12 rounded-full flex items-center justify-center transition-all duration-300 ${
+                <div className={`flex-shrink-0 w-10 h-10 rounded-full flex items-center justify-center transition-all duration-300 ${
                   isActive 
                     ? 'bg-cyan-500/20 text-cyan-400' 
                     : isCompleted
                       ? 'bg-green-500/20 text-green-400'
                       : 'bg-slate-700/50 text-gray-500'
                 }`}>
-                  <StepIcon className={`w-6 h-6 ${isActive ? 'animate-pulse' : ''}`} />
+                  <StepIcon className={`w-5 h-5 ${isActive ? 'animate-pulse' : ''}`} />
                 </div>
                 
-                <div className="ml-4 flex-1">
-                  <div className="flex items-center justify-between">
-                    <h3 className={`font-semibold ${
-                      isActive ? 'text-cyan-300' : isCompleted ? 'text-green-300' : 'text-gray-400'
-                    }`}>
-                      {step.title}
-                    </h3>
-                    {isCompleted && (
-                      <CheckCircle2 className="w-5 h-5 text-green-400 animate-fade-in" />
-                    )}
-                    {isActive && (
-                      <div className="flex space-x-1">
-                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
-                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
-                        <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
-                      </div>
-                    )}
-                  </div>
-                  <p className="text-sm text-gray-500 mt-1">{step.description}</p>
+                <div className="ml-3 flex-1">
+                  <h3 className={`font-semibold text-sm ${
+                    isActive ? 'text-cyan-300' : isCompleted ? 'text-green-300' : 'text-gray-400'
+                  }`}>
+                    {step.title}
+                  </h3>
                 </div>
+
+                {isCompleted && (
+                  <CheckCircle2 className="w-4 h-4 text-green-400 animate-fade-in" />
+                )}
+                {isActive && (
+                  <div className="flex space-x-1">
+                    <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse"></div>
+                    <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.2s' }}></div>
+                    <div className="w-1.5 h-1.5 bg-cyan-400 rounded-full animate-pulse" style={{ animationDelay: '0.4s' }}></div>
+                  </div>
+                )}
               </div>
             );
           })}
         </div>
 
         {/* Stats Footer */}
-        <div className="mt-8 grid grid-cols-3 gap-4 text-center">
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+        <div className="mt-6 grid grid-cols-3 gap-3 text-center">
+          <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50">
             <div className="text-cyan-400 text-lg font-bold">2.4TB</div>
             <div className="text-gray-400 text-xs">Data Processed</div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+          <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50">
             <div className="text-blue-400 text-lg font-bold">847</div>
             <div className="text-gray-400 text-xs">SAR Images</div>
           </div>
-          <div className="bg-slate-800/50 rounded-lg p-3 border border-slate-700/50">
+          <div className="bg-slate-800/50 rounded-lg p-2.5 border border-slate-700/50">
             <div className="text-purple-400 text-lg font-bold">94.2%</div>
             <div className="text-gray-400 text-xs">Accuracy</div>
           </div>
         </div>
       </div>
+      
+      <style jsx>{`
+        @keyframes slide-right {
+          0% { transform: translateX(-100%) skewX(-12deg); }
+          100% { transform: translateX(300%) skewX(-12deg); }
+        }
+      `}</style>
     </div>
   );
 };
