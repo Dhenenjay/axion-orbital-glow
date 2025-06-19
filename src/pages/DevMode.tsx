@@ -1,4 +1,3 @@
-
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
@@ -59,14 +58,17 @@ const DevMode = () => {
     };
 
     const newIsCropQuery = checkIfCropQuery(currentQuery);
-    setIsCropQuery(newIsCropQuery);
-
-    // If this is a submitted query and the type changed, update the default code
-    if (hasSubmittedQuery && !generatedCode) {
-      // Clear any existing generated code when query type changes
-      setGeneratedCode('');
+    
+    // Only update if the crop query status actually changed
+    if (newIsCropQuery !== isCropQuery) {
+      setIsCropQuery(newIsCropQuery);
+      
+      // Clear generated code when query type changes to show new default
+      if (hasSubmittedQuery) {
+        setGeneratedCode('');
+      }
     }
-  }, [currentQuery, hasSubmittedQuery, generatedCode]);
+  }, [currentQuery, hasSubmittedQuery, isCropQuery]); // Removed generatedCode from dependencies
 
   // Set the interface state when returning based on whether we should show output
   const handleBackClick = () => {
@@ -246,6 +248,7 @@ print('Classes: 0-Wheat, 1-Potato, 2-Plantation, 3-Other Crops');`;
     return defaultFloodCode;
   };
 
+  // Fixed logic: Show generated code if exists, otherwise show default code if query submitted, otherwise show placeholder
   const displayedCode = generatedCode || (hasSubmittedQuery ? getDefaultCode() : emptyCodePlaceholder);
 
   const handleGenerateCode = async () => {
