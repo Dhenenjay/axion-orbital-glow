@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -26,6 +27,7 @@ const Interface = () => {
   const [showOutput, setShowOutput] = useState(false);
   const [hasSubmittedQuery, setHasSubmittedQuery] = useState(false);
   const [isProcessing, setIsProcessing] = useState(false);
+  const [mapType, setMapType] = useState<'flood' | 'crop'>('flood');
 
   // Handle state restoration when returning from DevMode
   useEffect(() => {
@@ -40,6 +42,20 @@ const Interface = () => {
     }
   }, [location.state]);
 
+  const determineMapType = (queryText: string): 'flood' | 'crop' => {
+    const lowerQuery = queryText.toLowerCase();
+    if (lowerQuery.includes('crop') || 
+        lowerQuery.includes('agriculture') || 
+        lowerQuery.includes('farming') || 
+        lowerQuery.includes('wheat') || 
+        lowerQuery.includes('potato') || 
+        lowerQuery.includes('plantation') ||
+        lowerQuery.includes('classification')) {
+      return 'crop';
+    }
+    return 'flood';
+  };
+
   const handleSubmitQuery = () => {
     if (query.trim()) {
       setIsProcessing(true);
@@ -51,6 +67,15 @@ const Interface = () => {
     setIsProcessing(false);
     setShowOutput(true);
     setHasSubmittedQuery(true);
+    // Set map type based on the query that was processed
+    setMapType(determineMapType(query || "Jakarta flood risk analysis with Sentinel-1 SAR data"));
+  };
+
+  const handleMapQuerySubmit = (mapQuery: string) => {
+    // When query is submitted from the map overlay, update the map type
+    const newMapType = determineMapType(mapQuery);
+    setMapType(newMapType);
+    console.log('Map type changed to:', newMapType, 'based on query:', mapQuery);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -195,13 +220,11 @@ const Interface = () => {
               {/* Interactive Earth Visualization */}
               <div className="flex-1 px-8 pb-8">
                 <div className="bg-slate-800/20 rounded-2xl border border-slate-700/30 h-full relative overflow-hidden backdrop-blur-sm">
-                  {/* Header for the visualization */}
                   <div className="absolute top-4 left-6 z-10">
                     <h3 className="text-white font-semibold mb-1">Global Satellite Coverage</h3>
                     <p className="text-gray-400 text-sm">Interactive Earth Visualization</p>
                   </div>
                   
-                  {/* Stats overlay */}
                   <div className="absolute top-4 right-6 z-10 space-y-2">
                     <div className="bg-slate-900/70 backdrop-blur-sm rounded-lg px-4 py-2 border border-slate-600/50">
                       <div className="text-cyan-400 text-sm font-semibold">Active Satellites</div>
@@ -213,12 +236,10 @@ const Interface = () => {
                     </div>
                   </div>
 
-                  {/* Interactive Earth Component */}
                   <div className="h-full flex items-center justify-center">
                     <InteractiveEarth />
                   </div>
 
-                  {/* Floating action buttons */}
                   <div className="absolute bottom-6 left-6 flex space-x-3">
                     <button className="p-3 bg-slate-800/70 hover:bg-slate-700/70 rounded-lg border border-slate-600/50 text-gray-300 hover:text-white transition-all duration-300 backdrop-blur-sm">
                       <Globe className="w-5 h-5" />
@@ -228,7 +249,6 @@ const Interface = () => {
                     </button>
                   </div>
 
-                  {/* Processing indicator */}
                   <div className="absolute bottom-6 right-6 flex items-center space-x-2 bg-slate-900/70 backdrop-blur-sm rounded-lg px-4 py-2 border border-slate-600/50">
                     <div className="w-2 h-2 bg-cyan-400 rounded-full animate-pulse"></div>
                     <span className="text-gray-300 text-sm">Ready for analysis</span>
@@ -242,7 +262,10 @@ const Interface = () => {
               <div className="px-8 pb-8 pt-4">
                 {/* Flood Risk Map with enhanced interactivity */}
                 <div className="min-h-screen">
-                  <FloodRiskMap />
+                  <FloodRiskMap 
+                    mapType={mapType}
+                    onQuerySubmit={handleMapQuerySubmit}
+                  />
                 </div>
               </div>
             </ScrollArea>
