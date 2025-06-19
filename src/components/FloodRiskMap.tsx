@@ -1,4 +1,3 @@
-
 import React, { useEffect, useRef, useState } from 'react';
 import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -132,9 +131,9 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
         onMouseDown={handleMouseDown}
         onWheel={handleWheel}
       >
-        {/* Draggable Query Overlay */}
+        {/* Draggable Query Overlay - Higher z-index */}
         <div 
-          className="absolute bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-xl p-4 border border-slate-600/50 shadow-xl max-w-md cursor-move z-20"
+          className="absolute bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-xl p-4 border border-slate-600/50 shadow-xl max-w-md cursor-move z-50"
           style={{ 
             left: overlayPosition.x, 
             top: overlayPosition.y,
@@ -197,13 +196,13 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           />
         </div>
         
-        {/* Zoom controls - Always visible */}
-        <div className="absolute top-4 right-4 flex flex-col space-y-2 z-10">
+        {/* Zoom controls - Improved styling and z-index */}
+        <div className="absolute top-4 right-4 flex flex-col space-y-2 z-40">
           <Button
             onClick={handleZoomIn}
             size="sm"
             variant="outline"
-            className="bg-white/90 border-gray-300 text-gray-700 hover:bg-white shadow-md"
+            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <ZoomIn className="w-4 h-4" />
           </Button>
@@ -211,14 +210,14 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
             onClick={handleZoomOut}
             size="sm"
             variant="outline"
-            className="bg-white/90 border-gray-300 text-gray-700 hover:bg-white shadow-md"
+            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <ZoomOut className="w-4 h-4" />
           </Button>
         </div>
         
-        {/* Dynamic Layer selector - Always visible */}
-        <div className="absolute top-4 right-20 bg-white/90 backdrop-blur-sm rounded-lg p-3 border border-gray-300 shadow-md z-10">
+        {/* Layer selector - Improved styling and z-index */}
+        <div className="absolute top-4 right-20 bg-white/95 backdrop-blur-sm rounded-lg p-3 border border-gray-300 shadow-lg z-40">
           <h4 className="text-gray-700 text-xs font-semibold mb-2 flex items-center">
             <Layers className="w-3 h-3 mr-1" />
             {mapType === 'crop' ? 'Crop Analysis' : 'SAR Analysis'}
@@ -284,12 +283,12 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </div>
         </div>
         
-        {/* Action buttons - Always visible */}
-        <div className="absolute bottom-4 right-4 flex space-x-2 z-10">
+        {/* Action buttons - Improved styling and z-index */}
+        <div className="absolute bottom-4 right-4 flex space-x-2 z-40">
           <Button
             size="sm"
             variant="outline"
-            className="bg-white/90 border-gray-300 text-gray-700 hover:bg-white shadow-md"
+            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Share className="w-4 h-4 mr-2" />
             Share
@@ -297,15 +296,15 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           <Button
             size="sm"
             variant="outline"
-            className="bg-white/90 border-gray-300 text-gray-700 hover:bg-white shadow-md"
+            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
           >
             <Download className="w-4 h-4 mr-2" />
             Export
           </Button>
         </div>
         
-        {/* Dynamic Legend - Always visible */}
-        <div className="absolute bottom-4 left-4 bg-white/95 backdrop-blur-md rounded-lg p-4 border border-gray-300 shadow-md z-10">
+        {/* Legend - Improved styling and z-index */}
+        <div className="absolute bottom-4 left-4 bg-white/97 backdrop-blur-md rounded-lg p-4 border border-gray-300 shadow-lg z-40 min-w-[200px]">
           <h4 className="text-gray-700 text-sm font-semibold mb-3">
             {mapType === 'crop' ? 'Crop Classification Legend' : 
              selectedLayer === 'flood-depth' ? 'Flood Detection (SAR)' : 'Backscatter Intensity (dB)'}
@@ -380,8 +379,8 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </div>
         </div>
         
-        {/* Dynamic Data info - Always visible */}
-        <div className="absolute top-20 right-4 bg-white/95 backdrop-blur-md rounded-lg p-3 border border-gray-300 shadow-md z-10">
+        {/* Data info - Improved styling and z-index */}
+        <div className="absolute top-20 right-4 bg-white/97 backdrop-blur-md rounded-lg p-3 border border-gray-300 shadow-lg z-40 min-w-[220px]">
           <h4 className="text-gray-700 text-sm font-semibold mb-1">
             {mapType === 'crop' ? 'Sentinel-2 Crop Classification' : 'Sentinel-1 SAR Analysis'}
           </h4>
@@ -393,27 +392,27 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
               <>
                 <div className="flex justify-between">
                   <span>Sensor:</span>
-                  <span className="text-green-600">Sentinel-2 MSI</span>
+                  <span className="text-green-600 font-medium">Sentinel-2 MSI</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Season:</span>
-                  <span className="text-green-600">Rabi 2022-23</span>
+                  <span className="text-green-600 font-medium">Rabi 2022-23</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Resolution:</span>
-                  <span className="text-green-600">10m × 10m</span>
+                  <span className="text-green-600 font-medium">10m × 10m</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Bands Used:</span>
-                  <span className="text-green-600">B2,B3,B4,B8</span>
+                  <span className="text-green-600 font-medium">B2,B3,B4,B8</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Method:</span>
-                  <span className="text-green-600">RF Classification</span>
+                  <span className="text-green-600 font-medium">RF Classification</span>
                 </div>
                 <div className="flex justify-between">
                   <span>Accuracy:</span>
-                  <span className="text-green-600">87.3%</span>
+                  <span className="text-green-600 font-medium">87.3%</span>
                 </div>
               </>
             ) : (
@@ -439,8 +438,8 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </div>
         </div>
 
-        {/* Zoom level indicator - Always visible */}
-        <div className="absolute top-4 left-4 bg-white/95 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-md z-10">
+        {/* Zoom level indicator - Improved styling and z-index */}
+        <div className="absolute top-4 left-4 bg-white/97 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-lg z-40">
           <div className="text-gray-700 text-xs font-semibold">
             Zoom: {Math.round(zoomLevel * 100)}%
           </div>
