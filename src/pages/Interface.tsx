@@ -17,6 +17,7 @@ import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
 import { InteractiveEarth } from "@/components/InteractiveEarth";
 import FloodRiskMap from "@/components/FloodRiskMap";
+import QueryProcessingOverlay from "@/components/QueryProcessingOverlay";
 
 const Interface = () => {
   const navigate = useNavigate();
@@ -24,6 +25,7 @@ const Interface = () => {
   const [query, setQuery] = useState("");
   const [showOutput, setShowOutput] = useState(false);
   const [hasSubmittedQuery, setHasSubmittedQuery] = useState(false);
+  const [isProcessing, setIsProcessing] = useState(false);
 
   // Handle state restoration when returning from DevMode
   useEffect(() => {
@@ -40,9 +42,15 @@ const Interface = () => {
 
   const handleSubmitQuery = () => {
     if (query.trim()) {
-      setShowOutput(true);
-      setHasSubmittedQuery(true);
+      setIsProcessing(true);
+      // Don't immediately show output - wait for processing to complete
     }
+  };
+
+  const handleProcessingComplete = () => {
+    setIsProcessing(false);
+    setShowOutput(true);
+    setHasSubmittedQuery(true);
   };
 
   const handleKeyPress = (e: React.KeyboardEvent) => {
@@ -64,6 +72,13 @@ const Interface = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950 to-slate-950 relative overflow-hidden">
+      {/* Processing Overlay */}
+      <QueryProcessingOverlay 
+        isProcessing={isProcessing}
+        onComplete={handleProcessingComplete}
+        query={query || "Jakarta flood risk analysis with Sentinel-1 SAR data"}
+      />
+
       {/* Animated background particles */}
       <div className="absolute inset-0">
         {[...Array(50)].map((_, i) => (
