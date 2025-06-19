@@ -152,12 +152,12 @@ const CropClassification = () => {
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col relative z-10">
-            {/* Enhanced Title */}
+            {/* Fixed Title Section - Changed from flood to crop content */}
             <div className="px-8 py-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/30 to-slate-900/30 backdrop-blur-sm">
               <div className="flex items-center space-x-3 mb-2">
                 <Zap className="h-6 w-6 text-green-400 animate-pulse" />
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                  Crop Classification Analysis - Hoshiarpur District
+                  Live Crop Classification Analysis - Hoshiarpur District
                 </h1>
               </div>
               <p className="text-gray-400 text-sm">
