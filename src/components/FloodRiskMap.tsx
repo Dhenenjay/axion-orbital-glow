@@ -2,7 +2,12 @@ import React, { useEffect, useRef, useState } from 'react';
 import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
-const FloodRiskMap = () => {
+interface FloodRiskMapProps {
+  mapType?: 'flood' | 'crop';
+  onQuerySubmit?: (query: string) => void;
+}
+
+const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [selectedLayer, setSelectedLayer] = useState('flood-depth');
@@ -14,19 +19,15 @@ const FloodRiskMap = () => {
   const [isPanning, setIsPanning] = useState(false);
   const [panStart, setPanStart] = useState({ x: 0, y: 0 });
   const [isMouseOverMap, setIsMouseOverMap] = useState(false);
-  const [mapType, setMapType] = useState<'flood' | 'crop'>('flood');
 
-  // Determine map type based on query content
+  // Update selected layer when map type changes
   useEffect(() => {
-    const lowerQuery = query.toLowerCase();
-    if (lowerQuery.includes('crop') || lowerQuery.includes('agriculture') || lowerQuery.includes('farming') || lowerQuery.includes('wheat') || lowerQuery.includes('potato') || lowerQuery.includes('plantation')) {
-      setMapType('crop');
+    if (mapType === 'crop') {
       setSelectedLayer('crop-types');
     } else {
-      setMapType('flood');
       setSelectedLayer('flood-depth');
     }
-  }, [query]);
+  }, [mapType]);
 
   const handleZoomIn = () => {
     setZoomLevel(prev => Math.min(prev + 0.2, 3));
@@ -37,7 +38,10 @@ const FloodRiskMap = () => {
   };
 
   const handleSubmitQuery = () => {
-    console.log('Rerunning query:', query);
+    console.log('Submitting query:', query);
+    if (onQuerySubmit) {
+      onQuerySubmit(query);
+    }
   };
 
   const handleMouseDown = (e: React.MouseEvent) => {
