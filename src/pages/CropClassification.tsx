@@ -1,6 +1,6 @@
 
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Globe, 
   Menu, 
@@ -22,9 +22,25 @@ import QueryProcessingOverlay from "@/components/QueryProcessingOverlay";
 
 const CropClassification = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [query, setQuery] = useState("Crop classification analysis for Hoshiarpur district using Sentinel-2 data");
+  const [showOutput, setShowOutput] = useState(true);
+  const [hasSubmittedQuery, setHasSubmittedQuery] = useState(true);
   const [isProcessing, setIsProcessing] = useState(false);
   const [currentProcessingQuery, setCurrentProcessingQuery] = useState("");
+
+  // Handle state restoration when returning from DevMode
+  useEffect(() => {
+    if (location.state?.shouldShowOutput !== undefined) {
+      setShowOutput(location.state.shouldShowOutput);
+      setHasSubmittedQuery(location.state.hasSubmittedQuery || true);
+      if (location.state.preservedQuery) {
+        setQuery(location.state.preservedQuery);
+      }
+      // Clear the location state to avoid issues on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSubmitQuery = () => {
     if (query.trim()) {
@@ -35,6 +51,8 @@ const CropClassification = () => {
 
   const handleProcessingComplete = () => {
     setIsProcessing(false);
+    setShowOutput(true);
+    setHasSubmittedQuery(true);
   };
 
   const handleMapQuerySubmit = (mapQuery: string) => {
@@ -152,31 +170,79 @@ const CropClassification = () => {
 
           {/* Main Content */}
           <div className="flex-1 flex flex-col relative z-10">
-            {/* Fixed Title Section - Changed from flood to crop content */}
-            <div className="px-8 py-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/30 to-slate-900/30 backdrop-blur-sm">
-              <div className="flex items-center space-x-3 mb-2">
-                <Zap className="h-6 w-6 text-green-400 animate-pulse" />
-                <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
-                  Live Crop Classification Analysis - Hoshiarpur District
-                </h1>
-              </div>
-              <p className="text-gray-400 text-sm">
-                Multi-spectral crop classification using Sentinel-2 MSI data with interactive layers and detailed analytics
-              </p>
-            </div>
-
-            {/* Enhanced Output Display with ScrollArea */}
-            <ScrollArea className="flex-1">
-              <div className="px-8 pb-8 pt-4">
-                {/* Crop Classification Map with enhanced interactivity */}
-                <div className="min-h-screen">
-                  <FloodRiskMap 
-                    mapType="crop"
-                    onQuerySubmit={handleMapQuerySubmit}
-                  />
+            {!showOutput ? (
+              <>
+                {/* Query Input Section */}
+                <div className="px-8 py-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/30 to-slate-900/30 backdrop-blur-sm">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <Zap className="h-6 w-6 text-green-400 animate-pulse" />
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                      Crop Classification Analysis
+                    </h1>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    Analyze agricultural areas using multi-spectral satellite data for precise crop identification
+                  </p>
                 </div>
-              </div>
-            </ScrollArea>
+
+                {/* Query Input */}
+                <div className="px-8 py-8">
+                  <div className="relative group">
+                    <Search className="absolute left-4 top-1/2 transform -translate-y-1/2 h-5 w-5 text-gray-400 group-hover:text-green-400 transition-colors" />
+                    <input
+                      type="text"
+                      placeholder="Crop classification analysis for Hoshiarpur district using Sentinel-2 data"
+                      value={query}
+                      onChange={(e) => setQuery(e.target.value)}
+                      onKeyPress={handleKeyPress}
+                      className="w-full bg-slate-800/50 border border-slate-600/50 rounded-xl pl-12 pr-4 py-5 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-green-500 focus:border-transparent hover:bg-slate-800/70 transition-all duration-300 text-lg"
+                    />
+                    <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-green-500/10 via-transparent to-emerald-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
+                  </div>
+                  <div className="mt-6 flex items-center space-x-4">
+                    <Button 
+                      onClick={handleSubmitQuery}
+                      className="bg-gradient-to-r from-green-500 to-emerald-500 hover:from-green-600 hover:to-emerald-600 text-white px-8 py-3 text-lg font-semibold rounded-xl transition-all duration-300 transform hover:scale-105 hover:shadow-lg hover:shadow-green-500/25"
+                    >
+                      <Zap className="w-5 h-5 mr-2" />
+                      Submit Query
+                    </Button>
+                    <div className="flex items-center space-x-2 text-sm text-gray-400">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                      <span>Real-time processing ready</span>
+                    </div>
+                  </div>
+                </div>
+              </>
+            ) : (
+              <>
+                {/* Crop Classification Title Section */}
+                <div className="px-8 py-6 border-b border-slate-700/50 bg-gradient-to-r from-slate-800/30 to-slate-900/30 backdrop-blur-sm">
+                  <div className="flex items-center space-x-3 mb-2">
+                    <Zap className="h-6 w-6 text-green-400 animate-pulse" />
+                    <h1 className="text-2xl font-bold bg-gradient-to-r from-green-400 via-emerald-400 to-teal-400 bg-clip-text text-transparent">
+                      Live Crop Classification Analysis - Hoshiarpur District
+                    </h1>
+                  </div>
+                  <p className="text-gray-400 text-sm">
+                    Multi-spectral crop classification using Sentinel-2 MSI data with interactive layers and detailed analytics
+                  </p>
+                </div>
+
+                {/* Enhanced Output Display with ScrollArea */}
+                <ScrollArea className="flex-1">
+                  <div className="px-8 pb-8 pt-4">
+                    {/* Crop Classification Map with enhanced interactivity */}
+                    <div className="min-h-screen">
+                      <FloodRiskMap 
+                        mapType="crop"
+                        onQuerySubmit={handleMapQuerySubmit}
+                      />
+                    </div>
+                  </div>
+                </ScrollArea>
+              </>
+            )}
           </div>
         </div>
       </div>
