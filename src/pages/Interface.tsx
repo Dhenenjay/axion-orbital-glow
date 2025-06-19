@@ -1,3 +1,4 @@
+
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -58,6 +59,8 @@ const Interface = () => {
 
   const handleSubmitQuery = () => {
     if (query.trim()) {
+      const newMapType = determineMapType(query);
+      setMapType(newMapType);
       setCurrentProcessingQuery(query);
       setIsProcessing(true);
       // Don't immediately show output - wait for processing to complete
@@ -68,13 +71,14 @@ const Interface = () => {
     setIsProcessing(false);
     setShowOutput(true);
     setHasSubmittedQuery(true);
-    // Set map type based on the query that was processed
-    setMapType(determineMapType(currentProcessingQuery || "Jakarta flood risk analysis with Sentinel-1 SAR data"));
+    // Map type is already set in handleSubmitQuery or handleMapQuerySubmit
   };
 
   const handleMapQuerySubmit = (mapQuery: string) => {
     // When query is submitted from the map overlay, start processing
     console.log('Map query submitted:', mapQuery);
+    const newMapType = determineMapType(mapQuery);
+    setMapType(newMapType);
     setCurrentProcessingQuery(mapQuery);
     setIsProcessing(true);
     // The processing overlay will show and then call handleProcessingComplete when done
@@ -91,7 +95,7 @@ const Interface = () => {
       state: { 
         hasSubmittedQuery,
         showOutput,
-        query: query.trim() || "Jakarta flood risk analysis with Sentinel-1 SAR data",
+        query: query.trim() || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data"),
         returnToOutput: showOutput
       } 
     });
@@ -101,6 +105,30 @@ const Interface = () => {
     navigate('/crop-classification');
   };
 
+  const getPageTitle = () => {
+    if (!showOutput) {
+      return "No-Code IDE for Planetary Scale Satellite Data Analysis";
+    }
+    
+    if (mapType === 'crop') {
+      return "Live Crop Classification Analysis - Hoshiarpur District";
+    }
+    
+    return "Live Flood Risk Analysis - Jakarta";
+  };
+
+  const getPageSubtitle = () => {
+    if (!showOutput) {
+      return "Harness the power of real-time satellite intelligence with natural language queries";
+    }
+    
+    if (mapType === 'crop') {
+      return "Multi-spectral crop classification using Sentinel-2 MSI data with interactive layers and detailed analytics";
+    }
+    
+    return "Real-time flood risk mapping with interactive layers and detailed analytics";
+  };
+
   return (
     <ScrollArea className="h-screen">
       <div className="min-h-screen bg-gradient-to-b from-slate-950 via-blue-950 to-slate-950 relative overflow-hidden">
@@ -108,7 +136,7 @@ const Interface = () => {
         <QueryProcessingOverlay 
           isProcessing={isProcessing}
           onComplete={handleProcessingComplete}
-          query={currentProcessingQuery || "Jakarta flood risk analysis with Sentinel-1 SAR data"}
+          query={currentProcessingQuery || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data")}
         />
 
         {/* Animated background particles */}
@@ -185,11 +213,11 @@ const Interface = () => {
               <div className="flex items-center space-x-3 mb-2">
                 <Zap className="h-6 w-6 text-yellow-400 animate-pulse" />
                 <h1 className="text-2xl font-bold bg-gradient-to-r from-cyan-400 via-blue-400 to-purple-400 bg-clip-text text-transparent">
-                  {showOutput ? "Live Flood Risk Analysis - Jakarta" : "No-Code IDE for Planetary Scale Satellite Data Analysis"}
+                  {getPageTitle()}
                 </h1>
               </div>
               <p className="text-gray-400 text-sm">
-                {showOutput ? "Real-time flood risk mapping with interactive layers and detailed analytics" : "Harness the power of real-time satellite intelligence with natural language queries"}
+                {getPageSubtitle()}
               </p>
             </div>
 
@@ -267,7 +295,7 @@ const Interface = () => {
               /* Enhanced Output Display with ScrollArea */
               <ScrollArea className="flex-1">
                 <div className="px-8 pb-8 pt-4">
-                  {/* Flood Risk Map with enhanced interactivity */}
+                  {/* Map with enhanced interactivity */}
                   <div className="min-h-screen">
                     <FloodRiskMap 
                       mapType={mapType}
