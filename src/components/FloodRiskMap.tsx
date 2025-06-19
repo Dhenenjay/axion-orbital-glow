@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -59,7 +60,7 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
       setIsDragging(true);
       setDragStart({
         x: e.clientX - overlayPosition.x,
-        y: e.clientY - overlayPosition.y
+        y: e.clientX - overlayPosition.y
       });
     }
   };
@@ -95,14 +96,12 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
 
   const handleWheel = (e: React.WheelEvent) => {
     // Only handle zoom if mouse is over the map AND user is holding Ctrl key
-    // This allows normal scrolling while providing zoom functionality with Ctrl+scroll
     if (isMouseOverMap && e.ctrlKey) {
       e.preventDefault();
       e.stopPropagation();
       const delta = e.deltaY > 0 ? -0.1 : 0.1;
       setZoomLevel(prev => Math.max(0.5, Math.min(3, prev + delta)));
     }
-    // If no Ctrl key, let the event bubble up for normal page scrolling
   };
 
   const getMapImage = () => {
@@ -131,9 +130,29 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
         onMouseDown={handleMouseDown}
         onWheel={handleWheel}
       >
-        {/* Draggable Query Overlay - Higher z-index */}
+        {/* Map container with dynamic image */}
         <div 
-          className="absolute bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-xl p-4 border border-slate-600/50 shadow-xl max-w-md cursor-move z-50"
+          ref={mapContainer} 
+          className="w-full h-full flex items-center justify-center overflow-hidden"
+          style={{
+            transform: `translate(${panPosition.x}px, ${panPosition.y}px)`
+          }}
+        >
+          <img
+            src={getMapImage()}
+            alt={getMapTitle()}
+            className="map-image max-w-none transition-transform duration-200 ease-out"
+            style={{
+              transform: `scale(${zoomLevel})`,
+              transformOrigin: 'center center'
+            }}
+            draggable={false}
+          />
+        </div>
+
+        {/* Draggable Query Overlay - Highest z-index */}
+        <div 
+          className="absolute bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-xl p-4 border border-slate-600/50 shadow-xl max-w-md cursor-move z-[100]"
           style={{ 
             left: overlayPosition.x, 
             top: overlayPosition.y,
@@ -175,29 +194,19 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
             Submit Query
           </Button>
         </div>
-
-        {/* Map container with dynamic image */}
-        <div 
-          ref={mapContainer} 
-          className="w-full h-full flex items-center justify-center overflow-hidden"
-          style={{
-            transform: `translate(${panPosition.x}px, ${panPosition.y}px)`
-          }}
-        >
-          <img
-            src={getMapImage()}
-            alt={getMapTitle()}
-            className="map-image max-w-none transition-transform duration-200 ease-out"
-            style={{
-              transform: `scale(${zoomLevel})`,
-              transformOrigin: 'center center'
-            }}
-            draggable={false}
-          />
+        
+        {/* Zoom level indicator - Top left */}
+        <div className="absolute top-4 left-4 bg-white/97 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-lg z-[90]">
+          <div className="text-gray-700 text-xs font-semibold">
+            Zoom: {Math.round(zoomLevel * 100)}%
+          </div>
+          <div className="text-gray-500 text-xs mt-1">
+            Hold Ctrl + scroll to zoom
+          </div>
         </div>
         
-        {/* Zoom controls - Improved styling and z-index */}
-        <div className="absolute top-4 right-4 flex flex-col space-y-2 z-40">
+        {/* Zoom controls - Top right */}
+        <div className="absolute top-4 right-4 flex flex-col space-y-2 z-[90]">
           <Button
             onClick={handleZoomIn}
             size="sm"
@@ -216,8 +225,8 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </Button>
         </div>
         
-        {/* Layer selector - Improved styling and z-index */}
-        <div className="absolute top-4 right-20 bg-white/95 backdrop-blur-sm rounded-lg p-3 border border-gray-300 shadow-lg z-40">
+        {/* Layer selector - Top right, below zoom controls */}
+        <div className="absolute top-24 right-4 bg-white/97 backdrop-blur-sm rounded-lg p-3 border border-gray-300 shadow-lg z-[90] min-w-[160px]">
           <h4 className="text-gray-700 text-xs font-semibold mb-2 flex items-center">
             <Layers className="w-3 h-3 mr-1" />
             {mapType === 'crop' ? 'Crop Analysis' : 'SAR Analysis'}
@@ -283,8 +292,67 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </div>
         </div>
         
-        {/* Action buttons - Improved styling and z-index */}
-        <div className="absolute bottom-4 right-4 flex space-x-2 z-40">
+        {/* Data info - Top right, below layer selector */}
+        <div className="absolute top-[180px] right-4 bg-white/97 backdrop-blur-md rounded-lg p-3 border border-gray-300 shadow-lg z-[90] min-w-[220px]">
+          <h4 className="text-gray-700 text-sm font-semibold mb-1">
+            {mapType === 'crop' ? 'Sentinel-2 Crop Classification' : 'Sentinel-1 SAR Analysis'}
+          </h4>
+          <p className="text-gray-600 text-xs mb-2">
+            {mapType === 'crop' ? 'Hoshiarpur District, Punjab' : 'Jakarta Metropolitan Area'}
+          </p>
+          <div className="space-y-1 text-xs text-gray-600">
+            {mapType === 'crop' ? (
+              <>
+                <div className="flex justify-between">
+                  <span>Sensor:</span>
+                  <span className="text-green-600 font-medium">Sentinel-2 MSI</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Season:</span>
+                  <span className="text-green-600 font-medium">Rabi 2022-23</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Resolution:</span>
+                  <span className="text-green-600 font-medium">10m × 10m</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Bands Used:</span>
+                  <span className="text-green-600 font-medium">B2,B3,B4,B8</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Method:</span>
+                  <span className="text-green-600 font-medium">RF Classification</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Accuracy:</span>
+                  <span className="text-green-600 font-medium">87.3%</span>
+                </div>
+              </>
+            ) : (
+              <>
+                <div className="flex justify-between">
+                  <span>Sensor:</span>
+                  <span className="text-blue-600">Sentinel-1 C-band</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Polarization:</span>
+                  <span className="text-blue-600">VV/VH</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Resolution:</span>
+                  <span className="text-blue-600">10m × 10m</span>
+                </div>
+                <div className="flex justify-between">
+                  <span>Method:</span>
+                  <span className="text-green-600">Multi-temporal</span>
+                </div>
+              </>
+            )}
+          </div>
+        </div>
+        
+        {/* Action buttons - Bottom right */}
+        <div className="absolute bottom-4 right-4 flex space-x-2 z-[90]">
           <Button
             size="sm"
             variant="outline"
@@ -303,8 +371,8 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </Button>
         </div>
         
-        {/* Legend - Improved styling and z-index */}
-        <div className="absolute bottom-4 left-4 bg-white/97 backdrop-blur-md rounded-lg p-4 border border-gray-300 shadow-lg z-40 min-w-[200px]">
+        {/* Legend - Bottom left */}
+        <div className="absolute bottom-4 left-4 bg-white/97 backdrop-blur-md rounded-lg p-4 border border-gray-300 shadow-lg z-[90] min-w-[200px]">
           <h4 className="text-gray-700 text-sm font-semibold mb-3">
             {mapType === 'crop' ? 'Crop Classification Legend' : 
              selectedLayer === 'flood-depth' ? 'Flood Detection (SAR)' : 'Backscatter Intensity (dB)'}
@@ -376,75 +444,6 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
                 </div>
               </>
             )}
-          </div>
-        </div>
-        
-        {/* Data info - Improved styling and z-index */}
-        <div className="absolute top-20 right-4 bg-white/97 backdrop-blur-md rounded-lg p-3 border border-gray-300 shadow-lg z-40 min-w-[220px]">
-          <h4 className="text-gray-700 text-sm font-semibold mb-1">
-            {mapType === 'crop' ? 'Sentinel-2 Crop Classification' : 'Sentinel-1 SAR Analysis'}
-          </h4>
-          <p className="text-gray-600 text-xs mb-2">
-            {mapType === 'crop' ? 'Hoshiarpur District, Punjab' : 'Jakarta Metropolitan Area'}
-          </p>
-          <div className="space-y-1 text-xs text-gray-600">
-            {mapType === 'crop' ? (
-              <>
-                <div className="flex justify-between">
-                  <span>Sensor:</span>
-                  <span className="text-green-600 font-medium">Sentinel-2 MSI</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Season:</span>
-                  <span className="text-green-600 font-medium">Rabi 2022-23</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Resolution:</span>
-                  <span className="text-green-600 font-medium">10m × 10m</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Bands Used:</span>
-                  <span className="text-green-600 font-medium">B2,B3,B4,B8</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Method:</span>
-                  <span className="text-green-600 font-medium">RF Classification</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Accuracy:</span>
-                  <span className="text-green-600 font-medium">87.3%</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex justify-between">
-                  <span>Sensor:</span>
-                  <span className="text-blue-600">Sentinel-1 C-band</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Polarization:</span>
-                  <span className="text-blue-600">VV/VH</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Resolution:</span>
-                  <span className="text-blue-600">10m × 10m</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Method:</span>
-                  <span className="text-green-600">Multi-temporal</span>
-                </div>
-              </>
-            )}
-          </div>
-        </div>
-
-        {/* Zoom level indicator - Improved styling and z-index */}
-        <div className="absolute top-4 left-4 bg-white/97 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-lg z-40">
-          <div className="text-gray-700 text-xs font-semibold">
-            Zoom: {Math.round(zoomLevel * 100)}%
-          </div>
-          <div className="text-gray-500 text-xs mt-1">
-            Hold Ctrl + scroll to zoom
           </div>
         </div>
       </div>
