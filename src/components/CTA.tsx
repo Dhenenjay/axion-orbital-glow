@@ -45,7 +45,7 @@ export const CTA = () => {
           </div>
           
           <p className="text-gray-400 text-sm mt-6">
-            No credit card required • 14-day free trial • Enterprise support available
+            No credit card required • 14-day free trial • Priority support available
           </p>
         </div>
       </div>
