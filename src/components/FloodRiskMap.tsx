@@ -119,10 +119,10 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
   };
 
   return (
-    <div className="flex flex-col space-y-6">
-      {/* Map container */}
+    <div className="flex flex-col space-y-6 w-full max-w-full overflow-hidden">
+      {/* Map container with proper constraints */}
       <div 
-        className="relative h-[600px] bg-slate-900/20 rounded-lg border border-slate-600/50 overflow-hidden cursor-grab active:cursor-grabbing"
+        className="relative w-full h-[600px] bg-slate-900/20 rounded-lg border border-slate-600/50 overflow-hidden cursor-grab active:cursor-grabbing"
         onMouseMove={handleMouseMove}
         onMouseUp={handleMouseUp}
         onMouseLeave={handleMouseLeave}
@@ -130,32 +130,34 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
         onMouseDown={handleMouseDown}
         onWheel={handleWheel}
       >
-        {/* Map container with dynamic image */}
+        {/* Map image container with proper boundaries */}
         <div 
           ref={mapContainer} 
-          className="w-full h-full flex items-center justify-center overflow-hidden"
+          className="w-full h-full flex items-center justify-center overflow-hidden relative"
           style={{
-            transform: `translate(${panPosition.x}px, ${panPosition.y}px)`
+            transform: `translate(${Math.max(-200, Math.min(200, panPosition.x))}px, ${Math.max(-200, Math.min(200, panPosition.y))}px)`
           }}
         >
           <img
             src={getMapImage()}
             alt={getMapTitle()}
-            className="map-image max-w-none transition-transform duration-200 ease-out"
+            className="map-image w-full h-full object-contain transition-transform duration-200 ease-out"
             style={{
               transform: `scale(${zoomLevel})`,
-              transformOrigin: 'center center'
+              transformOrigin: 'center center',
+              maxWidth: '100%',
+              maxHeight: '100%'
             }}
             draggable={false}
           />
         </div>
 
-        {/* Draggable Query Overlay - Highest z-index */}
+        {/* Draggable Query Overlay - Constrained positioning */}
         <div 
-          className="absolute bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-xl p-4 border border-slate-600/50 shadow-xl max-w-md cursor-move z-[100]"
+          className="absolute bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-xl p-4 border border-slate-600/50 shadow-xl w-80 cursor-move z-[100]"
           style={{ 
-            left: overlayPosition.x, 
-            top: overlayPosition.y,
+            left: Math.max(10, Math.min(overlayPosition.x, window.innerWidth - 350)), 
+            top: Math.max(10, Math.min(overlayPosition.y, 100)),
             userSelect: 'none'
           }}
           onMouseDown={(e) => {
@@ -195,8 +197,8 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </Button>
         </div>
         
-        {/* Zoom level indicator - Top left */}
-        <div className="absolute top-4 left-4 bg-white/97 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-lg z-[90]">
+        {/* Zoom level indicator - Constrained positioning */}
+        <div className="absolute top-4 left-4 bg-white/97 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-lg z-[90] max-w-[200px]">
           <div className="text-gray-700 text-xs font-semibold">
             Zoom: {Math.round(zoomLevel * 100)}%
           </div>
@@ -205,13 +207,13 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </div>
         </div>
         
-        {/* Zoom controls - Top right */}
+        {/* Zoom controls - Fixed positioning within viewport */}
         <div className="absolute top-4 right-4 flex flex-col space-y-2 z-[90]">
           <Button
             onClick={handleZoomIn}
             size="sm"
             variant="outline"
-            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
+            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 p-0 flex items-center justify-center"
           >
             <ZoomIn className="w-4 h-4" />
           </Button>
@@ -219,14 +221,14 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
             onClick={handleZoomOut}
             size="sm"
             variant="outline"
-            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
+            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 p-0 flex items-center justify-center"
           >
             <ZoomOut className="w-4 h-4" />
           </Button>
         </div>
         
-        {/* Layer selector - Top right, below zoom controls */}
-        <div className="absolute top-24 right-4 bg-white/97 backdrop-blur-sm rounded-lg p-3 border border-gray-300 shadow-lg z-[90] min-w-[160px]">
+        {/* Layer selector - Positioned to stay within viewport */}
+        <div className="absolute top-20 right-4 bg-white/97 backdrop-blur-sm rounded-lg p-3 border border-gray-300 shadow-lg z-[90] w-48">
           <h4 className="text-gray-700 text-xs font-semibold mb-2 flex items-center">
             <Layers className="w-3 h-3 mr-1" />
             {mapType === 'crop' ? 'Crop Analysis' : 'SAR Analysis'}
@@ -292,8 +294,8 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </div>
         </div>
         
-        {/* Data info - Top right, below layer selector */}
-        <div className="absolute top-[180px] right-4 bg-white/97 backdrop-blur-md rounded-lg p-3 border border-gray-300 shadow-lg z-[90] min-w-[220px]">
+        {/* Data info - Positioned to stay within viewport */}
+        <div className="absolute top-44 right-4 bg-white/97 backdrop-blur-md rounded-lg p-3 border border-gray-300 shadow-lg z-[90] w-56">
           <h4 className="text-gray-700 text-sm font-semibold mb-1">
             {mapType === 'crop' ? 'Sentinel-2 Crop Classification' : 'Sentinel-1 SAR Analysis'}
           </h4>
@@ -351,7 +353,7 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </div>
         </div>
         
-        {/* Action buttons - Bottom right */}
+        {/* Action buttons - Fixed positioning within viewport */}
         <div className="absolute bottom-4 right-4 flex space-x-2 z-[90]">
           <Button
             size="sm"
@@ -371,8 +373,8 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           </Button>
         </div>
         
-        {/* Legend - Bottom left */}
-        <div className="absolute bottom-4 left-4 bg-white/97 backdrop-blur-md rounded-lg p-4 border border-gray-300 shadow-lg z-[90] min-w-[200px]">
+        {/* Legend - Fixed positioning within viewport */}
+        <div className="absolute bottom-4 left-4 bg-white/97 backdrop-blur-md rounded-lg p-4 border border-gray-300 shadow-lg z-[90] w-52">
           <h4 className="text-gray-700 text-sm font-semibold mb-3">
             {mapType === 'crop' ? 'Crop Classification Legend' : 
              selectedLayer === 'flood-depth' ? 'Flood Detection (SAR)' : 'Backscatter Intensity (dB)'}
