@@ -1,3 +1,4 @@
+
 import React, { useEffect, useRef, useState } from 'react';
 import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -105,7 +106,7 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
 
   const getMapImage = () => {
     if (mapType === 'crop') {
-      return "/lovable-uploads/e4725ee1-3147-4f60-b8f8-024b13f89252.png";
+      return "/lovable-uploads/85ec5200-8f8e-4b38-aef3-e9424c659c2b.png";
     }
     return "/lovable-uploads/b19b4dc0-559c-488d-9b72-ca43ef69ae53.png";
   };
