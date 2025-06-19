@@ -120,332 +120,345 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
 
   return (
     <div className="flex flex-col space-y-6 w-full max-w-full overflow-hidden">
-      {/* Map container with proper constraints */}
-      <div 
-        className="relative w-full h-[600px] bg-slate-900/20 rounded-lg border border-slate-600/50 overflow-hidden cursor-grab active:cursor-grabbing"
-        onMouseMove={handleMouseMove}
-        onMouseUp={handleMouseUp}
-        onMouseLeave={handleMouseLeave}
-        onMouseEnter={handleMouseEnter}
-        onMouseDown={handleMouseDown}
-        onWheel={handleWheel}
-      >
-        {/* Map image container with proper boundaries */}
+      {/* Main layout with left map and right controls */}
+      <div className="flex w-full h-[600px] bg-slate-900/20 rounded-lg border border-slate-600/50 overflow-hidden">
+        
+        {/* Map Section - Takes up most of the space */}
         <div 
-          ref={mapContainer} 
-          className="w-full h-full flex items-center justify-center overflow-hidden relative"
-          style={{
-            transform: `translate(${Math.max(-200, Math.min(200, panPosition.x))}px, ${Math.max(-200, Math.min(200, panPosition.y))}px)`
-          }}
+          className="flex-1 relative cursor-grab active:cursor-grabbing overflow-hidden"
+          onMouseMove={handleMouseMove}
+          onMouseUp={handleMouseUp}
+          onMouseLeave={handleMouseLeave}
+          onMouseEnter={handleMouseEnter}
+          onMouseDown={handleMouseDown}
+          onWheel={handleWheel}
         >
-          <img
-            src={getMapImage()}
-            alt={getMapTitle()}
-            className="map-image w-full h-full object-contain transition-transform duration-200 ease-out"
+          {/* Map image container */}
+          <div 
+            ref={mapContainer} 
+            className="w-full h-full flex items-center justify-center overflow-hidden relative"
             style={{
-              transform: `scale(${zoomLevel})`,
-              transformOrigin: 'center center',
-              maxWidth: '100%',
-              maxHeight: '100%'
+              transform: `translate(${Math.max(-200, Math.min(200, panPosition.x))}px, ${Math.max(-200, Math.min(200, panPosition.y))}px)`
             }}
-            draggable={false}
-          />
-        </div>
-
-        {/* Draggable Query Overlay - Constrained positioning */}
-        <div 
-          className="absolute bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-xl p-4 border border-slate-600/50 shadow-xl w-80 cursor-move z-[100]"
-          style={{ 
-            left: Math.max(10, Math.min(overlayPosition.x, window.innerWidth - 350)), 
-            top: Math.max(10, Math.min(overlayPosition.y, 100)),
-            userSelect: 'none'
-          }}
-          onMouseDown={(e) => {
-            e.stopPropagation();
-            setIsDragging(true);
-            setDragStart({
-              x: e.clientX - overlayPosition.x,
-              y: e.clientY - overlayPosition.y
-            });
-          }}
-        >
-          <div className="flex items-center space-x-3 mb-3">
-            <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
-            <h4 className="text-white font-semibold">Active Query</h4>
-          </div>
-          <div className="relative mb-3">
-            <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
-            <input
-              type="text"
-              value={query}
-              onChange={(e) => setQuery(e.target.value)}
-              className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
-              placeholder="Enter your query..."
-              onClick={(e) => e.stopPropagation()}
+          >
+            <img
+              src={getMapImage()}
+              alt={getMapTitle()}
+              className="map-image w-full h-full object-contain transition-transform duration-200 ease-out"
+              style={{
+                transform: `scale(${zoomLevel})`,
+                transformOrigin: 'center center',
+                maxWidth: '100%',
+                maxHeight: '100%'
+              }}
+              draggable={false}
             />
           </div>
-          <Button
-            onClick={(e) => {
-              e.stopPropagation();
-              handleSubmitQuery();
+
+          {/* Draggable Query Overlay - Positioned within map area */}
+          <div 
+            className="absolute bg-gradient-to-r from-slate-900/95 to-slate-800/95 backdrop-blur-md rounded-xl p-4 border border-slate-600/50 shadow-xl w-72 cursor-move z-50"
+            style={{ 
+              left: Math.max(10, Math.min(overlayPosition.x, window.innerWidth - 400)), 
+              top: Math.max(10, Math.min(overlayPosition.y, 100)),
+              userSelect: 'none'
             }}
-            size="sm"
-            className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white text-sm w-full"
+            onMouseDown={(e) => {
+              e.stopPropagation();
+              setIsDragging(true);
+              setDragStart({
+                x: e.clientX - overlayPosition.x,
+                y: e.clientY - overlayPosition.y
+              });
+            }}
           >
-            <Zap className="w-4 h-4 mr-2" />
-            Submit Query
-          </Button>
-        </div>
-        
-        {/* Zoom level indicator - Constrained positioning */}
-        <div className="absolute top-4 left-4 bg-white/97 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-lg z-[90] max-w-[200px]">
-          <div className="text-gray-700 text-xs font-semibold">
-            Zoom: {Math.round(zoomLevel * 100)}%
+            <div className="flex items-center space-x-3 mb-3">
+              <div className="w-3 h-3 bg-emerald-400 rounded-full animate-pulse"></div>
+              <h4 className="text-white font-semibold text-sm">Active Query</h4>
+            </div>
+            <div className="relative mb-3">
+              <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-gray-400" />
+              <input
+                type="text"
+                value={query}
+                onChange={(e) => setQuery(e.target.value)}
+                className="w-full bg-slate-800/50 border border-slate-600/50 rounded-lg pl-10 pr-4 py-2 text-white placeholder-gray-400 focus:outline-none focus:ring-2 focus:ring-cyan-500 focus:border-transparent text-sm"
+                placeholder="Enter your query..."
+                onClick={(e) => e.stopPropagation()}
+              />
+            </div>
+            <Button
+              onClick={(e) => {
+                e.stopPropagation();
+                handleSubmitQuery();
+              }}
+              size="sm"
+              className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white text-sm w-full"
+            >
+              <Zap className="w-4 h-4 mr-2" />
+              Submit Query
+            </Button>
           </div>
-          <div className="text-gray-500 text-xs mt-1">
-            Hold Ctrl + scroll to zoom
+          
+          {/* Zoom level indicator - Top left of map */}
+          <div className="absolute top-4 left-4 bg-white/97 backdrop-blur-md rounded-lg px-3 py-2 border border-gray-300 shadow-lg z-40">
+            <div className="text-gray-700 text-xs font-semibold">
+              Zoom: {Math.round(zoomLevel * 100)}%
+            </div>
+            <div className="text-gray-500 text-xs mt-1">
+              Hold Ctrl + scroll to zoom
+            </div>
           </div>
-        </div>
-        
-        {/* Zoom controls - Fixed positioning within viewport */}
-        <div className="absolute top-4 right-4 flex flex-col space-y-2 z-[90]">
-          <Button
-            onClick={handleZoomIn}
-            size="sm"
-            variant="outline"
-            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 p-0 flex items-center justify-center"
-          >
-            <ZoomIn className="w-4 h-4" />
-          </Button>
-          <Button
-            onClick={handleZoomOut}
-            size="sm"
-            variant="outline"
-            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 w-10 h-10 p-0 flex items-center justify-center"
-          >
-            <ZoomOut className="w-4 h-4" />
-          </Button>
-        </div>
-        
-        {/* Layer selector - Positioned to stay within viewport */}
-        <div className="absolute top-20 right-4 bg-white/97 backdrop-blur-sm rounded-lg p-3 border border-gray-300 shadow-lg z-[90] w-48">
-          <h4 className="text-gray-700 text-xs font-semibold mb-2 flex items-center">
-            <Layers className="w-3 h-3 mr-1" />
-            {mapType === 'crop' ? 'Crop Analysis' : 'SAR Analysis'}
-          </h4>
-          <div className="space-y-1">
-            {mapType === 'crop' ? (
-              <>
-                <button
-                  onClick={() => setSelectedLayer('crop-types')}
-                  className={`w-full text-left px-2 py-1 rounded text-xs transition-all ${
-                    selectedLayer === 'crop-types' 
-                      ? 'bg-green-500/20 text-green-700' 
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  Crop Types
-                </button>
-                <button
-                  onClick={() => setSelectedLayer('agricultural')}
-                  className={`w-full text-left px-2 py-1 rounded text-xs transition-all ${
-                    selectedLayer === 'agricultural' 
-                      ? 'bg-yellow-500/20 text-yellow-700' 
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  Agricultural Areas
-                </button>
-                <button
-                  onClick={() => setSelectedLayer('ndvi')}
-                  className={`w-full text-left px-2 py-1 rounded text-xs transition-all ${
-                    selectedLayer === 'ndvi' 
-                      ? 'bg-blue-500/20 text-blue-700' 
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  NDVI Analysis
-                </button>
-              </>
-            ) : (
-              <>
-                <button
-                  onClick={() => setSelectedLayer('flood-depth')}
-                  className={`w-full text-left px-2 py-1 rounded text-xs transition-all ${
-                    selectedLayer === 'flood-depth' 
-                      ? 'bg-blue-500/20 text-blue-700' 
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  Flood Extent
-                </button>
-                <button
-                  onClick={() => setSelectedLayer('economic')}
-                  className={`w-full text-left px-2 py-1 rounded text-xs transition-all ${
-                    selectedLayer === 'economic' 
-                      ? 'bg-orange-500/20 text-orange-700' 
-                      : 'text-gray-600 hover:bg-gray-100'
-                  }`}
-                >
-                  SAR Backscatter
-                </button>
-              </>
-            )}
+          
+          {/* Action buttons - Bottom left of map */}
+          <div className="absolute bottom-4 left-4 flex space-x-2 z-40">
+            <Button
+              size="sm"
+              variant="outline"
+              className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              <Share className="w-4 h-4 mr-2" />
+              Share
+            </Button>
+            <Button
+              size="sm"
+              variant="outline"
+              className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
+            >
+              <Download className="w-4 h-4 mr-2" />
+              Export
+            </Button>
           </div>
         </div>
-        
-        {/* Data info - Positioned to stay within viewport */}
-        <div className="absolute top-44 right-4 bg-white/97 backdrop-blur-md rounded-lg p-3 border border-gray-300 shadow-lg z-[90] w-56">
-          <h4 className="text-gray-700 text-sm font-semibold mb-1">
-            {mapType === 'crop' ? 'Sentinel-2 Crop Classification' : 'Sentinel-1 SAR Analysis'}
-          </h4>
-          <p className="text-gray-600 text-xs mb-2">
-            {mapType === 'crop' ? 'Hoshiarpur District, Punjab' : 'Jakarta Metropolitan Area'}
-          </p>
-          <div className="space-y-1 text-xs text-gray-600">
-            {mapType === 'crop' ? (
-              <>
-                <div className="flex justify-between">
-                  <span>Sensor:</span>
-                  <span className="text-green-600 font-medium">Sentinel-2 MSI</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Season:</span>
-                  <span className="text-green-600 font-medium">Rabi 2022-23</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Resolution:</span>
-                  <span className="text-green-600 font-medium">10m × 10m</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Bands Used:</span>
-                  <span className="text-green-600 font-medium">B2,B3,B4,B8</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Method:</span>
-                  <span className="text-green-600 font-medium">RF Classification</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Accuracy:</span>
-                  <span className="text-green-600 font-medium">87.3%</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex justify-between">
-                  <span>Sensor:</span>
-                  <span className="text-blue-600">Sentinel-1 C-band</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Polarization:</span>
-                  <span className="text-blue-600">VV/VH</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Resolution:</span>
-                  <span className="text-blue-600">10m × 10m</span>
-                </div>
-                <div className="flex justify-between">
-                  <span>Method:</span>
-                  <span className="text-green-600">Multi-temporal</span>
-                </div>
-              </>
-            )}
+
+        {/* Right Control Panel - Fixed width, stays within bounds */}
+        <div className="w-80 bg-slate-800/50 border-l border-slate-600/50 flex flex-col overflow-hidden">
+          
+          {/* Zoom Controls */}
+          <div className="p-4 border-b border-slate-600/50">
+            <h4 className="text-white text-sm font-semibold mb-3">Map Controls</h4>
+            <div className="flex space-x-2">
+              <Button
+                onClick={handleZoomIn}
+                size="sm"
+                variant="outline"
+                className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 flex-1 flex items-center justify-center"
+              >
+                <ZoomIn className="w-4 h-4 mr-2" />
+                Zoom In
+              </Button>
+              <Button
+                onClick={handleZoomOut}
+                size="sm"
+                variant="outline"
+                className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200 flex-1 flex items-center justify-center"
+              >
+                <ZoomOut className="w-4 h-4 mr-2" />
+                Zoom Out
+              </Button>
+            </div>
           </div>
-        </div>
-        
-        {/* Action buttons - Fixed positioning within viewport */}
-        <div className="absolute bottom-4 right-4 flex space-x-2 z-[90]">
-          <Button
-            size="sm"
-            variant="outline"
-            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            <Share className="w-4 h-4 mr-2" />
-            Share
-          </Button>
-          <Button
-            size="sm"
-            variant="outline"
-            className="bg-white/95 border-gray-300 text-gray-700 hover:bg-white shadow-lg hover:shadow-xl transition-all duration-200"
-          >
-            <Download className="w-4 h-4 mr-2" />
-            Export
-          </Button>
-        </div>
-        
-        {/* Legend - Fixed positioning within viewport */}
-        <div className="absolute bottom-4 left-4 bg-white/97 backdrop-blur-md rounded-lg p-4 border border-gray-300 shadow-lg z-[90] w-52">
-          <h4 className="text-gray-700 text-sm font-semibold mb-3">
-            {mapType === 'crop' ? 'Crop Classification Legend' : 
-             selectedLayer === 'flood-depth' ? 'Flood Detection (SAR)' : 'Backscatter Intensity (dB)'}
-          </h4>
-          <div className="space-y-2">
-            {mapType === 'crop' ? (
-              <>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-green-600 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Plantation</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-purple-600 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Wheat</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-yellow-400 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Potato</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-red-600 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Other crops</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-blue-400 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Water</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-amber-800 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Urban and Fallow</span>
-                </div>
-              </>
-            ) : selectedLayer === 'flood-depth' ? (
-              <>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-red-600 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Flooded Areas</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-blue-400 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Water Bodies</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-white rounded border border-gray-400"></div>
-                  <span className="text-gray-700 text-xs">Non-flooded Areas</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-yellow-400 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Urban Areas</span>
-                </div>
-              </>
-            ) : (
-              <>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-red-600 rounded border"></div>
-                  <span className="text-gray-700 text-xs">High (-5 to 0)</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-orange-500 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Medium (-10 to -5)</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-yellow-400 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Low (-15 to -10)</span>
-                </div>
-                <div className="flex items-center space-x-3">
-                  <div className="w-4 h-4 bg-blue-400 rounded border"></div>
-                  <span className="text-gray-700 text-xs">Very Low (-20 to -15)</span>
-                </div>
-              </>
-            )}
+
+          {/* Layer Selector */}
+          <div className="p-4 border-b border-slate-600/50">
+            <h4 className="text-white text-sm font-semibold mb-3 flex items-center">
+              <Layers className="w-4 h-4 mr-2" />
+              {mapType === 'crop' ? 'Crop Analysis' : 'SAR Analysis'}
+            </h4>
+            <div className="space-y-2">
+              {mapType === 'crop' ? (
+                <>
+                  <button
+                    onClick={() => setSelectedLayer('crop-types')}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${
+                      selectedLayer === 'crop-types' 
+                        ? 'bg-green-500/20 text-green-300 border border-green-400/30' 
+                        : 'text-gray-300 hover:bg-slate-700/50 border border-transparent'
+                    }`}
+                  >
+                    Crop Types
+                  </button>
+                  <button
+                    onClick={() => setSelectedLayer('agricultural')}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${
+                      selectedLayer === 'agricultural' 
+                        ? 'bg-yellow-500/20 text-yellow-300 border border-yellow-400/30' 
+                        : 'text-gray-300 hover:bg-slate-700/50 border border-transparent'
+                    }`}
+                  >
+                    Agricultural Areas
+                  </button>
+                  <button
+                    onClick={() => setSelectedLayer('ndvi')}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${
+                      selectedLayer === 'ndvi' 
+                        ? 'bg-blue-500/20 text-blue-300 border border-blue-400/30' 
+                        : 'text-gray-300 hover:bg-slate-700/50 border border-transparent'
+                    }`}
+                  >
+                    NDVI Analysis
+                  </button>
+                </>
+              ) : (
+                <>
+                  <button
+                    onClick={() => setSelectedLayer('flood-depth')}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${
+                      selectedLayer === 'flood-depth' 
+                        ? 'bg-blue-500/20 text-blue-300 border border-blue-400/30' 
+                        : 'text-gray-300 hover:bg-slate-700/50 border border-transparent'
+                    }`}
+                  >
+                    Flood Extent
+                  </button>
+                  <button
+                    onClick={() => setSelectedLayer('economic')}
+                    className={`w-full text-left px-3 py-2 rounded text-sm transition-all ${
+                      selectedLayer === 'economic' 
+                        ? 'bg-orange-500/20 text-orange-300 border border-orange-400/30' 
+                        : 'text-gray-300 hover:bg-slate-700/50 border border-transparent'
+                    }`}
+                  >
+                    SAR Backscatter
+                  </button>
+                </>
+              )}
+            </div>
+          </div>
+          
+          {/* Data Info */}
+          <div className="p-4 border-b border-slate-600/50">
+            <h4 className="text-white text-sm font-semibold mb-2">
+              {mapType === 'crop' ? 'Sentinel-2 Crop Classification' : 'Sentinel-1 SAR Analysis'}
+            </h4>
+            <p className="text-gray-400 text-xs mb-3">
+              {mapType === 'crop' ? 'Hoshiarpur District, Punjab' : 'Jakarta Metropolitan Area'}
+            </p>
+            <div className="space-y-1 text-xs text-gray-300">
+              {mapType === 'crop' ? (
+                <>
+                  <div className="flex justify-between">
+                    <span>Sensor:</span>
+                    <span className="text-green-400 font-medium">Sentinel-2 MSI</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Season:</span>
+                    <span className="text-green-400 font-medium">Rabi 2022-23</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Resolution:</span>
+                    <span className="text-green-400 font-medium">10m × 10m</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Bands Used:</span>
+                    <span className="text-green-400 font-medium">B2,B3,B4,B8</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Method:</span>
+                    <span className="text-green-400 font-medium">RF Classification</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Accuracy:</span>
+                    <span className="text-green-400 font-medium">87.3%</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex justify-between">
+                    <span>Sensor:</span>
+                    <span className="text-blue-400">Sentinel-1 C-band</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Polarization:</span>
+                    <span className="text-blue-400">VV/VH</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Resolution:</span>
+                    <span className="text-blue-400">10m × 10m</span>
+                  </div>
+                  <div className="flex justify-between">
+                    <span>Method:</span>
+                    <span className="text-green-400">Multi-temporal</span>
+                  </div>
+                </>
+              )}
+            </div>
+          </div>
+          
+          {/* Legend - Scrollable if needed */}
+          <div className="flex-1 p-4 overflow-y-auto">
+            <h4 className="text-white text-sm font-semibold mb-3">
+              {mapType === 'crop' ? 'Crop Classification Legend' : 
+               selectedLayer === 'flood-depth' ? 'Flood Detection (SAR)' : 'Backscatter Intensity (dB)'}
+            </h4>
+            <div className="space-y-2">
+              {mapType === 'crop' ? (
+                <>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-green-600 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Plantation</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-purple-600 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Wheat</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-yellow-400 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Potato</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-red-600 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Other crops</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-blue-400 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Water</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-amber-800 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Urban and Fallow</span>
+                  </div>
+                </>
+              ) : selectedLayer === 'flood-depth' ? (
+                <>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-red-600 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Flooded Areas</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-blue-400 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Water Bodies</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-white rounded border border-gray-400"></div>
+                    <span className="text-gray-300 text-xs">Non-flooded Areas</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-yellow-400 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Urban Areas</span>
+                  </div>
+                </>
+              ) : (
+                <>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-red-600 rounded border"></div>
+                    <span className="text-gray-300 text-xs">High (-5 to 0)</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-orange-500 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Medium (-10 to -5)</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-yellow-400 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Low (-15 to -10)</span>
+                  </div>
+                  <div className="flex items-center space-x-3">
+                    <div className="w-4 h-4 bg-blue-400 rounded border"></div>
+                    <span className="text-gray-300 text-xs">Very Low (-20 to -15)</span>
+                  </div>
+                </>
+              )}
+            </div>
           </div>
         </div>
       </div>
