@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
@@ -42,6 +43,31 @@ const DevMode = () => {
   const initialQuery = location.state?.query || '';
   const [currentQuery, setCurrentQuery] = useState(initialQuery);
 
+  // Track if this is a crop query
+  const [isCropQuery, setIsCropQuery] = useState(false);
+
+  // Update crop query detection when query changes
+  useEffect(() => {
+    const checkIfCropQuery = (queryText: string) => {
+      return queryText.toLowerCase().includes('crop') || 
+             queryText.toLowerCase().includes('agriculture') ||
+             queryText.toLowerCase().includes('classification') ||
+             queryText.toLowerCase().includes('hoshiarpur') ||
+             queryText.toLowerCase().includes('wheat') ||
+             queryText.toLowerCase().includes('potato') ||
+             queryText.toLowerCase().includes('plantation');
+    };
+
+    const newIsCropQuery = checkIfCropQuery(currentQuery);
+    setIsCropQuery(newIsCropQuery);
+
+    // If this is a submitted query and the type changed, update the default code
+    if (hasSubmittedQuery && !generatedCode) {
+      // Clear any existing generated code when query type changes
+      setGeneratedCode('');
+    }
+  }, [currentQuery, hasSubmittedQuery, generatedCode]);
+
   // Set the interface state when returning based on whether we should show output
   const handleBackClick = () => {
     navigate('/interface', {
@@ -59,12 +85,6 @@ const DevMode = () => {
     'MODIS',
     'DEM'
   ];
-
-  // Detect query type for appropriate default code
-  const isCropQuery = currentQuery.toLowerCase().includes('crop') || 
-                     currentQuery.toLowerCase().includes('agriculture') ||
-                     currentQuery.toLowerCase().includes('classification') ||
-                     currentQuery.toLowerCase().includes('hoshiarpur');
 
   const defaultFloodCode = `// Earth Engine JavaScript Code for Jakarta Flood Analysis
 var jakarta = ee.Geometry.Rectangle([106.6922, -6.3713, 107.1576, -5.9969]);
