@@ -1,4 +1,3 @@
-
 import { useState, useEffect } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
 import { 
@@ -12,8 +11,7 @@ import {
   Search,
   Zap,
   Satellite,
-  Code,
-  ArrowRight
+  Code
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { ScrollArea } from "@/components/ui/scroll-area";
@@ -142,15 +140,6 @@ const Interface = () => {
               </div>
             </div>
             <div className="flex items-center space-x-4">
-              <Button
-                onClick={handleNavigateToCropClassification}
-                variant="outline"
-                size="sm"
-                className="bg-green-500/20 border-green-400/50 text-green-300 hover:bg-green-500/30 hover:text-green-200 transition-all duration-300"
-              >
-                Crop Classification
-                <ArrowRight className="h-4 w-4 ml-2" />
-              </Button>
               <div className="flex items-center space-x-2 px-3 py-1 bg-emerald-500/20 rounded-full">
                 <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
                 <span className="text-emerald-300 text-sm font-medium">Live</span>
