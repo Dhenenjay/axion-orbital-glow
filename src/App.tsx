@@ -8,6 +8,7 @@ import Index from "./pages/Index";
 import SignUp from "./pages/SignUp";
 import Interface from "./pages/Interface";
 import DevMode from "./pages/DevMode";
+import CropClassification from "./pages/CropClassification";
 import NotFound from "./pages/NotFound";
 
 const queryClient = new QueryClient();
@@ -23,6 +24,7 @@ const App = () => (
           <Route path="/signup" element={<SignUp />} />
           <Route path="/interface" element={<Interface />} />
           <Route path="/dev-mode" element={<DevMode />} />
+          <Route path="/crop-classification" element={<CropClassification />} />
           {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
           <Route path="*" element={<NotFound />} />
         </Routes>
