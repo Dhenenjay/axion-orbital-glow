@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
   Play, 
@@ -37,8 +37,21 @@ const DevMode = () => {
   
   // Get query and state from Interface page
   const hasSubmittedQuery = location.state?.hasSubmittedQuery || false;
+  const showOutput = location.state?.showOutput || false;
+  const returnToOutput = location.state?.returnToOutput || false;
   const initialQuery = location.state?.query || '';
   const [currentQuery, setCurrentQuery] = useState(initialQuery);
+
+  // Set the interface state when returning based on whether we should show output
+  const handleBackClick = () => {
+    navigate('/interface', {
+      state: {
+        shouldShowOutput: returnToOutput,
+        hasSubmittedQuery: hasSubmittedQuery,
+        preservedQuery: currentQuery
+      }
+    });
+  };
 
   const datasets = [
     'Landsat 8',
@@ -127,7 +140,7 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
           <Button
             variant="ghost"
             size="sm"
-            onClick={() => navigate('/interface')}
+            onClick={handleBackClick}
             className="text-gray-300 hover:text-white"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />

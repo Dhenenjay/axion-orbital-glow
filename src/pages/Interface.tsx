@@ -1,6 +1,5 @@
-
-import { useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { useNavigate, useLocation } from "react-router-dom";
 import { 
   Globe, 
   Menu, 
@@ -21,9 +20,23 @@ import FloodRiskMap from "@/components/FloodRiskMap";
 
 const Interface = () => {
   const navigate = useNavigate();
+  const location = useLocation();
   const [query, setQuery] = useState("");
   const [showOutput, setShowOutput] = useState(false);
   const [hasSubmittedQuery, setHasSubmittedQuery] = useState(false);
+
+  // Handle state restoration when returning from DevMode
+  useEffect(() => {
+    if (location.state?.shouldShowOutput) {
+      setShowOutput(true);
+      setHasSubmittedQuery(location.state.hasSubmittedQuery || true);
+      if (location.state.preservedQuery) {
+        setQuery(location.state.preservedQuery);
+      }
+      // Clear the location state to avoid issues on refresh
+      window.history.replaceState({}, document.title);
+    }
+  }, [location.state]);
 
   const handleSubmitQuery = () => {
     if (query.trim()) {
@@ -42,7 +55,9 @@ const Interface = () => {
     navigate('/dev-mode', { 
       state: { 
         hasSubmittedQuery,
-        query: query.trim() || "Jakarta flood risk analysis with Sentinel-1 SAR data"
+        showOutput,
+        query: query.trim() || "Jakarta flood risk analysis with Sentinel-1 SAR data",
+        returnToOutput: showOutput
       } 
     });
   };
