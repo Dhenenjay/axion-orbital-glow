@@ -1,3 +1,4 @@
+
 import React, { useState, useEffect } from 'react';
 import { 
   ArrowLeft, 
@@ -19,12 +20,36 @@ import {
   BarChart3,
   Bug,
   Zap,
-  Loader2
+  Loader2,
+  ChevronDown,
+  ChevronRight,
+  Eye,
+  EyeOff,
+  Map,
+  Image,
+  Filter,
+  SortAsc,
+  SortDesc,
+  X,
+  Maximize2,
+  Minimize2
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { useNavigate, useLocation } from 'react-router-dom';
 import { useClaudeApi } from '@/hooks/useClaudeApi';
 import { useToast } from '@/hooks/use-toast';
+import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
+import { ScrollArea } from '@/components/ui/scroll-area';
+import { Slider } from '@/components/ui/slider';
+
+interface LayerInfo {
+  name: string;
+  type: 'raster' | 'vector' | 'classification';
+  visible: boolean;
+  opacity: number;
+  description: string;
+  status: 'ready' | 'loading' | 'error';
+}
 
 const DevMode = () => {
   const navigate = useNavigate();
@@ -34,6 +59,10 @@ const DevMode = () => {
   const [activeTab, setActiveTab] = useState('code-editor');
   const [selectedDataset, setSelectedDataset] = useState('');
   const [generatedCode, setGeneratedCode] = useState('');
+  const [outputPanelExpanded, setOutputPanelExpanded] = useState(true);
+  const [sortBy, setSortBy] = useState<'name' | 'type' | 'status'>('name');
+  const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
+  const [filterVisible, setFilterVisible] = useState(true);
   
   // Get query and state from Interface page
   const hasSubmittedQuery = location.state?.hasSubmittedQuery || false;
@@ -45,7 +74,9 @@ const DevMode = () => {
   // Track if this is a crop query
   const [isCropQuery, setIsCropQuery] = useState(false);
 
-  // Update crop query detection when query changes
+  // Mock layer data that changes based on query type
+  const [layers, setLayers] = useState<LayerInfo[]>([]);
+
   useEffect(() => {
     const checkIfCropQuery = (queryText: string) => {
       return queryText.toLowerCase().includes('crop') || 
@@ -59,18 +90,73 @@ const DevMode = () => {
 
     const newIsCropQuery = checkIfCropQuery(currentQuery);
     
-    // Only update if the crop query status actually changed
     if (newIsCropQuery !== isCropQuery) {
       setIsCropQuery(newIsCropQuery);
       
-      // Clear generated code when query type changes to show new default
+      // Update layers based on query type
+      if (hasSubmittedQuery || generatedCode) {
+        const newLayers: LayerInfo[] = newIsCropQuery ? [
+          {
+            name: 'Sentinel-2 True Color',
+            type: 'raster',
+            visible: true,
+            opacity: 100,
+            description: 'RGB composite from Sentinel-2',
+            status: 'ready'
+          },
+          {
+            name: 'NDVI',
+            type: 'raster',
+            visible: true,
+            opacity: 80,
+            description: 'Normalized Difference Vegetation Index',
+            status: 'ready'
+          },
+          {
+            name: 'Crop Classification',
+            type: 'classification',
+            visible: true,
+            opacity: 90,
+            description: 'Wheat, Potato, Plantation, Other crops',
+            status: 'ready'
+          },
+          {
+            name: 'Hoshiarpur Boundary',
+            type: 'vector',
+            visible: false,
+            opacity: 100,
+            description: 'Study area boundary',
+            status: 'ready'
+          }
+        ] : [
+          {
+            name: 'Flood Risk',
+            type: 'raster',
+            visible: true,
+            opacity: 85,
+            description: 'SAR-based flood detection',
+            status: 'ready'
+          },
+          {
+            name: 'Population at Risk',
+            type: 'raster',
+            visible: true,
+            opacity: 75,
+            description: 'Population density in flood zones',
+            status: 'ready'
+          }
+        ];
+        setLayers(newLayers);
+      } else {
+        setLayers([]);
+      }
+      
       if (hasSubmittedQuery) {
         setGeneratedCode('');
       }
     }
-  }, [currentQuery, hasSubmittedQuery, isCropQuery]); // Removed generatedCode from dependencies
+  }, [currentQuery, hasSubmittedQuery, isCropQuery, generatedCode]);
 
-  // Set the interface state when returning based on whether we should show output
   const handleBackClick = () => {
     navigate('/interface', {
       state: {
@@ -88,6 +174,7 @@ const DevMode = () => {
     'DEM'
   ];
 
+  // Default code templates
   const defaultFloodCode = `// Earth Engine JavaScript Code for Jakarta Flood Analysis
 var jakarta = ee.Geometry.Rectangle([106.6922, -6.3713, 107.1576, -5.9969]);
 
@@ -237,9 +324,21 @@ Map.addLayer(hoshiarpur, {color: 'red'}, 'Hoshiarpur Boundary', false);
 print('Crop Classification completed for Hoshiarpur - Rabi 2022-23');
 print('Classes: 0-Wheat, 1-Potato, 2-Plantation, 3-Other Crops');`;
 
-  const emptyCodePlaceholder = `// Code editor ready...
+  const emptyCodePlaceholder = `// Earth Engine Code Editor
 // Submit a query from the Interface or use the Generate Code button
-// to create Earth Engine analysis code`;
+// to create satellite data analysis code
+
+// Explore our datasets:
+// - Landsat 8 & 9 Surface Reflectance
+// - Sentinel-2 Surface Reflectance  
+// - MODIS Terra & Aqua
+// - Digital Elevation Models (DEM)
+// - Precipitation data
+// - And much more...
+
+// Get started with a simple example:
+// var image = ee.Image('LANDSAT/LC08/C02/T1_L2/LC08_044034_20140318');
+// Map.addLayer(image, {bands: ['SR_B4', 'SR_B3', 'SR_B2'], min: 0, max: 30000}, 'True Color');`;
 
   const getDefaultCode = () => {
     if (isCropQuery) {
@@ -248,7 +347,6 @@ print('Classes: 0-Wheat, 1-Potato, 2-Plantation, 3-Other Crops');`;
     return defaultFloodCode;
   };
 
-  // Fixed logic: Show generated code if exists, otherwise show default code if query submitted, otherwise show placeholder
   const displayedCode = generatedCode || (hasSubmittedQuery ? getDefaultCode() : emptyCodePlaceholder);
 
   const handleGenerateCode = async () => {
@@ -277,329 +375,456 @@ print('Classes: 0-Wheat, 1-Potato, 2-Plantation, 3-Other Crops');`;
     }
   };
 
-  const getAnalysisType = () => {
-    if (isCropQuery) {
-      return 'Crop Classification';
-    }
-    return 'Flood Analysis';
+  const toggleLayerVisibility = (index: number) => {
+    setLayers(prev => prev.map((layer, i) => 
+      i === index ? { ...layer, visible: !layer.visible } : layer
+    ));
   };
 
-  const getLayerCount = () => {
-    if (generatedCode || hasSubmittedQuery) {
-      return isCropQuery ? '4' : '2';
-    }
-    return '0';
+  const updateLayerOpacity = (index: number, opacity: number) => {
+    setLayers(prev => prev.map((layer, i) => 
+      i === index ? { ...layer, opacity } : layer
+    ));
   };
 
-  const getExportCount = () => {
-    if (generatedCode || hasSubmittedQuery) {
-      return '1';
+  const sortedLayers = [...layers].sort((a, b) => {
+    let comparison = 0;
+    
+    switch (sortBy) {
+      case 'name':
+        comparison = a.name.localeCompare(b.name);
+        break;
+      case 'type':
+        comparison = a.type.localeCompare(b.type);
+        break;
+      case 'status':
+        comparison = a.status.localeCompare(b.status);
+        break;
     }
-    return '0';
+    
+    return sortOrder === 'asc' ? comparison : -comparison;
+  });
+
+  const filteredLayers = filterVisible 
+    ? sortedLayers.filter(layer => layer.visible)
+    : sortedLayers;
+
+  const getStatusIcon = (status: LayerInfo['status']) => {
+    switch (status) {
+      case 'loading':
+        return <Loader2 className="w-3 h-3 animate-spin text-blue-400" />;
+      case 'error':
+        return <X className="w-3 h-3 text-red-400" />;
+      default:
+        return <div className="w-2 h-2 rounded-full bg-green-400" />;
+    }
   };
 
-  const getSuggestionText = () => {
-    if (generatedCode) {
-      return 'Code generated by Claude AI';
-    } else if (hasSubmittedQuery) {
-      return isCropQuery ? 'Add temporal analysis for better crop phenology' : 'Add cloud masking for better results';
+  const getTypeIcon = (type: LayerInfo['type']) => {
+    switch (type) {
+      case 'raster':
+        return <Image className="w-4 h-4 text-blue-400" />;
+      case 'vector':
+        return <Map className="w-4 h-4 text-green-400" />;
+      case 'classification':
+        return <Layers className="w-4 h-4 text-purple-400" />;
     }
-    return 'Enter query to get AI-generated code';
   };
 
   return (
-    <div className="h-screen bg-slate-900 flex flex-col">
-      {/* Top Header */}
-      <div className="h-12 bg-slate-800 border-b border-slate-700 flex items-center justify-between px-4">
-        <div className="flex items-center space-x-4">
+    <div className="h-screen bg-[#1e1e1e] flex flex-col text-white">
+      {/* VSCode-like Top Bar */}
+      <div className="h-8 bg-[#323233] border-b border-[#2d2d30] flex items-center justify-between px-2 text-xs">
+        <div className="flex items-center space-x-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleBackClick}
-            className="text-gray-300 hover:text-white"
+            className="h-6 px-2 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
           >
-            <ArrowLeft className="w-4 h-4 mr-2" />
+            <ArrowLeft className="w-3 h-3 mr-1" />
             Back
           </Button>
-          <span className="text-white font-semibold">Dev Mode</span>
-          <span className="text-gray-400">|</span>
-          <span className="text-cyan-400">Phoenix 1.0</span>
+          <span className="text-[#cccccc]">•</span>
+          <span className="text-white">Phoenix Earth Engine IDE</span>
         </div>
         
-        <div className="flex items-center space-x-2">
-          <Button size="sm" variant="outline" className="bg-slate-700 border-slate-600 text-gray-300 hover:bg-slate-600">
-            <Play className="w-4 h-4 mr-1" />
-            Run
-          </Button>
-          <Button size="sm" variant="outline" className="bg-slate-700 border-slate-600 text-gray-300 hover:bg-slate-600">
-            <Save className="w-4 h-4 mr-1" />
-            Save
-          </Button>
-          <Button size="sm" variant="outline" className="bg-slate-700 border-slate-600 text-gray-300 hover:bg-slate-600">
-            <Download className="w-4 h-4" />
-          </Button>
-          <Button size="sm" variant="outline" className="bg-slate-700 border-slate-600 text-gray-300 hover:bg-slate-600">
-            <Settings className="w-4 h-4" />
-          </Button>
+        <div className="flex items-center space-x-1">
+          <div className="w-3 h-3 rounded-full bg-[#ff5f57]"></div>
+          <div className="w-3 h-3 rounded-full bg-[#ffbd2e]"></div>
+          <div className="w-3 h-3 rounded-full bg-[#28ca42]"></div>
         </div>
       </div>
 
-      {/* Secondary Header with Query and AI Assistant */}
-      <div className="h-16 bg-slate-850 border-b border-slate-700 flex items-center px-4 space-x-4">
-        <div className="flex-1 flex items-center space-x-4">
-          <span className="text-gray-300 text-sm">Query:</span>
-          <input
-            type="text"
-            className="flex-1 bg-slate-800 rounded px-3 py-2 text-gray-300 text-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
-            placeholder="Enter your satellite data analysis query..."
-            value={currentQuery}
-            onChange={(e) => setCurrentQuery(e.target.value)}
-          />
-        </div>
-        <div className="flex items-center space-x-2">
-          <Button 
-            size="sm" 
-            className="bg-blue-600 hover:bg-blue-700"
-            onClick={handleGenerateCode}
-            disabled={isGenerating}
-          >
-            {isGenerating ? (
-              <>
-                <Loader2 className="w-4 h-4 mr-1 animate-spin" />
-                Generating...
-              </>
-            ) : (
-              <>
-                <Zap className="w-4 h-4 mr-1" />
-                Generate Code
-              </>
-            )}
-          </Button>
+      {/* Menu Bar */}
+      <div className="h-7 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-3 text-xs">
+        <div className="flex items-center space-x-4 text-[#cccccc]">
+          <span className="hover:text-white cursor-pointer">File</span>
+          <span className="hover:text-white cursor-pointer">Edit</span>
+          <span className="hover:text-white cursor-pointer">View</span>
+          <span className="hover:text-white cursor-pointer">Run</span>
+          <span className="hover:text-white cursor-pointer">Help</span>
         </div>
       </div>
 
-      <div className="flex-1 flex">
-        {/* Left Sidebar - Project Tree */}
-        <div className="w-64 bg-slate-800 border-r border-slate-700 flex flex-col">
-          <div className="p-3 border-b border-slate-700">
-            <h3 className="text-white font-medium mb-3">Project Tree</h3>
-            <div className="space-y-1 text-sm">
-              <div className="flex items-center space-x-2 text-gray-300 hover:text-white cursor-pointer">
-                <Folder className="w-4 h-4" />
-                <span>src</span>
-              </div>
-              <div className="ml-6 space-y-1">
-                <div className="flex items-center space-x-2 text-gray-300 hover:text-white cursor-pointer">
-                  <File className="w-4 h-4" />
-                  <span>index.js</span>
+      {/* Activity Bar */}
+      <div className="flex flex-1">
+        <div className="w-12 bg-[#333333] border-r border-[#2d2d30] flex flex-col items-center py-2 space-y-4">
+          <div className="w-8 h-8 flex items-center justify-center rounded bg-[#007acc] text-white">
+            <File className="w-4 h-4" />
+          </div>
+          <div className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#2a2d2e] cursor-pointer">
+            <Search className="w-4 h-4 text-[#cccccc]" />
+          </div>
+          <div className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#2a2d2e] cursor-pointer">
+            <Database className="w-4 h-4 text-[#cccccc]" />
+          </div>
+          <div className="w-8 h-8 flex items-center justify-center rounded hover:bg-[#2a2d2e] cursor-pointer">
+            <Terminal className="w-4 h-4 text-[#cccccc]" />
+          </div>
+        </div>
+
+        {/* Main Content */}
+        <ResizablePanelGroup direction="horizontal">
+          {/* Left Panel - Explorer */}
+          <ResizablePanel defaultSize={20} minSize={15}>
+            <div className="h-full bg-[#252526] border-r border-[#2d2d30]">
+              <div className="p-2 border-b border-[#2d2d30]">
+                <h3 className="text-xs font-semibold text-[#cccccc] mb-2">EXPLORER</h3>
+                <div className="space-y-1 text-xs">
+                  <div className="flex items-center space-x-1 text-[#cccccc] hover:text-white cursor-pointer">
+                    <ChevronDown className="w-3 h-3" />
+                    <Folder className="w-3 h-3" />
+                    <span>earth-engine-project</span>
+                  </div>
+                  <div className="ml-4 space-y-1">
+                    <div className="flex items-center space-x-1 text-[#cccccc] hover:text-white cursor-pointer hover:bg-[#2a2d2e] px-1 py-0.5 rounded">
+                      <Code className="w-3 h-3 text-blue-400" />
+                      <span>analysis.js</span>
+                    </div>
+                    <div className="flex items-center space-x-1 text-[#cccccc] hover:text-white cursor-pointer hover:bg-[#2a2d2e] px-1 py-0.5 rounded">
+                      <FileText className="w-3 h-3 text-green-400" />
+                      <span>README.md</span>
+                    </div>
+                  </div>
                 </div>
-                <div className="flex items-center space-x-2 text-gray-300 hover:text-white cursor-pointer">
-                  <File className="w-4 h-4" />
-                  <span>analysis.js</span>
+              </div>
+
+              <div className="p-2 border-b border-[#2d2d30]">
+                <h3 className="text-xs font-semibold text-[#cccccc] mb-2">DATASETS</h3>
+                <div className="space-y-1">
+                  {datasets.map((dataset) => (
+                    <div 
+                      key={dataset}
+                      className={`flex items-center space-x-2 p-1 rounded cursor-pointer text-xs ${
+                        selectedDataset === dataset 
+                          ? 'bg-[#094771] text-white' 
+                          : 'text-[#cccccc] hover:bg-[#2a2d2e] hover:text-white'
+                      }`}
+                      onClick={() => setSelectedDataset(dataset)}
+                    >
+                      <Satellite className="w-3 h-3" />
+                      <span>{dataset}</span>
+                    </div>
+                  ))}
                 </div>
               </div>
             </div>
-          </div>
+          </ResizablePanel>
 
-          <div className="p-3 border-b border-slate-700">
-            <h3 className="text-white font-medium mb-3">Datasets</h3>
-            <div className="space-y-2">
-              {datasets.map((dataset) => (
-                <div 
-                  key={dataset}
-                  className={`flex items-center space-x-2 p-2 rounded cursor-pointer text-sm ${
-                    selectedDataset === dataset 
-                      ? 'bg-slate-700 text-cyan-400' 
-                      : 'text-gray-300 hover:bg-slate-700 hover:text-white'
-                  }`}
-                  onClick={() => setSelectedDataset(dataset)}
+          <ResizableHandle withHandle />
+
+          {/* Center Panel - Code Editor */}
+          <ResizablePanel defaultSize={outputPanelExpanded ? 50 : 80}>
+            <div className="h-full flex flex-col bg-[#1e1e1e]">
+              {/* Query Bar */}
+              <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-3 space-x-3">
+                <span className="text-xs text-[#cccccc]">Query:</span>
+                <input
+                  type="text"
+                  className="flex-1 bg-[#3c3c3c] rounded px-3 py-1 text-white text-xs focus:outline-none focus:ring-1 focus:ring-[#007acc] border border-[#5a5a5a]"
+                  placeholder="Enter your satellite data analysis query..."
+                  value={currentQuery}
+                  onChange={(e) => setCurrentQuery(e.target.value)}
+                />
+                <Button 
+                  size="sm" 
+                  className="h-7 bg-[#0e639c] hover:bg-[#1177bb] text-xs"
+                  onClick={handleGenerateCode}
+                  disabled={isGenerating}
                 >
-                  <Database className="w-4 h-4" />
-                  <span>{dataset}</span>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          <div className="p-3">
-            <h3 className="text-white font-medium mb-3">Tools</h3>
-            <div className="space-y-2 text-sm">
-              <div className="flex items-center space-x-2 text-gray-300 hover:text-white cursor-pointer">
-                <Globe className="w-4 h-4" />
-                <span>MODIS</span>
-              </div>
-              <div className="flex items-center space-x-2 text-gray-300 hover:text-white cursor-pointer">
-                <Mountain className="w-4 h-4" />
-                <span>DEM</span>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        {/* Main Content Area */}
-        <div className="flex-1 flex flex-col">
-          {/* Tabs */}
-          <div className="flex border-b border-slate-700 bg-slate-850">
-            <button 
-              className={`px-4 py-2 text-sm border-r border-slate-700 ${
-                activeTab === 'code-editor' 
-                  ? 'bg-slate-700 text-white' 
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800'
-              }`}
-              onClick={() => setActiveTab('code-editor')}
-            >
-              Code Editor
-            </button>
-            <button 
-              className={`px-4 py-2 text-sm border-r border-slate-700 ${
-                activeTab === 'console' 
-                  ? 'bg-slate-700 text-white' 
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800'
-              }`}
-              onClick={() => setActiveTab('console')}
-            >
-              Console
-            </button>
-            <button 
-              className={`px-4 py-2 text-sm ${
-                activeTab === 'docs' 
-                  ? 'bg-slate-700 text-white' 
-                  : 'text-gray-400 hover:text-white hover:bg-slate-800'
-              }`}
-              onClick={() => setActiveTab('docs')}
-            >
-              Documentation
-            </button>
-          </div>
-
-          {/* Code Editor Content */}
-          <div className="flex-1 flex">
-            <div className="flex-1 relative">
-              {activeTab === 'code-editor' && (
-                <>
-                  {/* Line numbers */}
-                  <div className="absolute left-0 top-0 bottom-0 w-12 bg-slate-800 border-r border-slate-700 p-2">
-                    {displayedCode.split('\n').map((_, index) => (
-                      <div key={index} className="text-gray-500 text-xs text-right leading-6">
-                        {index + 1}
-                      </div>
-                    ))}
-                  </div>
-                  
-                  {/* Code content */}
-                  <textarea
-                    className="w-full h-full bg-slate-900 text-gray-300 font-mono text-sm pl-16 p-4 resize-none focus:outline-none"
-                    value={displayedCode}
-                    onChange={(e) => setGeneratedCode(e.target.value)}
-                    placeholder="Submit a query or use Generate Code to create Earth Engine code..."
-                  />
-                </>
-              )}
-              
-              {activeTab === 'console' && (
-                <div className="p-4 bg-slate-900 text-gray-300 font-mono text-sm">
-                  <div className="text-green-400">$ Ready for execution</div>
-                  {error && (
-                    <div className="text-red-400 mt-2">Error: {error}</div>
-                  )}
-                  <div className="text-gray-500 mt-2">Console output will appear here...</div>
-                </div>
-              )}
-              
-              {activeTab === 'docs' && (
-                <div className="p-4 bg-slate-900 text-gray-300">
-                  <h3 className="text-white font-semibold mb-3">Earth Engine Documentation</h3>
-                  <div className="space-y-2 text-sm">
-                    <div>• ee.ImageCollection() - Load satellite imagery collections</div>
-                    <div>• .filter() - Apply filters to data</div>
-                    <div>• .select() - Choose specific bands</div>
-                    <div>• .mean() - Calculate temporal mean</div>
-                    {isCropQuery && (
-                      <>
-                        <div>• .normalizedDifference() - Calculate spectral indices (NDVI, NDWI)</div>
-                        <div>• ee.Classifier.smileRandomForest() - Random Forest classification</div>
-                        <div>• .sampleRegions() - Sample training data</div>
-                        <div>• .classify() - Apply trained classifier</div>
-                      </>
-                    )}
-                  </div>
-                </div>
-              )}
-            </div>
-
-            {/* Right Sidebar - Output/Methods */}
-            <div className="w-64 bg-slate-800 border-l border-slate-700">
-              <div className="p-4">
-                <h4 className="text-white font-medium mb-3">Output Preview</h4>
-                <div className="space-y-2 text-sm text-gray-400">
-                  <div className="flex justify-between">
-                    <span>Map Layers:</span>
-                    <span className="text-white">{getLayerCount()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Export Tasks:</span>
-                    <span className="text-white">{getExportCount()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Analysis:</span>
-                    <span className="text-cyan-400">{getAnalysisType()}</span>
-                  </div>
-                  <div className="flex justify-between">
-                    <span>Status:</span>
-                    <span className={generatedCode || hasSubmittedQuery ? "text-green-400" : "text-yellow-400"}>
-                      {isGenerating ? 'Generating...' : (generatedCode || hasSubmittedQuery ? 'Ready' : 'Waiting')}
-                    </span>
-                  </div>
-                </div>
-
-                <h4 className="text-white font-medium mt-6 mb-3">Methods</h4>
-                <div className="space-y-1 text-sm text-gray-400">
-                  {isCropQuery ? (
+                  {isGenerating ? (
                     <>
-                      <div className="hover:text-white cursor-pointer">normalizedDifference()</div>
-                      <div className="hover:text-white cursor-pointer">smileRandomForest()</div>
-                      <div className="hover:text-white cursor-pointer">sampleRegions()</div>
-                      <div className="hover:text-white cursor-pointer">classify()</div>
+                      <Loader2 className="w-3 h-3 mr-1 animate-spin" />
+                      Generating...
                     </>
                   ) : (
                     <>
-                      <div className="hover:text-white cursor-pointer">filterBounds()</div>
-                      <div className="hover:text-white cursor-pointer">filterDate()</div>
-                      <div className="hover:text-white cursor-pointer">focal_median()</div>
-                      <div className="hover:text-white cursor-pointer">updateMask()</div>
+                      <Zap className="w-3 h-3 mr-1" />
+                      Generate
                     </>
                   )}
-                </div>
+                </Button>
+              </div>
 
-                <h4 className="text-white font-medium mt-6 mb-3">AI Code Suggestions</h4>
-                <div className="text-sm text-gray-400">
-                  <div className="bg-slate-700 rounded p-3">
-                    <div className="text-cyan-400 mb-1">
-                      {generatedCode ? 'Generated:' : (hasSubmittedQuery ? 'Suggestion:' : 'Status:')}
-                    </div>
-                    <div>
-                      {getSuggestionText()}
-                    </div>
-                  </div>
+              {/* Editor Tabs */}
+              <div className="flex bg-[#2d2d30] border-b border-[#3e3e42]">
+                <div className="flex">
+                  <button 
+                    className={`px-3 py-2 text-xs border-r border-[#3e3e42] flex items-center space-x-2 ${
+                      activeTab === 'code-editor' 
+                        ? 'bg-[#1e1e1e] text-white border-t-2 border-t-[#007acc]' 
+                        : 'text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]'
+                    }`}
+                    onClick={() => setActiveTab('code-editor')}
+                  >
+                    <Code className="w-3 h-3" />
+                    <span>analysis.js</span>
+                    <div className="w-1 h-1 rounded-full bg-orange-400"></div>
+                  </button>
+                  <button 
+                    className={`px-3 py-2 text-xs border-r border-[#3e3e42] ${
+                      activeTab === 'console' 
+                        ? 'bg-[#1e1e1e] text-white border-t-2 border-t-[#007acc]' 
+                        : 'text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]'
+                    }`}
+                    onClick={() => setActiveTab('console')}
+                  >
+                    Console
+                  </button>
+                  <button 
+                    className={`px-3 py-2 text-xs ${
+                      activeTab === 'docs' 
+                        ? 'bg-[#1e1e1e] text-white border-t-2 border-t-[#007acc]' 
+                        : 'text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]'
+                    }`}
+                    onClick={() => setActiveTab('docs')}
+                  >
+                    Docs
+                  </button>
+                </div>
+                
+                <div className="flex-1"></div>
+                
+                <div className="flex items-center px-3 space-x-2">
+                  <Button size="sm" variant="ghost" className="h-6 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]">
+                    <Play className="w-3 h-3 mr-1" />
+                    Run
+                  </Button>
+                  <Button size="sm" variant="ghost" className="h-6 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]">
+                    <Save className="w-3 h-3" />
+                  </Button>
                 </div>
               </div>
+
+              {/* Editor Content */}
+              <div className="flex-1 relative">
+                {activeTab === 'code-editor' && (
+                  <div className="h-full flex">
+                    {/* Line numbers */}
+                    <div className="w-12 bg-[#1e1e1e] border-r border-[#3e3e42] p-2 select-none">
+                      {displayedCode.split('\n').map((_, index) => (
+                        <div key={index} className="text-[#858585] text-xs text-right leading-[18px] font-mono">
+                          {index + 1}
+                        </div>
+                      ))}
+                    </div>
+                    
+                    {/* Code content */}
+                    <textarea
+                      className="flex-1 bg-[#1e1e1e] text-[#d4d4d4] font-mono text-xs p-3 resize-none focus:outline-none leading-[18px]"
+                      value={displayedCode}
+                      onChange={(e) => setGeneratedCode(e.target.value)}
+                      placeholder="// Earth Engine Code Editor..."
+                      spellCheck={false}
+                    />
+                  </div>
+                )}
+                
+                {activeTab === 'console' && (
+                  <div className="p-4 bg-[#1e1e1e] text-[#cccccc] font-mono text-xs">
+                    <div className="text-[#4ec9b0]">$ Earth Engine Console</div>
+                    {error && (
+                      <div className="text-[#f48771] mt-2">❌ Error: {error}</div>
+                    )}
+                    <div className="text-[#858585] mt-2">Console output will appear here...</div>
+                    {(hasSubmittedQuery || generatedCode) && (
+                      <div className="mt-2 text-[#4fc1ff]">✓ Analysis ready for execution</div>
+                    )}
+                  </div>
+                )}
+                
+                {activeTab === 'docs' && (
+                  <div className="p-4 bg-[#1e1e1e] text-[#cccccc] text-xs">
+                    <h3 className="text-white font-semibold mb-3">Earth Engine API Reference</h3>
+                    <div className="space-y-2">
+                      <div className="text-[#9cdcfe]">ee.ImageCollection()</div>
+                      <div className="ml-4 text-[#858585]">Load satellite imagery collections</div>
+                      <div className="text-[#9cdcfe]">.filter()</div>
+                      <div className="ml-4 text-[#858585]">Apply filters to data</div>
+                      <div className="text-[#9cdcfe]">.select()</div>
+                      <div className="ml-4 text-[#858585]">Choose specific bands</div>
+                      {isCropQuery && (
+                        <>
+                          <div className="text-[#9cdcfe]">.normalizedDifference()</div>
+                          <div className="ml-4 text-[#858585]">Calculate spectral indices</div>
+                          <div className="text-[#9cdcfe]">ee.Classifier.smileRandomForest()</div>
+                          <div className="ml-4 text-[#858585]">Random Forest classification</div>
+                        </>
+                      )}
+                    </div>
+                  </div>
+                )}
+              </div>
             </div>
-          </div>
-        </div>
+          </ResizablePanel>
+
+          <ResizableHandle withHandle />
+
+          {/* Right Panel - Output Viewer */}
+          <ResizablePanel 
+            defaultSize={outputPanelExpanded ? 30 : 0} 
+            minSize={outputPanelExpanded ? 20 : 0}
+            maxSize={outputPanelExpanded ? 50 : 0}
+          >
+            <div className="h-full bg-[#252526] border-l border-[#2d2d30] flex flex-col">
+              {/* Output Panel Header */}
+              <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center justify-between px-3">
+                <div className="flex items-center space-x-2">
+                  <Map className="w-4 h-4 text-[#4fc1ff]" />
+                  <span className="text-xs font-medium text-white">Map Layers</span>
+                  <span className="text-xs text-[#858585]">({layers.length})</span>
+                </div>
+                <div className="flex items-center space-x-1">
+                  <Button
+                    size="sm"
+                    variant="ghost"
+                    className="h-6 w-6 p-0 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+                    onClick={() => setOutputPanelExpanded(!outputPanelExpanded)}
+                  >
+                    {outputPanelExpanded ? <Minimize2 className="w-3 h-3" /> : <Maximize2 className="w-3 h-3" />}
+                  </Button>
+                </div>
+              </div>
+
+              {outputPanelExpanded && (
+                <>
+                  {/* Controls */}
+                  <div className="p-3 border-b border-[#3e3e42] space-y-2">
+                    <div className="flex items-center space-x-2">
+                      <div className="flex items-center space-x-1">
+                        <span className="text-xs text-[#cccccc]">Sort:</span>
+                        <select 
+                          className="bg-[#3c3c3c] border border-[#5a5a5a] rounded px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#007acc]"
+                          value={sortBy}
+                          onChange={(e) => setSortBy(e.target.value as any)}
+                        >
+                          <option value="name">Name</option>
+                          <option value="type">Type</option>
+                          <option value="status">Status</option>
+                        </select>
+                        <Button
+                          size="sm"
+                          variant="ghost"
+                          className="h-6 w-6 p-0 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+                          onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                        >
+                          {sortOrder === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />}
+                        </Button>
+                      </div>
+                      
+                      <Button
+                        size="sm"
+                        variant="ghost"
+                        className={`h-6 px-2 text-xs ${filterVisible ? 'bg-[#094771] text-white' : 'text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]'}`}
+                        onClick={() => setFilterVisible(!filterVisible)}
+                      >
+                        <Filter className="w-3 h-3 mr-1" />
+                        Visible
+                      </Button>
+                    </div>
+                  </div>
+
+                  {/* Layers List */}
+                  <ScrollArea className="flex-1 p-2">
+                    {filteredLayers.length > 0 ? (
+                      <div className="space-y-2">
+                        {filteredLayers.map((layer, index) => (
+                          <div key={layer.name} className="bg-[#2d2d30] rounded p-3 space-y-2">
+                            <div className="flex items-center justify-between">
+                              <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                {getTypeIcon(layer.type)}
+                                <span className="text-xs text-white font-medium truncate">{layer.name}</span>
+                                {getStatusIcon(layer.status)}
+                              </div>
+                              <Button
+                                size="sm"
+                                variant="ghost"
+                                className="h-6 w-6 p-0 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+                                onClick={() => toggleLayerVisibility(layers.findIndex(l => l.name === layer.name))}
+                              >
+                                {layer.visible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                              </Button>
+                            </div>
+                            
+                            <div className="text-xs text-[#858585] truncate">{layer.description}</div>
+                            
+                            <div className="space-y-1">
+                              <div className="flex items-center justify-between">
+                                <span className="text-xs text-[#cccccc]">Opacity</span>
+                                <span className="text-xs text-[#858585]">{layer.opacity}%</span>
+                              </div>
+                              <Slider
+                                value={[layer.opacity]}
+                                onValueChange={(value) => updateLayerOpacity(layers.findIndex(l => l.name === layer.name), value[0])}
+                                max={100}
+                                step={5}
+                                className="w-full"
+                              />
+                            </div>
+                            
+                            <div className="flex items-center justify-between text-xs">
+                              <span className="text-[#cccccc] capitalize">{layer.type}</span>
+                              <span className={`px-2 py-0.5 rounded text-xs ${
+                                layer.status === 'ready' ? 'bg-green-900/50 text-green-300' :
+                                layer.status === 'loading' ? 'bg-blue-900/50 text-blue-300' :
+                                'bg-red-900/50 text-red-300'
+                              }`}>
+                                {layer.status}
+                              </span>
+                            </div>
+                          </div>
+                        ))}
+                      </div>
+                    ) : (
+                      <div className="flex flex-col items-center justify-center h-32 text-[#858585]">
+                        <Layers className="w-8 h-8 mb-2" />
+                        <span className="text-xs">No layers to display</span>
+                        <span className="text-xs">Submit a query to generate layers</span>
+                      </div>
+                    )}
+                  </ScrollArea>
+                </>
+              )}
+            </div>
+          </ResizablePanel>
+        </ResizablePanelGroup>
       </div>
 
-      {/* Bottom Status Bar */}
-      <div className="h-8 bg-slate-800 border-t border-slate-700 flex items-center justify-between px-4 text-xs">
-        <div className="flex items-center space-x-4 text-gray-400">
+      {/* Status Bar */}
+      <div className="h-6 bg-[#007acc] flex items-center justify-between px-3 text-xs text-white">
+        <div className="flex items-center space-x-4">
           <span>Ln {generatedCode || hasSubmittedQuery ? (isCropQuery ? '85, Col 15' : '24, Col 15') : '1, Col 1'}</span>
           <span>JavaScript</span>
           <span>UTF-8</span>
+          <span>Earth Engine API</span>
         </div>
-        <div className="flex items-center space-x-4 text-gray-400">
+        <div className="flex items-center space-x-4">
           <div className="flex items-center space-x-1">
-            <div className={`w-2 h-2 rounded-full ${isGenerating ? 'bg-yellow-400 animate-pulse' : 'bg-green-400'}`}></div>
-            <span>{isGenerating ? 'Generating' : 'Connected'}</span>
+            <div className={`w-2 h-2 rounded-full ${isGenerating ? 'bg-yellow-300 animate-pulse' : 'bg-green-300'}`}></div>
+            <span>{isGenerating ? 'Generating' : 'Ready'}</span>
           </div>
+          <span>Phoenix IDE v1.0</span>
         </div>
       </div>
     </div>
