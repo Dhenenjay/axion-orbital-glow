@@ -41,6 +41,7 @@ import { useToast } from '@/hooks/use-toast';
 import { ResizablePanelGroup, ResizablePanel, ResizableHandle } from '@/components/ui/resizable';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { Slider } from '@/components/ui/slider';
+import MapViewer from '@/components/MapViewer';
 
 interface LayerInfo {
   name: string;
@@ -63,6 +64,7 @@ const DevMode = () => {
   const [sortBy, setSortBy] = useState<'name' | 'type' | 'status'>('name');
   const [sortOrder, setSortOrder] = useState<'asc' | 'desc'>('asc');
   const [filterVisible, setFilterVisible] = useState(true);
+  const [outputViewMode, setOutputViewMode] = useState<'map' | 'layers'>('map');
   
   // Get query and state from Interface page
   const hasSubmittedQuery = location.state?.hasSubmittedQuery || false;
@@ -431,6 +433,8 @@ print('Classes: 0-Wheat, 1-Potato, 2-Plantation, 3-Other Crops');`;
     }
   };
 
+  const hasOutput = hasSubmittedQuery || !!generatedCode;
+
   return (
     <div className="h-screen bg-[#1e1e1e] flex flex-col text-white">
       {/* VSCode-like Top Bar */}
@@ -535,7 +539,7 @@ print('Classes: 0-Wheat, 1-Potato, 2-Plantation, 3-Other Crops');`;
           <ResizableHandle withHandle />
 
           {/* Center Panel - Code Editor */}
-          <ResizablePanel defaultSize={outputPanelExpanded ? 50 : 80}>
+          <ResizablePanel defaultSize={outputPanelExpanded ? 40 : 70}>
             <div className="h-full flex flex-col bg-[#1e1e1e]">
               {/* Query Bar */}
               <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center px-3 space-x-3">
@@ -683,19 +687,45 @@ print('Classes: 0-Wheat, 1-Potato, 2-Plantation, 3-Other Crops');`;
 
           {/* Right Panel - Output Viewer */}
           <ResizablePanel 
-            defaultSize={outputPanelExpanded ? 30 : 0} 
-            minSize={outputPanelExpanded ? 20 : 0}
-            maxSize={outputPanelExpanded ? 50 : 0}
+            defaultSize={outputPanelExpanded ? 40 : 0} 
+            minSize={outputPanelExpanded ? 25 : 0}
+            maxSize={outputPanelExpanded ? 60 : 0}
           >
             <div className="h-full bg-[#252526] border-l border-[#2d2d30] flex flex-col">
               {/* Output Panel Header */}
               <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center justify-between px-3">
                 <div className="flex items-center space-x-2">
-                  <Map className="w-4 h-4 text-[#4fc1ff]" />
-                  <span className="text-xs font-medium text-white">Map Layers</span>
-                  <span className="text-xs text-[#858585]">({layers.length})</span>
+                  <Globe className="w-4 h-4 text-[#4fc1ff]" />
+                  <span className="text-xs font-medium text-white">Output Viewer</span>
+                  {hasOutput && (
+                    <span className="text-xs text-[#858585]">
+                      ({isCropQuery ? 'Crop Analysis' : 'Flood Analysis'})
+                    </span>
+                  )}
                 </div>
                 <div className="flex items-center space-x-1">
+                  {outputPanelExpanded && hasOutput && (
+                    <div className="flex items-center space-x-1 mr-2">
+                      <Button
+                        size="sm"
+                        variant={outputViewMode === 'map' ? 'default' : 'ghost'}
+                        className="h-6 px-2 text-xs"
+                        onClick={() => setOutputViewMode('map')}
+                      >
+                        <Map className="w-3 h-3 mr-1" />
+                        Map
+                      </Button>
+                      <Button
+                        size="sm"
+                        variant={outputViewMode === 'layers' ? 'default' : 'ghost'}
+                        className="h-6 px-2 text-xs"
+                        onClick={() => setOutputViewMode('layers')}
+                      >
+                        <Layers className="w-3 h-3 mr-1" />
+                        Layers
+                      </Button>
+                    </div>
+                  )}
                   <Button
                     size="sm"
                     variant="ghost"
@@ -708,103 +738,109 @@ print('Classes: 0-Wheat, 1-Potato, 2-Plantation, 3-Other Crops');`;
               </div>
 
               {outputPanelExpanded && (
-                <>
-                  {/* Controls */}
-                  <div className="p-3 border-b border-[#3e3e42] space-y-2">
-                    <div className="flex items-center space-x-2">
-                      <div className="flex items-center space-x-1">
-                        <span className="text-xs text-[#cccccc]">Sort:</span>
-                        <select 
-                          className="bg-[#3c3c3c] border border-[#5a5a5a] rounded px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#007acc]"
-                          value={sortBy}
-                          onChange={(e) => setSortBy(e.target.value as any)}
-                        >
-                          <option value="name">Name</option>
-                          <option value="type">Type</option>
-                          <option value="status">Status</option>
-                        </select>
-                        <Button
-                          size="sm"
-                          variant="ghost"
-                          className="h-6 w-6 p-0 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
-                          onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
-                        >
-                          {sortOrder === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />}
-                        </Button>
-                      </div>
-                      
-                      <Button
-                        size="sm"
-                        variant="ghost"
-                        className={`h-6 px-2 text-xs ${filterVisible ? 'bg-[#094771] text-white' : 'text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]'}`}
-                        onClick={() => setFilterVisible(!filterVisible)}
-                      >
-                        <Filter className="w-3 h-3 mr-1" />
-                        Visible
-                      </Button>
-                    </div>
-                  </div>
-
-                  {/* Layers List */}
-                  <ScrollArea className="flex-1 p-2">
-                    {filteredLayers.length > 0 ? (
-                      <div className="space-y-2">
-                        {filteredLayers.map((layer, index) => (
-                          <div key={layer.name} className="bg-[#2d2d30] rounded p-3 space-y-2">
-                            <div className="flex items-center justify-between">
-                              <div className="flex items-center space-x-2 flex-1 min-w-0">
-                                {getTypeIcon(layer.type)}
-                                <span className="text-xs text-white font-medium truncate">{layer.name}</span>
-                                {getStatusIcon(layer.status)}
-                              </div>
-                              <Button
-                                size="sm"
-                                variant="ghost"
-                                className="h-6 w-6 p-0 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
-                                onClick={() => toggleLayerVisibility(layers.findIndex(l => l.name === layer.name))}
-                              >
-                                {layer.visible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
-                              </Button>
-                            </div>
-                            
-                            <div className="text-xs text-[#858585] truncate">{layer.description}</div>
-                            
-                            <div className="space-y-1">
-                              <div className="flex items-center justify-between">
-                                <span className="text-xs text-[#cccccc]">Opacity</span>
-                                <span className="text-xs text-[#858585]">{layer.opacity}%</span>
-                              </div>
-                              <Slider
-                                value={[layer.opacity]}
-                                onValueChange={(value) => updateLayerOpacity(layers.findIndex(l => l.name === layer.name), value[0])}
-                                max={100}
-                                step={5}
-                                className="w-full"
-                              />
-                            </div>
-                            
-                            <div className="flex items-center justify-between text-xs">
-                              <span className="text-[#cccccc] capitalize">{layer.type}</span>
-                              <span className={`px-2 py-0.5 rounded text-xs ${
-                                layer.status === 'ready' ? 'bg-green-900/50 text-green-300' :
-                                layer.status === 'loading' ? 'bg-blue-900/50 text-blue-300' :
-                                'bg-red-900/50 text-red-300'
-                              }`}>
-                                {layer.status}
-                              </span>
-                            </div>
+                <div className="flex-1 overflow-hidden">
+                  {outputViewMode === 'map' ? (
+                    <MapViewer hasOutput={hasOutput} isCropQuery={isCropQuery} />
+                  ) : (
+                    <div className="h-full flex flex-col">
+                      {/* Layer Controls */}
+                      <div className="p-3 border-b border-[#3e3e42] space-y-2">
+                        <div className="flex items-center space-x-2">
+                          <div className="flex items-center space-x-1">
+                            <span className="text-xs text-[#cccccc]">Sort:</span>
+                            <select 
+                              className="bg-[#3c3c3c] border border-[#5a5a5a] rounded px-2 py-1 text-xs text-white focus:outline-none focus:ring-1 focus:ring-[#007acc]"
+                              value={sortBy}
+                              onChange={(e) => setSortBy(e.target.value as any)}
+                            >
+                              <option value="name">Name</option>
+                              <option value="type">Type</option>
+                              <option value="status">Status</option>
+                            </select>
+                            <Button
+                              size="sm"
+                              variant="ghost"
+                              className="h-6 w-6 p-0 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+                              onClick={() => setSortOrder(sortOrder === 'asc' ? 'desc' : 'asc')}
+                            >
+                              {sortOrder === 'asc' ? <SortAsc className="w-3 h-3" /> : <SortDesc className="w-3 h-3" />}
+                            </Button>
                           </div>
-                        ))}
+                          
+                          <Button
+                            size="sm"
+                            variant="ghost"
+                            className={`h-6 px-2 text-xs ${filterVisible ? 'bg-[#094771] text-white' : 'text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]'}`}
+                            onClick={() => setFilterVisible(!filterVisible)}
+                          >
+                            <Filter className="w-3 h-3 mr-1" />
+                            Visible
+                          </Button>
+                        </div>
                       </div>
-                    ) : (
-                      <div className="flex flex-col items-center justify-center h-32 text-[#858585]">
-                        <Layers className="w-8 h-8 mb-2" />
-                        <span className="text-xs">No layers to display</span>
-                        <span className="text-xs">Submit a query to generate layers</span>
-                      </div>
-                    )}
-                  </ScrollArea>
-                </>
+
+                      {/* Layers List */}
+                      <ScrollArea className="flex-1 p-2">
+                        {filteredLayers.length > 0 ? (
+                          <div className="space-y-2">
+                            {filteredLayers.map((layer, index) => (
+                              <div key={layer.name} className="bg-[#2d2d30] rounded p-3 space-y-2">
+                                <div className="flex items-center justify-between">
+                                  <div className="flex items-center space-x-2 flex-1 min-w-0">
+                                    {getTypeIcon(layer.type)}
+                                    <span className="text-xs text-white font-medium truncate">{layer.name}</span>
+                                    {getStatusIcon(layer.status)}
+                                  </div>
+                                  <Button
+                                    size="sm"
+                                    variant="ghost"
+                                    className="h-6 w-6 p-0 text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+                                    onClick={() => toggleLayerVisibility(layers.findIndex(l => l.name === layer.name))}
+                                  >
+                                    {layer.visible ? <Eye className="w-3 h-3" /> : <EyeOff className="w-3 h-3" />}
+                                  </Button>
+                                </div>
+                                
+                                <div className="text-xs text-[#858585] truncate">{layer.description}</div>
+                                
+                                <div className="space-y-1">
+                                  <div className="flex items-center justify-between">
+                                    <span className="text-xs text-[#cccccc]">Opacity</span>
+                                    <span className="text-xs text-[#858585]">{layer.opacity}%</span>
+                                  </div>
+                                  <Slider
+                                    value={[layer.opacity]}
+                                    onValueChange={(value) => updateLayerOpacity(layers.findIndex(l => l.name === layer.name), value[0])}
+                                    max={100}
+                                    step={5}
+                                    className="w-full"
+                                  />
+                                </div>
+                                
+                                <div className="flex items-center justify-between text-xs">
+                                  <span className="text-[#cccccc] capitalize">{layer.type}</span>
+                                  <span className={`px-2 py-0.5 rounded text-xs ${
+                                    layer.status === 'ready' ? 'bg-green-900/50 text-green-300' :
+                                    layer.status === 'loading' ? 'bg-blue-900/50 text-blue-300' :
+                                    'bg-red-900/50 text-red-300'
+                                  }`}>
+                                    {layer.status}
+                                  </span>
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+                        ) : (
+                          <div className="flex flex-col items-center justify-center h-32 text-[#858585]">
+                            <Layers className="w-8 h-8 mb-2" />
+                            <span className="text-xs">No layers to display</span>
+                            <span className="text-xs">Submit a query to generate layers</span>
+                          </div>
+                        )}
+                      </ScrollArea>
+                    </div>
+                  )}
+                </div>
               )}
             </div>
           </ResizablePanel>
