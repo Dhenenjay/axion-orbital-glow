@@ -4,11 +4,12 @@ import { Copy, Download, Play, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 
 interface CodeEditorProps {
-  hasSubmittedQuery: boolean;
+  initialCode?: string;
+  language?: string;
 }
 
-const CodeEditor = ({ hasSubmittedQuery }: CodeEditorProps) => {
-  const earthEngineCode = `// Earth Engine JavaScript Code for Jakarta Flood Analysis
+const CodeEditor = ({ initialCode, language = 'javascript' }: CodeEditorProps) => {
+  const defaultCode = `// Earth Engine JavaScript Code for Jakarta Flood Analysis
 var jakarta = ee.Geometry.Rectangle([106.6922, -6.3713, 107.1576, -5.9969]);
 
 // Load Sentinel-1 SAR data for flood detection
@@ -47,6 +48,9 @@ Export.image.toDrive({
 Map.centerObject(jakarta, 10);
 Map.addLayer(floodMask, {palette: ['white', 'blue']}, 'Flood Risk');
 Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, 'Population at Risk');`;
+
+  const codeToDisplay = initialCode || defaultCode;
+  const hasCode = Boolean(initialCode);
 
   return (
     <div className="h-full flex flex-col bg-slate-900 border-l border-slate-700">
@@ -87,14 +91,14 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
       <div className="flex-1 relative">
         <textarea
           className="w-full h-full bg-slate-900 text-gray-300 font-mono text-sm p-4 resize-none focus:outline-none"
-          value={hasSubmittedQuery ? earthEngineCode : '// Code editor ready...\n// Submit a query to generate Earth Engine code'}
+          value={codeToDisplay}
           placeholder="// Code editor ready..."
-          readOnly={!hasSubmittedQuery}
+          readOnly={!hasCode}
         />
         
         {/* Line numbers */}
         <div className="absolute left-0 top-0 bottom-0 w-12 bg-slate-800/50 border-r border-slate-700 pt-4">
-          {(hasSubmittedQuery ? earthEngineCode : '// Code editor ready...\n// Submit a query to generate Earth Engine code').split('\n').map((_, index) => (
+          {codeToDisplay.split('\n').map((_, index) => (
             <div key={index} className="text-gray-500 text-xs text-right pr-2 leading-5">
               {index + 1}
             </div>
@@ -108,7 +112,7 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
         <div className="space-y-2 text-xs text-gray-400">
           <div>Map Layers: 2</div>
           <div>Export Tasks: 1</div>
-          <div>Status: {hasSubmittedQuery ? 'Ready' : 'Waiting'}</div>
+          <div>Status: {hasCode ? 'Ready' : 'Waiting'}</div>
         </div>
 
         <h4 className="text-white text-sm font-semibold mt-6 mb-3">Methods</h4>
@@ -121,7 +125,7 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
 
         <h4 className="text-white text-sm font-semibold mt-6 mb-3">AI Code Suggestions</h4>
         <div className="text-xs text-gray-400">
-          {hasSubmittedQuery ? 'Code generated successfully' : 'Submit query to get suggestions'}
+          {hasCode ? 'Code generated successfully' : 'Submit query to get suggestions'}
         </div>
       </div>
     </div>
