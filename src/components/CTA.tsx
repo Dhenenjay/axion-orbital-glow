@@ -31,7 +31,7 @@ export const CTA = () => {
               className="bg-gradient-to-r from-cyan-500 to-blue-500 hover:from-cyan-600 hover:to-blue-600 text-white px-8 py-3 text-lg group"
               onClick={() => navigate('/signup')}
             >
-              Get Started Free
+              Get Started with a Simulated UX
               <ArrowRight className="ml-2 h-5 w-5 group-hover:translate-x-1 transition-transform" />
             </Button>
             <Button 

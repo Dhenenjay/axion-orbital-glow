@@ -31,7 +31,7 @@ export const Header = () => {
               className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950"
               onClick={() => navigate('/signup')}
             >
-              Get Started
+              Get Started with a Simulated UX
             </Button>
           </nav>
 
@@ -57,7 +57,7 @@ export const Header = () => {
                 className="border-cyan-400 text-cyan-400 hover:bg-cyan-400 hover:text-slate-950 w-fit"
                 onClick={() => navigate('/signup')}
               >
-                Get Started
+                Get Started with a Simulated UX
               </Button>
             </nav>
           </div>
