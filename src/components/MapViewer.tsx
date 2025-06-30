@@ -21,10 +21,12 @@ interface MapViewerProps {
 
 const MapViewer = ({ hasOutput, isCropQuery }: MapViewerProps) => {
   const mapRef = useRef<HTMLDivElement>(null);
+  const canvasRef = useRef<HTMLCanvasElement>(null);
   const [zoomLevel, setZoomLevel] = useState(10);
   const [center, setCenter] = useState(isCropQuery ? [75.5726, 31.3559] : [106.845, -6.208]);
   const [mapStyle, setMapStyle] = useState<'satellite' | 'terrain' | 'hybrid'>('satellite');
   const [visibleLayers, setVisibleLayers] = useState<string[]>(['base']);
+  const [mapTiles, setMapTiles] = useState<{ [key: string]: HTMLImageElement }>({});
 
   // Mock satellite imagery data based on query type
   const layerData = isCropQuery ? {
@@ -38,8 +40,182 @@ const MapViewer = ({ hasOutput, isCropQuery }: MapViewerProps) => {
     'population': { name: 'Population Risk', opacity: 75, color: '#dc2626' }
   };
 
+  // Convert lat/lng to tile coordinates
+  const deg2num = (lat: number, lon: number, zoom: number) => {
+    const latRad = lat * Math.PI / 180;
+    const n = Math.pow(2, zoom);
+    const x = Math.floor((lon + 180) / 360 * n);
+    const y = Math.floor((1 - Math.asinh(Math.tan(latRad)) / Math.PI) / 2 * n);
+    return { x, y };
+  };
+
+  // Load map tiles
+  const loadMapTiles = async () => {
+    if (!hasOutput) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Clear canvas
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+    // Calculate tile coordinates
+    const { x: centerX, y: centerY } = deg2num(center[1], center[0], zoomLevel);
+    
+    // Load multiple tiles for better coverage
+    const tileSize = 256;
+    const tilesX = Math.ceil(canvas.width / tileSize) + 1;
+    const tilesY = Math.ceil(canvas.height / tileSize) + 1;
+    
+    const startX = centerX - Math.floor(tilesX / 2);
+    const startY = centerY - Math.floor(tilesY / 2);
+
+    // Use different tile sources based on map style
+    const getTileUrl = (x: number, y: number, z: number) => {
+      if (mapStyle === 'satellite') {
+        // Use satellite imagery (ESRI World Imagery)
+        return `https://server.arcgisonline.com/ArcGIS/rest/services/World_Imagery/MapServer/tile/${z}/${y}/${x}`;
+      } else {
+        // Use OpenStreetMap for terrain
+        return `https://tile.openstreetmap.org/${z}/${x}/${y}.png`;
+      }
+    };
+
+    // Load and draw tiles
+    for (let i = 0; i < tilesX; i++) {
+      for (let j = 0; j < tilesY; j++) {
+        const tileX = startX + i;
+        const tileY = startY + j;
+        
+        if (tileX >= 0 && tileY >= 0 && tileX < Math.pow(2, zoomLevel) && tileY < Math.pow(2, zoomLevel)) {
+          const tileKey = `${zoomLevel}-${tileX}-${tileY}`;
+          
+          if (!mapTiles[tileKey]) {
+            const img = new Image();
+            img.crossOrigin = 'anonymous';
+            img.onload = () => {
+              setMapTiles(prev => ({ ...prev, [tileKey]: img }));
+            };
+            img.onerror = () => {
+              // Fallback to a solid color if tile fails to load
+              const fallbackImg = new Image();
+              fallbackImg.onload = () => {
+                setMapTiles(prev => ({ ...prev, [tileKey]: fallbackImg }));
+              };
+              // Create a simple colored tile as fallback
+              const fallbackCanvas = document.createElement('canvas');
+              fallbackCanvas.width = tileSize;
+              fallbackCanvas.height = tileSize;
+              const fallbackCtx = fallbackCanvas.getContext('2d');
+              if (fallbackCtx) {
+                fallbackCtx.fillStyle = mapStyle === 'satellite' ? '#2d5a2d' : '#f0f0f0';
+                fallbackCtx.fillRect(0, 0, tileSize, tileSize);
+                fallbackImg.src = fallbackCanvas.toDataURL();
+              }
+            };
+            img.src = getTileUrl(tileX, tileY, zoomLevel);
+          }
+        }
+      }
+    }
+  };
+
+  // Draw the map
+  useEffect(() => {
+    if (!hasOutput) return;
+    
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    
+    const ctx = canvas.getContext('2d');
+    if (!ctx) return;
+
+    // Set canvas size
+    canvas.width = canvas.offsetWidth;
+    canvas.height = canvas.offsetHeight;
+
+    const drawMap = () => {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      
+      // Draw base map tiles
+      const { x: centerX, y: centerY } = deg2num(center[1], center[0], zoomLevel);
+      const tileSize = 256;
+      const scale = Math.pow(2, zoomLevel - Math.floor(zoomLevel));
+      
+      Object.entries(mapTiles).forEach(([key, img]) => {
+        const [z, x, y] = key.split('-').map(Number);
+        if (z === zoomLevel) {
+          const screenX = (x - centerX) * tileSize + canvas.width / 2;
+          const screenY = (y - centerY) * tileSize + canvas.height / 2;
+          ctx.drawImage(img, screenX, screenY, tileSize, tileSize);
+        }
+      });
+
+      // Add data overlays based on query type
+      if (isCropQuery) {
+        // Draw crop classification overlay
+        ctx.globalAlpha = 0.6;
+        
+        // Wheat fields
+        ctx.fillStyle = '#a855f7';
+        ctx.fillRect(canvas.width * 0.2, canvas.height * 0.3, 80, 60);
+        ctx.fillStyle = 'white';
+        ctx.font = '10px Arial';
+        ctx.fillText('Wheat', canvas.width * 0.2 + 25, canvas.height * 0.3 + 35);
+        
+        // Plantation
+        ctx.fillStyle = '#22c55e';
+        ctx.fillRect(canvas.width * 0.4, canvas.height * 0.25, 100, 80);
+        ctx.fillStyle = 'white';
+        ctx.fillText('Plantation', canvas.width * 0.4 + 25, canvas.height * 0.25 + 45);
+        
+        // Potato fields
+        ctx.fillStyle = '#eab308';
+        ctx.fillRect(canvas.width * 0.6, canvas.height * 0.4, 70, 70);
+        ctx.fillStyle = 'black';
+        ctx.fillText('Potato', canvas.width * 0.6 + 20, canvas.height * 0.4 + 40);
+        
+        ctx.globalAlpha = 1;
+      } else {
+        // Draw flood risk overlay
+        ctx.globalAlpha = 0.5;
+        
+        // High flood risk area
+        const gradient = ctx.createRadialGradient(
+          canvas.width * 0.4, canvas.height * 0.5, 0,
+          canvas.width * 0.4, canvas.height * 0.5, 100
+        );
+        gradient.addColorStop(0, '#3b82f6');
+        gradient.addColorStop(1, 'transparent');
+        ctx.fillStyle = gradient;
+        ctx.fillRect(canvas.width * 0.2, canvas.height * 0.3, 200, 150);
+        
+        // Population at risk indicators (red dots)
+        ctx.globalAlpha = 0.8;
+        ctx.fillStyle = '#dc2626';
+        ctx.beginPath();
+        ctx.arc(canvas.width * 0.3, canvas.height * 0.4, 8, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(canvas.width * 0.5, canvas.height * 0.6, 6, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.beginPath();
+        ctx.arc(canvas.width * 0.4, canvas.height * 0.7, 10, 0, Math.PI * 2);
+        ctx.fill();
+        
+        ctx.globalAlpha = 1;
+      }
+    };
+
+    drawMap();
+    loadMapTiles();
+  }, [hasOutput, zoomLevel, center, mapStyle, mapTiles, isCropQuery]);
+
   const handleZoomIn = () => {
-    setZoomLevel(prev => Math.min(prev + 1, 20));
+    setZoomLevel(prev => Math.min(prev + 1, 18));
   };
 
   const handleZoomOut = () => {
@@ -60,8 +236,13 @@ const MapViewer = ({ hasOutput, isCropQuery }: MapViewerProps) => {
   };
 
   const exportMap = () => {
-    // Mock export functionality
-    console.log('Exporting map...');
+    const canvas = canvasRef.current;
+    if (canvas) {
+      const link = document.createElement('a');
+      link.download = `earth-engine-output-${Date.now()}.png`;
+      link.href = canvas.toDataURL();
+      link.click();
+    }
   };
 
   if (!hasOutput) {
@@ -112,100 +293,56 @@ const MapViewer = ({ hasOutput, isCropQuery }: MapViewerProps) => {
 
       <div className="flex-1 flex">
         {/* Map Display */}
-        <div className="flex-1 relative bg-gradient-to-br from-green-900 via-blue-900 to-purple-900">
-          <div 
-            ref={mapRef}
-            className="w-full h-full relative overflow-hidden"
-            style={{
-              backgroundImage: isCropQuery 
-                ? `linear-gradient(45deg, #22c55e 0%, #16a34a 50%, #15803d 100%)`
-                : `linear-gradient(45deg, #1e40af 0%, #1d4ed8 50%, #2563eb 100%)`,
-            }}
-          >
-            {/* Simulated satellite imagery overlay */}
-            <div className="absolute inset-0 opacity-60">
-              <svg width="100%" height="100%" viewBox="0 0 400 300">
-                {/* Grid pattern to simulate imagery */}
-                <defs>
-                  <pattern id="grid" width="20" height="20" patternUnits="userSpaceOnUse">
-                    <path d="M 20 0 L 0 0 0 20" fill="none" stroke="rgba(255,255,255,0.1)" strokeWidth="0.5"/>
-                  </pattern>
-                </defs>
-                <rect width="100%" height="100%" fill="url(#grid)" />
-                
-                {/* Mock data visualizations */}
-                {isCropQuery ? (
-                  <>
-                    {/* Crop field polygons */}
-                    <rect x="50" y="80" width="60" height="40" fill="#a855f7" opacity="0.7" rx="3" />
-                    <text x="80" y="105" fill="white" fontSize="8" textAnchor="middle">Wheat</text>
-                    
-                    <rect x="120" y="60" width="80" height="60" fill="#22c55e" opacity="0.7" rx="3" />
-                    <text x="160" y="95" fill="white" fontSize="8" textAnchor="middle">Plantation</text>
-                    
-                    <rect x="220" y="90" width="50" height="50" fill="#eab308" opacity="0.7" rx="3" />
-                    <text x="245" y="120" fill="white" fontSize="8" textAnchor="middle">Potato</text>
-                    
-                    <rect x="290" y="70" width="70" height="45" fill="#f97316" opacity="0.7" rx="3" />
-                    <text x="325" y="97" fill="white" fontSize="8" textAnchor="middle">Other</text>
-                  </>
-                ) : (
-                  <>
-                    {/* Flood risk areas */}
-                    <ellipse cx="150" cy="120" rx="80" ry="50" fill="#3b82f6" opacity="0.8" />
-                    <text x="150" y="125" fill="white" fontSize="8" textAnchor="middle">High Flood Risk</text>
-                    
-                    <ellipse cx="280" cy="180" rx="60" ry="40" fill="#1d4ed8" opacity="0.6" />
-                    <text x="280" y="185" fill="white" fontSize="8" textAnchor="middle">Medium Risk</text>
-                    
-                    {/* Population density indicators */}
-                    <circle cx="200" cy="100" r="8" fill="#dc2626" opacity="0.9" />
-                    <circle cx="250" cy="140" r="6" fill="#dc2626" opacity="0.9" />
-                    <circle cx="180" cy="160" r="10" fill="#dc2626" opacity="0.9" />
-                  </>
-                )}
-              </svg>
-            </div>
-            
-            {/* Zoom controls */}
-            <div className="absolute top-4 right-4 flex flex-col space-y-1">
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 bg-black/50 text-white hover:bg-black/70"
-                onClick={handleZoomIn}
-              >
-                <ZoomIn className="w-4 h-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 bg-black/50 text-white hover:bg-black/70"
-                onClick={handleZoomOut}
-              >
-                <ZoomOut className="w-4 h-4" />
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-8 w-8 p-0 bg-black/50 text-white hover:bg-black/70"
-                onClick={handleReset}
-              >
-                <RotateCcw className="w-4 h-4" />
-              </Button>
-            </div>
-            
-            {/* Coordinates display */}
-            <div className="absolute bottom-4 left-4 bg-black/70 text-white px-2 py-1 rounded text-xs">
-              <div>Lat: {center[1].toFixed(4)}°</div>
-              <div>Lng: {center[0].toFixed(4)}°</div>
-              <div>Zoom: {zoomLevel}</div>
-            </div>
-            
-            {/* Scale indicator */}
-            <div className="absolute bottom-4 right-4 bg-black/70 text-white px-2 py-1 rounded text-xs">
-              Scale: 1:{Math.pow(2, 20 - zoomLevel) * 1000}
-            </div>
+        <div className="flex-1 relative bg-[#2d2d30]">
+          <canvas
+            ref={canvasRef}
+            className="w-full h-full"
+            style={{ cursor: 'grab' }}
+          />
+          
+          {/* Zoom controls */}
+          <div className="absolute top-4 right-4 flex flex-col space-y-1">
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 w-8 p-0 bg-black/50 text-white hover:bg-black/70"
+              onClick={handleZoomIn}
+            >
+              <ZoomIn className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 w-8 p-0 bg-black/50 text-white hover:bg-black/70"
+              onClick={handleZoomOut}
+            >
+              <ZoomOut className="w-4 h-4" />
+            </Button>
+            <Button
+              size="sm"
+              variant="ghost"
+              className="h-8 w-8 p-0 bg-black/50 text-white hover:bg-black/70"
+              onClick={handleReset}
+            >
+              <RotateCcw className="w-4 h-4" />
+            </Button>
+          </div>
+          
+          {/* Coordinates display */}
+          <div className="absolute bottom-4 left-4 bg-black/70 text-white px-2 py-1 rounded text-xs">
+            <div>Lat: {center[1].toFixed(4)}°</div>
+            <div>Lng: {center[0].toFixed(4)}°</div>
+            <div>Zoom: {zoomLevel}</div>
+          </div>
+          
+          {/* Scale indicator */}
+          <div className="absolute bottom-4 right-4 bg-black/70 text-white px-2 py-1 rounded text-xs">
+            Scale: 1:{Math.pow(2, 20 - zoomLevel) * 1000}
+          </div>
+
+          {/* Attribution */}
+          <div className="absolute bottom-1 left-1/2 transform -translate-x-1/2 bg-black/50 text-white px-2 py-0.5 rounded text-xs">
+            © {mapStyle === 'satellite' ? 'Esri, DigitalGlobe' : 'OpenStreetMap contributors'}
           </div>
         </div>
 
