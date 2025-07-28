@@ -292,56 +292,92 @@ Export.image.toDrive({
   };
 
   return (
-    <div className="h-screen bg-[hsl(var(--editor-bg))] flex flex-col">
-      {/* Top Header */}
-      <div className="h-9 bg-[hsl(var(--editor-panel))] border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-4">
+    <div className="h-screen bg-[hsl(var(--editor-bg))] flex flex-col font-mono">
+      {/* VS Code-style Title Bar */}
+      <div className="h-8 bg-[hsl(var(--editor-sidebar))] border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-3 text-xs">
+        <div className="flex items-center space-x-3">
+          <div className="flex space-x-1">
+            <div className="w-3 h-3 rounded-full bg-red-500/80 hover:bg-red-500 cursor-pointer"></div>
+            <div className="w-3 h-3 rounded-full bg-yellow-500/80 hover:bg-yellow-500 cursor-pointer"></div>
+            <div className="w-3 h-3 rounded-full bg-green-500/80 hover:bg-green-500 cursor-pointer"></div>
+          </div>
+          <span className="text-[hsl(var(--editor-text-muted))]">Phoenix IDE - Earth Engine Development</span>
+        </div>
+        <div className="text-[hsl(var(--editor-text-muted))]">
+          {isCropQuery ? 'Crop Classification Project' : 'Flood Analysis Project'}
+        </div>
+      </div>
+      
+      {/* Menu Bar */}
+      <div className="h-8 bg-[hsl(var(--editor-panel))] border-b border-[hsl(var(--editor-border))] flex items-center px-3 text-xs">
+        <div className="flex items-center space-x-6">
+          <span className="text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] px-2 py-1 rounded cursor-pointer">File</span>
+          <span className="text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] px-2 py-1 rounded cursor-pointer">Edit</span>
+          <span className="text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] px-2 py-1 rounded cursor-pointer">View</span>
+          <span className="text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] px-2 py-1 rounded cursor-pointer">Run</span>
+          <span className="text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] px-2 py-1 rounded cursor-pointer">Help</span>
+        </div>
+      </div>
+
+      {/* Toolbar */}
+      <div className="h-10 bg-[hsl(var(--editor-panel))] border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-4">
         <div className="flex items-center space-x-3">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleBackToInterface}
-            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] transition-all duration-200 h-7 px-2 text-xs"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] transition-all duration-200 h-8 px-3 text-xs rounded-md"
           >
-            <ArrowLeft className="w-3 h-3 mr-1" />
-            Interface
+            <ArrowLeft className="w-4 h-4 mr-2" />
+            Back to Interface
           </Button>
-          <div className="h-3 w-px bg-[hsl(var(--editor-border))]"></div>
-          <div className="flex items-center space-x-1.5">
-            <Globe className="w-3 h-3 text-[hsl(var(--editor-accent))]" />
-            <span className="text-[hsl(var(--editor-text))] font-medium text-xs">Phoenix Dev Mode</span>
+          <div className="flex items-center space-x-2 bg-[hsl(var(--editor-sidebar))] px-3 py-1.5 rounded-md">
+            <div className="w-2 h-2 bg-[hsl(var(--editor-accent))] rounded-full animate-pulse"></div>
+            <span className="text-[hsl(var(--editor-text))] font-medium text-xs">
+              {isCropQuery ? 'Crop Analysis Ready' : 'Flood Analysis Ready'}
+            </span>
           </div>
         </div>
         
-        <div className="flex items-center space-x-1">
+        <div className="flex items-center space-x-2">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleRunCode}
             disabled={isRunning}
-            className="text-[hsl(var(--editor-text-muted))] hover:text-white hover:bg-green-600/90 disabled:opacity-50 transition-all duration-200 h-7 px-2 text-xs font-medium"
+            className="bg-green-600/20 text-green-400 hover:bg-green-600/30 hover:text-green-300 disabled:opacity-50 transition-all duration-200 h-8 px-4 text-xs font-medium rounded-md border border-green-600/30"
           >
-            <Play className="w-3 h-3 mr-1" />
-            {isRunning ? 'Running' : 'Run'}
+            <Play className="w-4 h-4 mr-2" />
+            {isRunning ? 'Executing...' : 'Run Script'}
           </Button>
           <Button
             variant="ghost"
             size="sm"
             onClick={handleStopCode}
             disabled={!isRunning}
-            className="text-[hsl(var(--editor-text-muted))] hover:text-white hover:bg-red-600/90 disabled:opacity-50 transition-all duration-200 h-7 px-2 text-xs font-medium"
+            className="bg-red-600/20 text-red-400 hover:bg-red-600/30 hover:text-red-300 disabled:opacity-50 transition-all duration-200 h-8 px-4 text-xs font-medium rounded-md border border-red-600/30"
           >
-            <Square className="w-3 h-3 mr-1" />
+            <Square className="w-4 h-4 mr-2" />
             Stop
           </Button>
-          <div className="h-3 w-px bg-[hsl(var(--editor-border))] mx-1"></div>
+          <div className="h-6 w-px bg-[hsl(var(--editor-border))] mx-2"></div>
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleTerminal}
-            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] transition-all duration-200 h-7 px-2 text-xs"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] transition-all duration-200 h-8 px-3 text-xs rounded-md"
           >
-            {showTerminal ? <PanelBottomClose className="w-3 h-3 mr-1" /> : <PanelBottomOpen className="w-3 h-3 mr-1" />}
+            {showTerminal ? <PanelBottomClose className="w-4 h-4 mr-2" /> : <PanelBottomOpen className="w-4 h-4 mr-2" />}
             Terminal
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={toggleOutput}
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] transition-all duration-200 h-8 px-3 text-xs rounded-md"
+          >
+            {showOutput ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
+            {showOutput ? 'Hide Map' : 'Show Map'}
           </Button>
         </div>
       </div>
