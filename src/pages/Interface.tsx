@@ -183,15 +183,6 @@ const Interface = () => {
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
               <span className="text-emerald-300 text-sm font-medium">Live</span>
             </div>
-            <Button
-              onClick={handleDevModeClick}
-              variant="outline"
-              size="sm"
-              className="bg-blue-500/20 border-blue-400/50 text-blue-300 hover:bg-blue-500/30 hover:text-blue-200 transition-all duration-300"
-            >
-              <Code className="h-4 w-4 mr-2" />
-              Dev Mode
-            </Button>
             <User className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
             <Settings className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
           </div>

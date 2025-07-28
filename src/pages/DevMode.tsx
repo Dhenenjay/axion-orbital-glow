@@ -292,7 +292,7 @@ Export.image.toDrive({
   };
 
   return (
-    <div className="h-screen bg-[hsl(var(--editor-bg))] flex flex-col font-mono">
+    <div className="h-screen bg-[hsl(var(--editor-bg))] flex flex-col font-mono dark">
       {/* VS Code-style Title Bar */}
       <div className="h-8 bg-[hsl(var(--editor-sidebar))] border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-3 text-xs">
         <div className="flex items-center space-x-3">
