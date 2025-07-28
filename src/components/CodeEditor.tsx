@@ -106,28 +106,6 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
         </div>
       </div>
 
-      {/* Right Panel */}
-      <div className="absolute right-0 top-0 bottom-0 w-48 bg-slate-800/50 border-l border-slate-700 p-4">
-        <h4 className="text-white text-sm font-semibold mb-3">Output Preview</h4>
-        <div className="space-y-2 text-xs text-gray-400">
-          <div>Map Layers: 2</div>
-          <div>Export Tasks: 1</div>
-          <div>Status: {hasCode ? 'Ready' : 'Waiting'}</div>
-        </div>
-
-        <h4 className="text-white text-sm font-semibold mt-6 mb-3">Methods</h4>
-        <div className="space-y-1 text-xs text-gray-400">
-          <div>filterBounds()</div>
-          <div>filterDate()</div>
-          <div>focal_median()</div>
-          <div>updateMask()</div>
-        </div>
-
-        <h4 className="text-white text-sm font-semibold mt-6 mb-3">AI Code Suggestions</h4>
-        <div className="text-xs text-gray-400">
-          {hasCode ? 'Code generated successfully' : 'Submit query to get suggestions'}
-        </div>
-      </div>
     </div>
   );
 };
