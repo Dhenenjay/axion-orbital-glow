@@ -27,7 +27,7 @@ const DevMode = () => {
   const location = useLocation();
   const [isRunning, setIsRunning] = useState(false);
   const [showOutput, setShowOutput] = useState(true);
-  const [hasOutput, setHasOutput] = useState(false);
+  const [hasOutput, setHasOutput] = useState(true);
   const [currentQuery, setCurrentQuery] = useState('');
   const [isCropQuery, setIsCropQuery] = useState(false);
   const [currentCode, setCurrentCode] = useState('');

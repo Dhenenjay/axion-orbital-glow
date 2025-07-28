@@ -116,19 +116,6 @@ const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) =
     );
   };
 
-  if (!hasOutput) {
-    return (
-      <div className="h-full flex flex-col items-center justify-center bg-[hsl(var(--editor-bg))] text-[hsl(var(--editor-text-muted))]">
-        <div className="text-center space-y-3 max-w-sm">
-          <MapIcon className="w-16 h-16 mx-auto opacity-50" />
-          <h3 className="text-lg font-medium text-[hsl(var(--editor-text))]">Earth Engine Console</h3>
-          <p className="text-sm">
-            Execute your Earth Engine script to visualize satellite data and analysis results
-          </p>
-        </div>
-      </div>
-    );
-  }
 
   return (
     <div className="h-full flex flex-col bg-[hsl(var(--editor-bg))]">
