@@ -6,7 +6,6 @@ import {
   RotateCcw, 
   Download, 
   Layers, 
-  MapPin,
   Satellite,
   Map as MapIcon,
   Eye,
@@ -25,11 +24,9 @@ interface EarthEngineViewerProps {
 }
 
 const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) => {
-  const mapRef = useRef<HTMLDivElement>(null);
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [zoomLevel, setZoomLevel] = useState(10);
   const [center, setCenter] = useState(isCropQuery ? [75.5726, 31.3559] : [106.845, -6.208]);
-  const [mapStyle, setMapStyle] = useState<'satellite' | 'terrain' | 'hybrid'>('satellite');
   const [visibleLayers, setVisibleLayers] = useState<string[]>(['base']);
   const [isPlaying, setIsPlaying] = useState(false);
   const [selectedDate, setSelectedDate] = useState('2023-01-15');
@@ -119,10 +116,6 @@ const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) =
     );
   };
 
-  const exportMap = () => {
-    console.log('Exporting map...');
-  };
-
   if (!hasOutput) {
     return (
       <div className="h-full flex flex-col items-center justify-center bg-[hsl(var(--editor-bg))] text-[hsl(var(--editor-text-muted))]">
@@ -132,12 +125,6 @@ const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) =
           <p className="text-sm">
             Execute your Earth Engine script to visualize satellite data and analysis results
           </p>
-          <div className="mt-6 space-y-2 text-xs text-[hsl(var(--editor-text-muted))]">
-            <div>• Interactive map visualization</div>
-            <div>• Multi-temporal analysis</div>
-            <div>• Export capabilities</div>
-            <div>• Real-time processing</div>
-          </div>
         </div>
       </div>
     );
@@ -261,13 +248,6 @@ const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) =
                 <Layers className="w-4 h-4 mr-2" />
                 Layers
               </h4>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="h-6 w-6 p-0 text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))]"
-              >
-                <Settings className="w-3 h-3" />
-              </Button>
             </div>
             
             <div className="space-y-2">
@@ -380,7 +360,6 @@ const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) =
                 size="sm"
                 variant="ghost"
                 className="w-full justify-start text-xs h-7 text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))]"
-                onClick={exportMap}
               >
                 <Download className="w-3 h-3 mr-2" />
                 Export Image
@@ -389,19 +368,9 @@ const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) =
                 size="sm"
                 variant="ghost"
                 className="w-full justify-start text-xs h-7 text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))]"
-                onClick={exportMap}
               >
                 <Download className="w-3 h-3 mr-2" />
                 Export to Drive
-              </Button>
-              <Button
-                size="sm"
-                variant="ghost"
-                className="w-full justify-start text-xs h-7 text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))]"
-                onClick={exportMap}
-              >
-                <Download className="w-3 h-3 mr-2" />
-                Export Data
               </Button>
             </div>
           </div>
