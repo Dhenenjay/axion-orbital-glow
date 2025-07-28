@@ -6,21 +6,17 @@ import {
   ArrowLeft, 
   Play, 
   Square, 
-  RotateCcw, 
-  Download, 
   Settings,
-  Terminal,
   Code,
   Eye,
-  EyeOff,
-  Bot
+  EyeOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import CodeEditor from '@/components/CodeEditor';
 import MapViewer from '@/components/MapViewer';
-import AIPromptBox from '@/components/AIPromptBox';
+import SimplePromptBox from '@/components/SimplePromptBox';
 
 const DevMode = () => {
   const navigate = useNavigate();
@@ -30,7 +26,6 @@ const DevMode = () => {
   const [hasOutput, setHasOutput] = useState(false);
   const [currentQuery, setCurrentQuery] = useState('');
   const [isCropQuery, setIsCropQuery] = useState(false);
-  const [showAIPrompt, setShowAIPrompt] = useState(true);
   const [currentCode, setCurrentCode] = useState('');
 
   // Get state from navigation
@@ -282,31 +277,33 @@ Export.image.toDrive({
     setShowOutput(!showOutput);
   };
 
-  const toggleAIPrompt = () => {
-    setShowAIPrompt(!showAIPrompt);
-  };
-
-  const handleCodeUpdate = (newCode: string) => {
-    setCurrentCode(newCode);
+  const handlePromptSubmit = (prompt: string) => {
+    console.log('AI Prompt:', prompt);
+    // Handle AI prompt here
   };
 
   return (
-    <div className="h-screen bg-[#1e1e1e] flex flex-col">
+    <div className="h-screen bg-gradient-to-br from-[hsl(var(--editor-bg))] to-[hsl(var(--editor-sidebar))] flex flex-col">
       {/* Header */}
-      <div className="h-12 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center justify-between px-4">
-        <div className="flex items-center space-x-4">
+      <div className="h-14 bg-[hsl(var(--editor-panel))]/80 backdrop-blur-md border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-6 shadow-lg">
+        <div className="flex items-center space-x-6">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleBackToInterface}
-            className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-accent-muted))] transition-all duration-200"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Interface
           </Button>
-          <div className="flex items-center space-x-2">
-            <Globe className="w-5 h-5 text-[#4fc1ff]" />
-            <span className="text-white font-medium">Phoenix Dev Mode</span>
+          <div className="flex items-center space-x-3">
+            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--editor-accent))] to-[hsl(var(--editor-accent))]/80 flex items-center justify-center shadow-lg">
+              <Globe className="w-4 h-4 text-white" />
+            </div>
+            <div>
+              <span className="text-[hsl(var(--editor-text))] font-semibold text-lg">Phoenix</span>
+              <span className="text-[hsl(var(--editor-text-muted))] text-sm ml-2">Dev Mode</span>
+            </div>
           </div>
         </div>
         
@@ -316,7 +313,7 @@ Export.image.toDrive({
             size="sm"
             onClick={handleRunCode}
             disabled={isRunning}
-            className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e] disabled:opacity-50"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-white hover:bg-green-500/20 disabled:opacity-50 transition-all duration-200 border border-transparent hover:border-green-500/30"
           >
             <Play className="w-4 h-4 mr-2" />
             {isRunning ? 'Running...' : 'Run'}
@@ -326,7 +323,7 @@ Export.image.toDrive({
             size="sm"
             onClick={handleStopCode}
             disabled={!isRunning}
-            className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e] disabled:opacity-50"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-white hover:bg-red-500/20 disabled:opacity-50 transition-all duration-200 border border-transparent hover:border-red-500/30"
           >
             <Square className="w-4 h-4 mr-2" />
             Stop
@@ -335,7 +332,7 @@ Export.image.toDrive({
             variant="ghost"
             size="sm"
             onClick={toggleOutput}
-            className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-accent-muted))] transition-all duration-200"
           >
             {showOutput ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
             {showOutput ? 'Hide Output' : 'Show Output'}
@@ -343,92 +340,70 @@ Export.image.toDrive({
           <Button
             variant="ghost"
             size="sm"
-            onClick={toggleAIPrompt}
-            className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
-          >
-            <Bot className="w-4 h-4 mr-2" />
-            {showAIPrompt ? 'Hide AI' : 'Show AI'}
-          </Button>
-          <Button
-            variant="ghost"
-            size="sm"
-            className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-accent-muted))] transition-all duration-200"
           >
             <Settings className="w-4 h-4" />
           </Button>
         </div>
       </div>
 
-      <div className="flex-1 flex flex-col">
-        {/* Main content area */}
-        <div className="flex-1 flex">
-          <ResizablePanelGroup direction="horizontal" className="flex-1">
-            {/* Code Editor Panel */}
-            <ResizablePanel defaultSize={showOutput ? 50 : 100} minSize={30}>
-              <ResizablePanelGroup direction="vertical" className="h-full">
-                {/* Code Editor */}
-                <ResizablePanel defaultSize={showAIPrompt ? 70 : 100} minSize={40}>
-                  <div className="h-full flex flex-col bg-[#1e1e1e]">
-                    {/* Code Editor Header */}
-                    <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center justify-between px-3">
-                      <div className="flex items-center space-x-2">
-                        <Code className="w-4 h-4 text-[#4fc1ff]" />
-                        <span className="text-xs font-medium text-white">
-                          {isCropQuery ? 'Crop Classification Script' : 'Flood Risk Analysis Script'}
-                        </span>
-                      </div>
-                      <div className="flex items-center space-x-2">
-                        {isRunning && (
-                          <div className="flex items-center space-x-2">
-                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                            <span className="text-xs text-green-400">Executing...</span>
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                    
-                    {/* Code Editor */}
-                    <div className="flex-1">
-                      <CodeEditor 
-                        initialCode={currentCode || sampleCode}
-                        language="javascript"
-                      />
-                    </div>
-                  </div>
-                </ResizablePanel>
+      {/* AI Prompt Box */}
+      <SimplePromptBox onPromptSubmit={handlePromptSubmit} />
 
-                {/* AI Prompt Panel */}
-                {showAIPrompt && (
-                  <>
-                    <ResizableHandle className="h-1 bg-[#3e3e42] hover:bg-[#4fc1ff] transition-colors" />
-                    <ResizablePanel defaultSize={30} minSize={25} maxSize={60}>
-                      <AIPromptBox 
-                        onCodeUpdate={handleCodeUpdate}
-                        currentCode={currentCode || sampleCode}
-                      />
-                    </ResizablePanel>
-                  </>
-                )}
-              </ResizablePanelGroup>
-            </ResizablePanel>
-
-            {showOutput && (
-              <>
-                <ResizableHandle className="w-1 bg-[#3e3e42] hover:bg-[#4fc1ff] transition-colors" />
-                
-                {/* Output Panel */}
-                <ResizablePanel defaultSize={50} minSize={30}>
-                  <div className="h-full flex flex-col">
-                    <MapViewer 
-                      hasOutput={hasOutput} 
-                      isCropQuery={isCropQuery}
-                    />
+      <div className="flex-1 flex">
+        <ResizablePanelGroup direction="horizontal" className="flex-1">
+          {/* Code Editor Panel */}
+          <ResizablePanel defaultSize={showOutput ? 60 : 100} minSize={40}>
+            <div className="h-full flex flex-col bg-[hsl(var(--editor-bg))]">
+              {/* Code Editor Header */}
+              <div className="h-11 bg-[hsl(var(--editor-panel))]/50 border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-4 backdrop-blur-sm">
+                <div className="flex items-center space-x-3">
+                  <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[hsl(var(--editor-accent))] to-[hsl(var(--editor-accent))]/80 flex items-center justify-center shadow-md">
+                    <Code className="w-3.5 h-3.5 text-white" />
                   </div>
-                </ResizablePanel>
-              </>
-            )}
-          </ResizablePanelGroup>
-        </div>
+                  <span className="text-sm font-medium text-[hsl(var(--editor-text))]">
+                    {isCropQuery ? 'Crop Classification Script' : 'Flood Risk Analysis Script'}
+                  </span>
+                </div>
+                <div className="flex items-center space-x-3">
+                  {isRunning && (
+                    <div className="flex items-center space-x-2 animate-fade-in">
+                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
+                      <span className="text-xs text-green-400 font-medium">Executing...</span>
+                    </div>
+                  )}
+                </div>
+              </div>
+              
+              {/* Code Editor */}
+              <div className="flex-1 relative">
+                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[hsl(var(--editor-bg))]/50 pointer-events-none z-10"></div>
+                <CodeEditor 
+                  initialCode={currentCode || sampleCode}
+                  language="javascript"
+                />
+              </div>
+            </div>
+          </ResizablePanel>
+
+          {showOutput && (
+            <>
+              <ResizableHandle className="w-1 bg-[hsl(var(--editor-border))] hover:bg-[hsl(var(--editor-accent))] transition-all duration-300 relative group">
+                <div className="absolute inset-y-0 left-1/2 w-0.5 bg-[hsl(var(--editor-accent))]/0 group-hover:bg-[hsl(var(--editor-accent))]/50 transition-all duration-300 transform -translate-x-1/2"></div>
+              </ResizableHandle>
+              
+              {/* Output Panel */}
+              <ResizablePanel defaultSize={40} minSize={30}>
+                <div className="h-full flex flex-col bg-[hsl(var(--editor-panel))]">
+                  <MapViewer 
+                    hasOutput={hasOutput} 
+                    isCropQuery={isCropQuery}
+                  />
+                </div>
+              </ResizablePanel>
+            </>
+          )}
+        </ResizablePanelGroup>
       </div>
     </div>
   );
