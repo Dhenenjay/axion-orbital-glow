@@ -252,12 +252,15 @@ Export.image.toDrive({
   }, [hasSubmittedQuery, query, returnToOutput, initialMapType]);
 
   useEffect(() => {
-    if (emptyCode) {
+    console.log('DevMode: emptyCode =', emptyCode, 'hasSubmittedQuery =', hasSubmittedQuery);
+    if (emptyCode === true) {
+      console.log('Setting empty code');
       setCurrentCode(''); // Explicitly set empty code
     } else {
+      console.log('Setting sample code');
       setCurrentCode(sampleCode);
     }
-  }, [sampleCode, emptyCode]);
+  }, [sampleCode, emptyCode, hasSubmittedQuery]);
 
   const handleRunCode = () => {
     setIsRunning(true);
@@ -425,7 +428,7 @@ Export.image.toDrive({
                   {/* Code Editor */}
                   <div className="flex-1">
                     <CodeEditor 
-                      initialCode={emptyCode ? '' : currentCode}
+                      initialCode={emptyCode === true ? '' : currentCode}
                       language="javascript"
                     />
                   </div>

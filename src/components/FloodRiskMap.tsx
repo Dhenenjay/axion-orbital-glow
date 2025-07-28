@@ -155,15 +155,6 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit, onDevModeClick }: Floo
             <span className="text-green-300 text-sm font-medium">Live Analysis</span>
           </div>
           <div className="text-white font-semibold">{getMapTitle()}</div>
-          <Button
-            onClick={onDevModeClick}
-            size="sm"
-            variant="outline"
-            className="bg-gradient-to-r from-purple-500/90 to-indigo-600/90 border-purple-400/50 text-white hover:from-purple-600/90 hover:to-indigo-700/90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 font-medium ml-4"
-          >
-            <Code className="w-4 h-4 mr-2" />
-            Dev Mode
-          </Button>
         </div>
         <div className="flex items-center space-x-4 text-sm">
           <div className="bg-slate-800/50 px-3 py-1 rounded-lg border border-slate-600/30">
