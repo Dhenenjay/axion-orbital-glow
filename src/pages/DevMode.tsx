@@ -12,13 +12,15 @@ import {
   Terminal,
   Code,
   Eye,
-  EyeOff
+  EyeOff,
+  Bot
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import CodeEditor from '@/components/CodeEditor';
 import MapViewer from '@/components/MapViewer';
+import AIPromptBox from '@/components/AIPromptBox';
 
 const DevMode = () => {
   const navigate = useNavigate();
@@ -28,34 +30,11 @@ const DevMode = () => {
   const [hasOutput, setHasOutput] = useState(false);
   const [currentQuery, setCurrentQuery] = useState('');
   const [isCropQuery, setIsCropQuery] = useState(false);
+  const [showAIPrompt, setShowAIPrompt] = useState(true);
+  const [currentCode, setCurrentCode] = useState('');
 
   // Get state from navigation
   const { hasSubmittedQuery, query, returnToOutput } = location.state || {};
-
-  useEffect(() => {
-    if (hasSubmittedQuery && query) {
-      setCurrentQuery(query);
-      setHasOutput(true);
-      
-      // Determine query type
-      const lowerQuery = query.toLowerCase();
-      const isCrop = lowerQuery.includes('crop') || 
-                    lowerQuery.includes('agriculture') || 
-                    lowerQuery.includes('farming') || 
-                    lowerQuery.includes('wheat') || 
-                    lowerQuery.includes('potato') || 
-                    lowerQuery.includes('plantation') ||
-                    lowerQuery.includes('classification') ||
-                    lowerQuery.includes('hoshiarpur') ||
-                    lowerQuery.includes('rabi');
-      
-      setIsCropQuery(isCrop);
-      
-      if (returnToOutput) {
-        setShowOutput(true);
-      }
-    }
-  }, [hasSubmittedQuery, query, returnToOutput]);
 
   const sampleCode = isCropQuery ? `
 // Crop Classification Model for Hoshiarpur District
@@ -242,7 +221,36 @@ Export.image.toDrive({
   region: jakarta,
   maxPixels: 1e10
 });
-  `;
+`;
+
+  useEffect(() => {
+    if (hasSubmittedQuery && query) {
+      setCurrentQuery(query);
+      setHasOutput(true);
+      
+      // Determine query type
+      const lowerQuery = query.toLowerCase();
+      const isCrop = lowerQuery.includes('crop') || 
+                    lowerQuery.includes('agriculture') || 
+                    lowerQuery.includes('farming') || 
+                    lowerQuery.includes('wheat') || 
+                    lowerQuery.includes('potato') || 
+                    lowerQuery.includes('plantation') ||
+                    lowerQuery.includes('classification') ||
+                    lowerQuery.includes('hoshiarpur') ||
+                    lowerQuery.includes('rabi');
+      
+      setIsCropQuery(isCrop);
+      
+      if (returnToOutput) {
+        setShowOutput(true);
+      }
+    }
+  }, [hasSubmittedQuery, query, returnToOutput]);
+
+  useEffect(() => {
+    setCurrentCode(sampleCode);
+  }, [sampleCode]);
 
   const handleRunCode = () => {
     setIsRunning(true);
@@ -272,6 +280,14 @@ Export.image.toDrive({
 
   const toggleOutput = () => {
     setShowOutput(!showOutput);
+  };
+
+  const toggleAIPrompt = () => {
+    setShowAIPrompt(!showAIPrompt);
+  };
+
+  const handleCodeUpdate = (newCode: string) => {
+    setCurrentCode(newCode);
   };
 
   return (
@@ -327,6 +343,15 @@ Export.image.toDrive({
           <Button
             variant="ghost"
             size="sm"
+            onClick={toggleAIPrompt}
+            className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
+          >
+            <Bot className="w-4 h-4 mr-2" />
+            {showAIPrompt ? 'Hide AI' : 'Show AI'}
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
             className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
           >
             <Settings className="w-4 h-4" />
@@ -334,55 +359,76 @@ Export.image.toDrive({
         </div>
       </div>
 
-      <div className="flex-1 flex">
-        <ResizablePanelGroup direction="horizontal" className="flex-1">
-          {/* Code Editor Panel */}
-          <ResizablePanel defaultSize={showOutput ? 50 : 100} minSize={30}>
-            <div className="h-full flex flex-col bg-[#1e1e1e]">
-              {/* Code Editor Header */}
-              <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center justify-between px-3">
-                <div className="flex items-center space-x-2">
-                  <Code className="w-4 h-4 text-[#4fc1ff]" />
-                  <span className="text-xs font-medium text-white">
-                    {isCropQuery ? 'Crop Classification Script' : 'Flood Risk Analysis Script'}
-                  </span>
-                </div>
-                <div className="flex items-center space-x-2">
-                  {isRunning && (
-                    <div className="flex items-center space-x-2">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
-                      <span className="text-xs text-green-400">Executing...</span>
+      <div className="flex-1 flex flex-col">
+        {/* Main content area */}
+        <div className="flex-1 flex">
+          <ResizablePanelGroup direction="horizontal" className="flex-1">
+            {/* Code Editor Panel */}
+            <ResizablePanel defaultSize={showOutput ? 50 : 100} minSize={30}>
+              <ResizablePanelGroup direction="vertical" className="h-full">
+                {/* Code Editor */}
+                <ResizablePanel defaultSize={showAIPrompt ? 70 : 100} minSize={40}>
+                  <div className="h-full flex flex-col bg-[#1e1e1e]">
+                    {/* Code Editor Header */}
+                    <div className="h-10 bg-[#2d2d30] border-b border-[#3e3e42] flex items-center justify-between px-3">
+                      <div className="flex items-center space-x-2">
+                        <Code className="w-4 h-4 text-[#4fc1ff]" />
+                        <span className="text-xs font-medium text-white">
+                          {isCropQuery ? 'Crop Classification Script' : 'Flood Risk Analysis Script'}
+                        </span>
+                      </div>
+                      <div className="flex items-center space-x-2">
+                        {isRunning && (
+                          <div className="flex items-center space-x-2">
+                            <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse"></div>
+                            <span className="text-xs text-green-400">Executing...</span>
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  )}
-                </div>
-              </div>
-              
-              {/* Code Editor */}
-              <div className="flex-1">
-                <CodeEditor 
-                  initialCode={sampleCode}
-                  language="javascript"
-                />
-              </div>
-            </div>
-          </ResizablePanel>
+                    
+                    {/* Code Editor */}
+                    <div className="flex-1">
+                      <CodeEditor 
+                        initialCode={currentCode || sampleCode}
+                        language="javascript"
+                      />
+                    </div>
+                  </div>
+                </ResizablePanel>
 
-          {showOutput && (
-            <>
-              <ResizableHandle className="w-1 bg-[#3e3e42] hover:bg-[#4fc1ff] transition-colors" />
-              
-              {/* Output Panel */}
-              <ResizablePanel defaultSize={50} minSize={30}>
-                <div className="h-full flex flex-col">
-                  <MapViewer 
-                    hasOutput={hasOutput} 
-                    isCropQuery={isCropQuery}
-                  />
-                </div>
-              </ResizablePanel>
-            </>
-          )}
-        </ResizablePanelGroup>
+                {/* AI Prompt Panel */}
+                {showAIPrompt && (
+                  <>
+                    <ResizableHandle className="h-1 bg-[#3e3e42] hover:bg-[#4fc1ff] transition-colors" />
+                    <ResizablePanel defaultSize={30} minSize={25} maxSize={60}>
+                      <AIPromptBox 
+                        onCodeUpdate={handleCodeUpdate}
+                        currentCode={currentCode || sampleCode}
+                      />
+                    </ResizablePanel>
+                  </>
+                )}
+              </ResizablePanelGroup>
+            </ResizablePanel>
+
+            {showOutput && (
+              <>
+                <ResizableHandle className="w-1 bg-[#3e3e42] hover:bg-[#4fc1ff] transition-colors" />
+                
+                {/* Output Panel */}
+                <ResizablePanel defaultSize={50} minSize={30}>
+                  <div className="h-full flex flex-col">
+                    <MapViewer 
+                      hasOutput={hasOutput} 
+                      isCropQuery={isCropQuery}
+                    />
+                  </div>
+                </ResizablePanel>
+              </>
+            )}
+          </ResizablePanelGroup>
+        </div>
       </div>
     </div>
   );

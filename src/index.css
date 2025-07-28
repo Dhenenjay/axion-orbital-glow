@@ -90,6 +90,17 @@
     --sidebar-accent-foreground: 240 4.8% 95.9%;
     --sidebar-border: 240 3.7% 15.9%;
     --sidebar-ring: 217.2 91.2% 59.8%;
+    
+    /* VS Code specific colors for dev mode */
+    --vscode-bg: 220 13% 18%;
+    --vscode-sidebar: 220 13% 15%;
+    --vscode-border: 220 13% 28%;
+    --vscode-button: 224 71% 52%;
+    --vscode-button-hover: 224 71% 60%;
+    --vscode-text: 220 14% 71%;
+    --vscode-text-secondary: 220 9% 55%;
+    --vscode-input: 220 13% 22%;
+    --vscode-panel: 220 13% 20%;
   }
 }
 
