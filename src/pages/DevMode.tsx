@@ -12,13 +12,10 @@ import {
   Terminal,
   Code,
   Eye,
-  EyeOff,
-  Send,
-  MessageSquare
+  EyeOff
 } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { ScrollArea } from '@/components/ui/scroll-area';
-import { Input } from '@/components/ui/input';
 import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/components/ui/resizable';
 import CodeEditor from '@/components/CodeEditor';
 import MapViewer from '@/components/MapViewer';
@@ -31,7 +28,6 @@ const DevMode = () => {
   const [hasOutput, setHasOutput] = useState(false);
   const [currentQuery, setCurrentQuery] = useState('');
   const [isCropQuery, setIsCropQuery] = useState(false);
-  const [devQuery, setDevQuery] = useState('');
 
   // Get state from navigation
   const { hasSubmittedQuery, query, returnToOutput } = location.state || {};
@@ -279,20 +275,6 @@ Export.image.toDrive({
     setShowOutput(!showOutput);
   };
 
-  const handleDevQuerySubmit = () => {
-    if (devQuery.trim()) {
-      // Here you would typically send the query to the AI agent
-      console.log('Dev query submitted:', devQuery);
-      setDevQuery('');
-    }
-  };
-
-  const handleDevQueryKeyPress = (e: React.KeyboardEvent) => {
-    if (e.key === 'Enter') {
-      handleDevQuerySubmit();
-    }
-  };
-
   return (
     <div className="h-screen bg-[#1e1e1e] flex flex-col">
       {/* Header */}
@@ -349,29 +331,6 @@ Export.image.toDrive({
             className="text-[#cccccc] hover:text-white hover:bg-[#2a2d2e]"
           >
             <Settings className="w-4 h-4" />
-          </Button>
-        </div>
-      </div>
-
-      {/* Query Input Section */}
-      <div className="h-16 bg-[#252526] border-b border-[#3e3e42] flex items-center px-4">
-        <div className="flex items-center space-x-2 flex-1">
-          <MessageSquare className="w-5 h-5 text-[#4fc1ff]" />
-          <Input
-            type="text"
-            placeholder="Ask the AI agent to modify your code..."
-            value={devQuery}
-            onChange={(e) => setDevQuery(e.target.value)}
-            onKeyPress={handleDevQueryKeyPress}
-            className="flex-1 bg-[#1e1e1e] border-[#3e3e42] text-white placeholder-[#888888] focus:border-[#4fc1ff] focus:ring-1 focus:ring-[#4fc1ff]"
-          />
-          <Button
-            onClick={handleDevQuerySubmit}
-            disabled={!devQuery.trim()}
-            className="bg-[#4fc1ff] hover:bg-[#3ba6d4] text-white disabled:opacity-50 disabled:cursor-not-allowed"
-            size="sm"
-          >
-            <Send className="w-4 h-4" />
           </Button>
         </div>
       </div>
