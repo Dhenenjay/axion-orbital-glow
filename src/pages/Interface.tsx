@@ -329,6 +329,7 @@ const Interface = () => {
                     <FloodRiskMap 
                       mapType={mapType}
                       onQuerySubmit={handleMapQuerySubmit}
+                      onDevModeClick={handleDevModeClick}
                     />
                   </div>
                 </div>

@@ -1,15 +1,16 @@
 
 import React, { useEffect, useRef, useState } from 'react';
-import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap, RotateCcw, Eye, EyeOff, Maximize2, Settings } from 'lucide-react';
+import { ZoomIn, ZoomOut, Download, Share, Layers, Search, Zap, RotateCcw, Eye, EyeOff, Maximize2, Settings, Code } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Slider } from '@/components/ui/slider';
 
 interface FloodRiskMapProps {
   mapType?: 'flood' | 'crop';
   onQuerySubmit?: (query: string) => void;
+  onDevModeClick?: () => void;
 }
 
-const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) => {
+const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit, onDevModeClick }: FloodRiskMapProps) => {
   const mapContainer = useRef<HTMLDivElement>(null);
   const [zoomLevel, setZoomLevel] = useState(1);
   const [selectedLayer, setSelectedLayer] = useState('flood-depth');
@@ -306,6 +307,15 @@ const FloodRiskMap = ({ mapType = 'flood', onQuerySubmit }: FloodRiskMapProps) =
           
           {/* Enhanced action buttons */}
           <div className="absolute bottom-4 left-4 flex space-x-2 z-40">
+            <Button
+              onClick={onDevModeClick}
+              size="sm"
+              variant="outline"
+              className="bg-gradient-to-r from-purple-500/90 to-indigo-600/90 border-purple-400/50 text-white hover:from-purple-600/90 hover:to-indigo-700/90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 font-medium"
+            >
+              <Code className="w-4 h-4 mr-2" />
+              Dev Mode
+            </Button>
             <Button
               size="sm"
               variant="outline"
