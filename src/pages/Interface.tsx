@@ -44,9 +44,6 @@ const Interface = () => {
       if (location.state.preservedQuery) {
         setQuery(location.state.preservedQuery);
       }
-      if (location.state.preservedMapType) {
-        setMapType(location.state.preservedMapType);
-      }
       // Clear the location state to avoid issues on refresh
       window.history.replaceState({}, document.title);
     }
@@ -107,8 +104,7 @@ const Interface = () => {
         hasSubmittedQuery,
         showOutput,
         query: query.trim() || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data"),
-        returnToOutput: showOutput,
-        mapType: mapType
+        returnToOutput: showOutput
       } 
     });
   };

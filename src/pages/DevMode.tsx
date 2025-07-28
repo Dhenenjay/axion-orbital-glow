@@ -265,8 +265,7 @@ Export.image.toDrive({
       state: { 
         shouldShowOutput: hasOutput,
         hasSubmittedQuery: hasSubmittedQuery,
-        preservedQuery: currentQuery,
-        preservedMapType: isCropQuery ? 'crop' : 'flood'
+        preservedQuery: currentQuery
       } 
     });
   };
