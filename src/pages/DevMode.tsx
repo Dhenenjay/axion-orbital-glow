@@ -253,7 +253,7 @@ Export.image.toDrive({
 
   useEffect(() => {
     if (emptyCode) {
-      setCurrentCode('');
+      setCurrentCode(''); // Explicitly set empty code
     } else {
       setCurrentCode(sampleCode);
     }
@@ -425,7 +425,7 @@ Export.image.toDrive({
                   {/* Code Editor */}
                   <div className="flex-1">
                     <CodeEditor 
-                      initialCode={emptyCode ? '' : (currentCode || sampleCode)}
+                      initialCode={emptyCode ? '' : currentCode}
                       language="javascript"
                     />
                   </div>

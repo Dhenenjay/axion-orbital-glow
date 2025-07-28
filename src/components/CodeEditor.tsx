@@ -1,4 +1,3 @@
-
 import React from 'react';
 import { Copy, Download, Play, Settings } from 'lucide-react';
 import { Button } from '@/components/ui/button';
@@ -49,8 +48,9 @@ Map.centerObject(jakarta, 10);
 Map.addLayer(floodMask, {palette: ['white', 'blue']}, 'Flood Risk');
 Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, 'Population at Risk');`;
 
-  const codeToDisplay = initialCode || defaultCode;
-  const hasCode = Boolean(initialCode);
+  // Use initialCode if provided, otherwise use empty string if explicitly empty, otherwise default
+  const codeToDisplay = initialCode !== undefined ? initialCode : defaultCode;
+  const isEmptyCode = initialCode === '';
 
   return (
     <div className="h-full flex flex-col bg-slate-900 border-l border-slate-700">
@@ -92,8 +92,8 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
         <textarea
           className="w-full h-full bg-slate-900 text-gray-300 font-mono text-sm p-4 resize-none focus:outline-none"
           value={codeToDisplay}
-          placeholder="// Code editor ready..."
-          readOnly={!hasCode}
+          placeholder={isEmptyCode ? "// Start coding your Earth Engine script here..." : "// Code editor ready..."}
+          readOnly={false}
         />
         
         {/* Line numbers */}
@@ -105,7 +105,6 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
           ))}
         </div>
       </div>
-
     </div>
   );
 };
