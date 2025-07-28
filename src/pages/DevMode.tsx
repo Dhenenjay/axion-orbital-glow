@@ -283,39 +283,35 @@ Export.image.toDrive({
   };
 
   return (
-    <div className="h-screen bg-gradient-to-br from-[hsl(var(--editor-bg))] to-[hsl(var(--editor-sidebar))] flex flex-col">
+    <div className="h-screen bg-[hsl(var(--editor-bg))] flex flex-col">
       {/* Header */}
-      <div className="h-14 bg-[hsl(var(--editor-panel))]/80 backdrop-blur-md border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-6 shadow-lg">
-        <div className="flex items-center space-x-6">
+      <div className="h-12 bg-[hsl(var(--editor-panel))] border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-4">
+        <div className="flex items-center space-x-4">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleBackToInterface}
-            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-accent-muted))] transition-all duration-200"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] transition-all duration-200 h-8 px-3"
           >
             <ArrowLeft className="w-4 h-4 mr-2" />
             Back to Interface
           </Button>
-          <div className="flex items-center space-x-3">
-            <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-[hsl(var(--editor-accent))] to-[hsl(var(--editor-accent))]/80 flex items-center justify-center shadow-lg">
-              <Globe className="w-4 h-4 text-white" />
-            </div>
-            <div>
-              <span className="text-[hsl(var(--editor-text))] font-semibold text-lg">Phoenix</span>
-              <span className="text-[hsl(var(--editor-text-muted))] text-sm ml-2">Dev Mode</span>
-            </div>
+          <div className="h-4 w-px bg-[hsl(var(--editor-border))]"></div>
+          <div className="flex items-center space-x-2">
+            <Globe className="w-4 h-4 text-[hsl(var(--editor-accent))]" />
+            <span className="text-[hsl(var(--editor-text))] font-medium text-sm">Phoenix Dev Mode</span>
           </div>
         </div>
         
-        <div className="flex items-center space-x-2">
+        <div className="flex items-center space-x-1">
           <Button
             variant="ghost"
             size="sm"
             onClick={handleRunCode}
             disabled={isRunning}
-            className="text-[hsl(var(--editor-text-muted))] hover:text-white hover:bg-green-500/20 disabled:opacity-50 transition-all duration-200 border border-transparent hover:border-green-500/30"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-white hover:bg-green-600/90 disabled:opacity-50 transition-all duration-200 h-8 px-3 text-xs font-medium"
           >
-            <Play className="w-4 h-4 mr-2" />
+            <Play className="w-3.5 h-3.5 mr-1.5" />
             {isRunning ? 'Running...' : 'Run'}
           </Button>
           <Button
@@ -323,26 +319,27 @@ Export.image.toDrive({
             size="sm"
             onClick={handleStopCode}
             disabled={!isRunning}
-            className="text-[hsl(var(--editor-text-muted))] hover:text-white hover:bg-red-500/20 disabled:opacity-50 transition-all duration-200 border border-transparent hover:border-red-500/30"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-white hover:bg-red-600/90 disabled:opacity-50 transition-all duration-200 h-8 px-3 text-xs font-medium"
           >
-            <Square className="w-4 h-4 mr-2" />
+            <Square className="w-3.5 h-3.5 mr-1.5" />
             Stop
           </Button>
+          <div className="h-4 w-px bg-[hsl(var(--editor-border))] mx-1"></div>
           <Button
             variant="ghost"
             size="sm"
             onClick={toggleOutput}
-            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-accent-muted))] transition-all duration-200"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] transition-all duration-200 h-8 px-3 text-xs"
           >
-            {showOutput ? <EyeOff className="w-4 h-4 mr-2" /> : <Eye className="w-4 h-4 mr-2" />}
-            {showOutput ? 'Hide Output' : 'Show Output'}
+            {showOutput ? <EyeOff className="w-3.5 h-3.5 mr-1.5" /> : <Eye className="w-3.5 h-3.5 mr-1.5" />}
+            Output Preview
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-accent-muted))] transition-all duration-200"
+            className="text-[hsl(var(--editor-text-muted))] hover:text-[hsl(var(--editor-text))] hover:bg-[hsl(var(--editor-sidebar))] transition-all duration-200 h-8 w-8 p-0"
           >
-            <Settings className="w-4 h-4" />
+            <Settings className="w-3.5 h-3.5" />
           </Button>
         </div>
       </div>
@@ -356,28 +353,25 @@ Export.image.toDrive({
           <ResizablePanel defaultSize={showOutput ? 60 : 100} minSize={40}>
             <div className="h-full flex flex-col bg-[hsl(var(--editor-bg))]">
               {/* Code Editor Header */}
-              <div className="h-11 bg-[hsl(var(--editor-panel))]/50 border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-4 backdrop-blur-sm">
-                <div className="flex items-center space-x-3">
-                  <div className="w-7 h-7 rounded-md bg-gradient-to-br from-[hsl(var(--editor-accent))] to-[hsl(var(--editor-accent))]/80 flex items-center justify-center shadow-md">
-                    <Code className="w-3.5 h-3.5 text-white" />
-                  </div>
-                  <span className="text-sm font-medium text-[hsl(var(--editor-text))]">
-                    {isCropQuery ? 'Crop Classification Script' : 'Flood Risk Analysis Script'}
+              <div className="h-9 bg-[hsl(var(--editor-panel))] border-b border-[hsl(var(--editor-border))] flex items-center justify-between px-4">
+                <div className="flex items-center space-x-2">
+                  <Code className="w-4 h-4 text-[hsl(var(--editor-accent))]" />
+                  <span className="text-xs font-medium text-[hsl(var(--editor-text))]">
+                    {isCropQuery ? 'crop_classification.js' : 'flood_risk_analysis.js'}
                   </span>
                 </div>
-                <div className="flex items-center space-x-3">
+                <div className="flex items-center space-x-2">
                   {isRunning && (
-                    <div className="flex items-center space-x-2 animate-fade-in">
-                      <div className="w-2 h-2 bg-green-400 rounded-full animate-pulse shadow-lg shadow-green-400/50"></div>
-                      <span className="text-xs text-green-400 font-medium">Executing...</span>
+                    <div className="flex items-center space-x-1.5 animate-fade-in">
+                      <div className="w-1.5 h-1.5 bg-green-400 rounded-full animate-pulse"></div>
+                      <span className="text-xs text-green-400 font-medium">Executing</span>
                     </div>
                   )}
                 </div>
               </div>
               
               {/* Code Editor */}
-              <div className="flex-1 relative">
-                <div className="absolute inset-0 bg-gradient-to-b from-transparent via-transparent to-[hsl(var(--editor-bg))]/50 pointer-events-none z-10"></div>
+              <div className="flex-1">
                 <CodeEditor 
                   initialCode={currentCode || sampleCode}
                   language="javascript"
