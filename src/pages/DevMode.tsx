@@ -34,7 +34,7 @@ const DevMode = () => {
   const [showTerminal, setShowTerminal] = useState(false);
 
   // Get state from navigation
-  const { hasSubmittedQuery, query, returnToOutput, emptyCode } = location.state || {};
+  const { hasSubmittedQuery, query, returnToOutput, emptyCode, mapType: initialMapType } = location.state || {};
 
   const sampleCode = isCropQuery ? `
 // Crop Classification Model for Hoshiarpur District
@@ -245,8 +245,11 @@ Export.image.toDrive({
       if (returnToOutput) {
         setShowOutput(true);
       }
+    } else if (initialMapType) {
+      // Use the passed map type if available
+      setIsCropQuery(initialMapType === 'crop');
     }
-  }, [hasSubmittedQuery, query, returnToOutput]);
+  }, [hasSubmittedQuery, query, returnToOutput, initialMapType]);
 
   useEffect(() => {
     if (emptyCode) {
@@ -275,9 +278,10 @@ Export.image.toDrive({
   const handleBackToInterface = () => {
     navigate('/interface', { 
       state: { 
-        shouldShowOutput: hasOutput,
+        shouldShowOutput: hasOutput && hasSubmittedQuery,
         hasSubmittedQuery: hasSubmittedQuery,
-        preservedQuery: currentQuery
+        preservedQuery: currentQuery,
+        mapType: isCropQuery ? 'crop' : 'flood' // Preserve the map type
       } 
     });
   };

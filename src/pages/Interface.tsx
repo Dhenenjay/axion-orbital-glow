@@ -44,6 +44,9 @@ const Interface = () => {
       if (location.state.preservedQuery) {
         setQuery(location.state.preservedQuery);
       }
+      if (location.state.mapType) {
+        setMapType(location.state.mapType); // Restore the map type
+      }
       // Clear the location state to avoid issues on refresh
       window.history.replaceState({}, document.title);
     }
@@ -101,11 +104,12 @@ const Interface = () => {
   const handleDevModeClick = () => {
     navigate('/dev-mode', { 
       state: { 
-        hasSubmittedQuery: showOutput,
-        showOutput,
-        query: showOutput ? (query.trim() || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data")) : "",
+        hasSubmittedQuery: hasSubmittedQuery,
+        showOutput: showOutput,
+        query: hasSubmittedQuery ? (query.trim() || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data")) : "",
         returnToOutput: showOutput,
-        emptyCode: !showOutput // Empty code when coming from interface without results
+        emptyCode: !hasSubmittedQuery, // Empty code when no query has been submitted
+        mapType: mapType // Pass the current map type
       } 
     });
   };
