@@ -101,10 +101,11 @@ const Interface = () => {
   const handleDevModeClick = () => {
     navigate('/dev-mode', { 
       state: { 
-        hasSubmittedQuery,
+        hasSubmittedQuery: showOutput,
         showOutput,
-        query: query.trim() || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data"),
-        returnToOutput: showOutput
+        query: showOutput ? (query.trim() || (mapType === 'crop' ? "Crop classification analysis for Hoshiarpur district using Sentinel-2 data" : "Jakarta flood risk analysis with Sentinel-1 SAR data")) : "",
+        returnToOutput: showOutput,
+        emptyCode: !showOutput // Empty code when coming from interface without results
       } 
     });
   };
@@ -183,6 +184,15 @@ const Interface = () => {
               <div className="w-2 h-2 bg-emerald-400 rounded-full animate-pulse"></div>
               <span className="text-emerald-300 text-sm font-medium">Live</span>
             </div>
+            <Button
+              onClick={handleDevModeClick}
+              size="sm"
+              variant="outline"
+              className="bg-gradient-to-r from-purple-500/90 to-indigo-600/90 border-purple-400/50 text-white hover:from-purple-600/90 hover:to-indigo-700/90 shadow-lg hover:shadow-xl transition-all duration-200 hover:scale-105 font-medium"
+            >
+              <Code className="w-4 h-4 mr-2" />
+              Dev Mode
+            </Button>
             <User className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
             <Settings className="h-6 w-6 text-gray-400 cursor-pointer hover:text-white transition-colors" />
           </div>

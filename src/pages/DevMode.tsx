@@ -34,7 +34,7 @@ const DevMode = () => {
   const [showTerminal, setShowTerminal] = useState(false);
 
   // Get state from navigation
-  const { hasSubmittedQuery, query, returnToOutput } = location.state || {};
+  const { hasSubmittedQuery, query, returnToOutput, emptyCode } = location.state || {};
 
   const sampleCode = isCropQuery ? `
 // Crop Classification Model for Hoshiarpur District
@@ -249,8 +249,12 @@ Export.image.toDrive({
   }, [hasSubmittedQuery, query, returnToOutput]);
 
   useEffect(() => {
-    setCurrentCode(sampleCode);
-  }, [sampleCode]);
+    if (emptyCode) {
+      setCurrentCode('');
+    } else {
+      setCurrentCode(sampleCode);
+    }
+  }, [sampleCode, emptyCode]);
 
   const handleRunCode = () => {
     setIsRunning(true);
@@ -417,7 +421,7 @@ Export.image.toDrive({
                   {/* Code Editor */}
                   <div className="flex-1">
                     <CodeEditor 
-                      initialCode={currentCode || sampleCode}
+                      initialCode={emptyCode ? '' : (currentCode || sampleCode)}
                       language="javascript"
                     />
                   </div>
