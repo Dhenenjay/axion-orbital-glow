@@ -90,16 +90,16 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
       {/* Code Content */}
       <div className="flex-1 relative">
         <textarea
-          className="w-full h-full bg-slate-900 text-gray-300 font-mono text-sm p-4 resize-none focus:outline-none"
+          className="w-full h-full bg-slate-900 text-gray-300 font-mono text-sm pl-16 pr-4 py-4 resize-none focus:outline-none"
           value={codeToDisplay}
           placeholder={isEmptyCode ? "// Start coding your script here..." : "// Code editor ready..."}
           readOnly={false}
         />
         
         {/* Line numbers */}
-        <div className="absolute left-0 top-0 bottom-0 w-12 bg-slate-800/50 border-r border-slate-700 pt-4">
+        <div className="absolute left-0 top-0 bottom-0 w-14 bg-slate-800/50 border-r border-slate-700 pt-4 select-none pointer-events-none">
           {codeToDisplay.split('\n').map((_, index) => (
-            <div key={index} className="text-gray-500 text-xs text-right pr-2 leading-5">
+            <div key={index} className="text-gray-500 text-xs text-right pr-3 leading-5 font-mono">
               {index + 1}
             </div>
           ))}

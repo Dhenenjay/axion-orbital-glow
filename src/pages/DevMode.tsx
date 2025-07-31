@@ -20,6 +20,7 @@ import CodeEditor from '@/components/CodeEditor';
 import EarthEngineViewer from '@/components/EarthEngineViewer';
 import SimplePromptBox from '@/components/SimplePromptBox';
 
+import FileTree from '@/components/FileTree';
 import Terminal from '@/components/Terminal';
 
 const DevMode = () => {
@@ -399,8 +400,15 @@ Export.image.toDrive({
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="flex-1">
+          {/* File Explorer */}
+          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
+            <FileTree />
+          </ResizablePanel>
+
+          <ResizableHandle className="w-px bg-[hsl(var(--editor-border))] hover:bg-[hsl(var(--editor-accent))] transition-colors duration-200" />
+
           {/* Main Editor Area */}
-          <ResizablePanel defaultSize={showOutput ? 65 : 100} minSize={30}>
+          <ResizablePanel defaultSize={showOutput ? 45 : 80} minSize={30}>
             <ResizablePanelGroup direction="vertical" className="h-full">
               {/* Code Editor */}
               <ResizablePanel defaultSize={showTerminal ? 70 : 100} minSize={40}>
