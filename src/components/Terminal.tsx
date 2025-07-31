@@ -10,7 +10,7 @@ interface TerminalProps {
 const Terminal = ({ isVisible, onToggle }: TerminalProps) => {
   const [input, setInput] = useState('');
   const [history, setHistory] = useState<Array<{ type: 'command' | 'output' | 'error'; content: string }>>([
-    { type: 'output', content: 'Earth Engine Code Editor Terminal v1.0.0' },
+    { type: 'output', content: 'Satellite Code Editor Terminal v1.0.0' },
     { type: 'output', content: 'Type "help" for available commands.' },
     { type: 'output', content: '' }
   ]);
@@ -48,10 +48,10 @@ const Terminal = ({ isVisible, onToggle }: TerminalProps) => {
           { type: 'output', content: 'Available commands:' },
           { type: 'output', content: '  help          - Show this help message' },
           { type: 'output', content: '  ls            - List files and directories' },
-          { type: 'output', content: '  run [file]    - Execute Earth Engine script' },
+          { type: 'output', content: '  run [file]    - Execute satellite script' },
           { type: 'output', content: '  export [type] - Export current analysis' },
           { type: 'output', content: '  clear         - Clear terminal' },
-          { type: 'output', content: '  ee.status     - Check Earth Engine status' },
+          { type: 'output', content: '  sat.status    - Check satellite data status' },
           { type: 'output', content: '' }
         ]);
         break;
@@ -75,7 +75,7 @@ const Terminal = ({ isVisible, onToggle }: TerminalProps) => {
           const filename = args[0];
           setHistory(prev => [...prev,
             { type: 'output', content: `Running ${filename}...` },
-            { type: 'output', content: 'Initializing Earth Engine...' },
+            { type: 'output', content: 'Initializing satellite data...' },
             { type: 'output', content: 'Loading satellite imagery...' },
             { type: 'output', content: 'Processing data...' },
             { type: 'output', content: `✓ Script executed successfully` },
@@ -102,17 +102,17 @@ const Terminal = ({ isVisible, onToggle }: TerminalProps) => {
 
       case 'ee.status':
       case 'ee':
-        if (args[0] === 'status' || command === 'ee.status') {
+        if (args[0] === 'status' || command === 'sat.status') {
           setHistory(prev => [...prev,
-            { type: 'output', content: 'Earth Engine Status:' },
+            { type: 'output', content: 'Satellite Data Status:' },
             { type: 'output', content: '✓ Authentication: Connected' },
             { type: 'output', content: '✓ API Access: Available' },
-            { type: 'output', content: '✓ Compute Credits: 1,247 remaining' },
-            { type: 'output', content: '✓ Assets: 12/100 used' },
+            { type: 'output', content: '✓ Quota: 99.2% remaining' },
+            { type: 'output', content: '✓ Processing: Ready' },
             { type: 'output', content: '' }
           ]);
         } else {
-          setHistory(prev => [...prev, { type: 'error', content: `Unknown Earth Engine command: ${args[0]}` }]);
+          setHistory(prev => [...prev, { type: 'error', content: `Unknown satellite command: ${args[0]}` }]);
         }
         break;
 

@@ -19,7 +19,7 @@ import { ResizableHandle, ResizablePanel, ResizablePanelGroup } from '@/componen
 import CodeEditor from '@/components/CodeEditor';
 import EarthEngineViewer from '@/components/EarthEngineViewer';
 import SimplePromptBox from '@/components/SimplePromptBox';
-import FileTree from '@/components/FileTree';
+
 import Terminal from '@/components/Terminal';
 
 const DevMode = () => {
@@ -312,7 +312,7 @@ Export.image.toDrive({
             <div className="w-3 h-3 rounded-full bg-yellow-500/80 hover:bg-yellow-500 cursor-pointer"></div>
             <div className="w-3 h-3 rounded-full bg-green-500/80 hover:bg-green-500 cursor-pointer"></div>
           </div>
-          <span className="text-[hsl(var(--editor-text-muted))]">Phoenix IDE - Earth Engine Development</span>
+          <span className="text-[hsl(var(--editor-text-muted))]">Phoenix IDE - Satellite Data Development</span>
         </div>
         <div className="text-[hsl(var(--editor-text-muted))]">
           {isCropQuery ? 'Crop Classification Project' : 'Flood Analysis Project'}
@@ -399,15 +399,8 @@ Export.image.toDrive({
       {/* Main Content Area */}
       <div className="flex-1 flex overflow-hidden">
         <ResizablePanelGroup direction="horizontal" className="flex-1">
-          {/* File Explorer */}
-          <ResizablePanel defaultSize={20} minSize={15} maxSize={30}>
-            <FileTree />
-          </ResizablePanel>
-
-          <ResizableHandle className="w-px bg-[hsl(var(--editor-border))] hover:bg-[hsl(var(--editor-accent))] transition-colors duration-200" />
-
           {/* Main Editor Area */}
-          <ResizablePanel defaultSize={showOutput ? 45 : 80} minSize={30}>
+          <ResizablePanel defaultSize={showOutput ? 65 : 100} minSize={30}>
             <ResizablePanelGroup direction="vertical" className="h-full">
               {/* Code Editor */}
               <ResizablePanel defaultSize={showTerminal ? 70 : 100} minSize={40}>

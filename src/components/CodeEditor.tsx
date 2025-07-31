@@ -8,7 +8,7 @@ interface CodeEditorProps {
 }
 
 const CodeEditor = ({ initialCode, language = 'javascript' }: CodeEditorProps) => {
-  const defaultCode = `// Earth Engine JavaScript Code for Jakarta Flood Analysis
+  const defaultCode = `// JavaScript Code for Jakarta Flood Analysis
 var jakarta = ee.Geometry.Rectangle([106.6922, -6.3713, 107.1576, -5.9969]);
 
 // Load Sentinel-1 SAR data for flood detection
@@ -77,7 +77,7 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
       {/* Tabs */}
       <div className="flex border-b border-slate-700">
         <button className="px-4 py-2 text-sm text-orange-300 bg-slate-800 border-r border-slate-700">
-          Earth Engine Code
+          JavaScript Code
         </button>
         <button className="px-4 py-2 text-sm text-gray-400 hover:text-white hover:bg-slate-800/50 border-r border-slate-700">
           Console
@@ -92,7 +92,7 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
         <textarea
           className="w-full h-full bg-slate-900 text-gray-300 font-mono text-sm p-4 resize-none focus:outline-none"
           value={codeToDisplay}
-          placeholder={isEmptyCode ? "// Start coding your Earth Engine script here..." : "// Code editor ready..."}
+          placeholder={isEmptyCode ? "// Start coding your script here..." : "// Code editor ready..."}
           readOnly={false}
         />
         

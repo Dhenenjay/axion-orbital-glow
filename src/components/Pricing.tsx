@@ -66,7 +66,7 @@ const competitors = [
     pricing: "$700/seat/yr"
   },
   {
-    name: "Google Earth Engine",
+    name: "Satellite Data Platform",
     coding: "Yes (JS/Python)",
     dataIntegration: "Yes (quotas)",
     pricing: "$500+/mo (commercial)"

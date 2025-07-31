@@ -152,7 +152,7 @@ var trueColorVis = {
 Map.addLayer(composite, trueColorVis, '${areaName} True Color');`;
     }
 
-    return `// Generated Earth Engine JavaScript Code
+    return `// Generated JavaScript Code
 // Query: ${originalQuery}
 // Generated for: ${areaName} analysis using ${satellite}
 

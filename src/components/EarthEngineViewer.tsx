@@ -32,7 +32,7 @@ const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) =
   const [selectedDate, setSelectedDate] = useState('2023-01-15');
   const [opacity, setOpacity] = useState(80);
 
-  // Enhanced layer data for Google Earth Engine style
+  // Enhanced layer data for satellite imagery analysis
   const layerData = isCropQuery ? {
     'base': { 
       name: 'Sentinel-2 RGB', 
@@ -203,7 +203,7 @@ const EarthEngineViewer = ({ hasOutput, isCropQuery }: EarthEngineViewerProps) =
 
           {/* Attribution */}
           <div className="absolute bottom-1 right-1/2 transform translate-x-1/2 bg-[hsl(var(--editor-panel))]/90 backdrop-blur-sm text-[hsl(var(--editor-text-muted))] px-2 py-0.5 rounded text-xs border border-[hsl(var(--editor-border))]">
-            © Google Earth Engine, Esri, DigitalGlobe
+            © Satellite Data, Esri, DigitalGlobe
           </div>
 
           {/* Mock satellite imagery */}

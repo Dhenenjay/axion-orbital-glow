@@ -252,7 +252,7 @@ const MapViewer = ({ hasOutput, isCropQuery }: MapViewerProps) => {
           <MapIcon className="w-16 h-16 mx-auto opacity-50" />
           <h3 className="text-lg font-medium text-[#cccccc]">No Output Generated</h3>
           <p className="text-sm max-w-sm">
-            Run your Earth Engine code or submit a query to see the map output here
+            Run your code or submit a query to see the map output here
           </p>
         </div>
       </div>
