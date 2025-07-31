@@ -28,7 +28,7 @@ const SimplePromptBox = ({ onPromptSubmit }: SimplePromptBoxProps) => {
       <form onSubmit={handleSubmit} className="h-full flex items-center px-4 space-x-3">
         <div className="flex items-center space-x-2 text-muted-foreground">
           <Sparkles className="w-4 h-4" />
-          <span className="text-sm font-medium">AI Assistant</span>
+          <span className="text-sm font-medium">Ask AI</span>
         </div>
         
         <div className="flex-1 relative">
@@ -41,7 +41,7 @@ const SimplePromptBox = ({ onPromptSubmit }: SimplePromptBoxProps) => {
             className="w-full h-8 px-3 text-sm bg-muted/50 border border-border/30 rounded-md 
                      focus:outline-none focus:ring-1 focus:ring-primary/20 focus:border-primary/30 
                      placeholder:text-muted-foreground/60 transition-all duration-200
-                     hover:bg-muted/70 hover:border-border/50"
+                     hover:bg-muted/70 hover:border-border/50 text-white"
           />
         </div>
         
