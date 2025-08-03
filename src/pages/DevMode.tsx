@@ -294,9 +294,35 @@ Export.image.toDrive({
     setShowOutput(!showOutput);
   };
 
+  const handleCodeChange = (newCode: string) => {
+    setCurrentCode(newCode);
+  };
+
   const handlePromptSubmit = (prompt: string) => {
     console.log('AI Prompt:', prompt);
-    // Handle AI prompt here
+    
+    // Simple AI response: modify the code based on the prompt
+    const currentCodeLines = currentCode.split('\n');
+    let modifiedCode = currentCode;
+    
+    // Add a comment showing the AI is responding
+    const aiComment = `// AI modification based on: "${prompt}"`;
+    
+    if (prompt.toLowerCase().includes('add') || prompt.toLowerCase().includes('create')) {
+      // Add the comment and a simple modification
+      modifiedCode = aiComment + '\n' + currentCode + '\n\n// Added by AI assistant\nprint("Code modified by AI");';
+    } else if (prompt.toLowerCase().includes('optimize') || prompt.toLowerCase().includes('improve')) {
+      // Add optimization comment
+      modifiedCode = aiComment + '\n' + currentCode.replace('// ', '// OPTIMIZED: ');
+    } else if (prompt.toLowerCase().includes('comment') || prompt.toLowerCase().includes('explain')) {
+      // Add explanatory comments
+      modifiedCode = currentCode.replace(/^(var |let |const )/gm, aiComment + '\n$1');
+    } else {
+      // Generic modification
+      modifiedCode = aiComment + '\n' + currentCode + '\n\n// Modified based on your request';
+    }
+    
+    setCurrentCode(modifiedCode);
   };
 
   const toggleTerminal = () => {
@@ -431,6 +457,7 @@ Export.image.toDrive({
                     <CodeEditor 
                       initialCode={emptyCode === true ? '' : currentCode}
                       language="javascript"
+                      onCodeChange={handleCodeChange}
                     />
                   </div>
                 </div>

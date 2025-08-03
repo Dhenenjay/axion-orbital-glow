@@ -5,9 +5,23 @@ import { Button } from '@/components/ui/button';
 interface CodeEditorProps {
   initialCode?: string;
   language?: string;
+  onCodeChange?: (code: string) => void;
 }
 
-const CodeEditor = ({ initialCode, language = 'javascript' }: CodeEditorProps) => {
+const CodeEditor = ({ initialCode, language = 'javascript', onCodeChange }: CodeEditorProps) => {
+  const [code, setCode] = React.useState(initialCode || '');
+
+  // Update code when initialCode changes
+  React.useEffect(() => {
+    if (initialCode !== undefined) {
+      setCode(initialCode);
+    }
+  }, [initialCode]);
+
+  const handleCodeChange = (newCode: string) => {
+    setCode(newCode);
+    onCodeChange?.(newCode);
+  };
   const defaultCode = `// JavaScript Code for Jakarta Flood Analysis
 var jakarta = ee.Geometry.Rectangle([106.6922, -6.3713, 107.1576, -5.9969]);
 
@@ -48,9 +62,9 @@ Map.centerObject(jakarta, 10);
 Map.addLayer(floodMask, {palette: ['white', 'blue']}, 'Flood Risk');
 Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, 'Population at Risk');`;
 
-  // Use initialCode if provided, otherwise use empty string if explicitly empty, otherwise default
-  const codeToDisplay = initialCode !== undefined ? initialCode : defaultCode;
-  const isEmptyCode = initialCode === '';
+  // Use code state for display
+  const codeToDisplay = code || (initialCode === '' ? '' : defaultCode);
+  const isEmptyCode = code === '';
 
   return (
     <div className="h-full flex flex-col bg-slate-900 border-l border-slate-700">
@@ -92,8 +106,8 @@ Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, '
         <textarea
           className="w-full h-full bg-slate-900 text-gray-300 font-mono text-sm pl-16 pr-4 py-4 resize-none focus:outline-none"
           value={codeToDisplay}
+          onChange={(e) => handleCodeChange(e.target.value)}
           placeholder={isEmptyCode ? "// Start coding your script here..." : "// Code editor ready..."}
-          readOnly={false}
         />
         
         {/* Line numbers */}
