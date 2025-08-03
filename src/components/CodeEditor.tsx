@@ -63,7 +63,7 @@ Map.addLayer(floodMask, {palette: ['white', 'blue']}, 'Flood Risk');
 Map.addLayer(populationAtRisk, {min: 0, max: 100, palette: ['yellow', 'red']}, 'Population at Risk');`;
 
   // Use code state for display
-  const codeToDisplay = code || (initialCode === '' ? '' : defaultCode);
+  const codeToDisplay = code;
   const isEmptyCode = code === '';
 
   return (

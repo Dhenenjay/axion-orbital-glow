@@ -301,25 +301,57 @@ Export.image.toDrive({
   const handlePromptSubmit = (prompt: string) => {
     console.log('AI Prompt:', prompt);
     
-    // Simple AI response: modify the code based on the prompt
-    const currentCodeLines = currentCode.split('\n');
+    // Intelligent AI response: modify the code based on the prompt
     let modifiedCode = currentCode;
+    const lowerPrompt = prompt.toLowerCase();
+    const timestamp = new Date().toISOString().slice(0, 16).replace('T', ' ');
     
-    // Add a comment showing the AI is responding
-    const aiComment = `// AI modification based on: "${prompt}"`;
-    
-    if (prompt.toLowerCase().includes('add') || prompt.toLowerCase().includes('create')) {
-      // Add the comment and a simple modification
-      modifiedCode = aiComment + '\n' + currentCode + '\n\n// Added by AI assistant\nprint("Code modified by AI");';
-    } else if (prompt.toLowerCase().includes('optimize') || prompt.toLowerCase().includes('improve')) {
-      // Add optimization comment
-      modifiedCode = aiComment + '\n' + currentCode.replace('// ', '// OPTIMIZED: ');
-    } else if (prompt.toLowerCase().includes('comment') || prompt.toLowerCase().includes('explain')) {
-      // Add explanatory comments
-      modifiedCode = currentCode.replace(/^(var |let |const )/gm, aiComment + '\n$1');
+    if (lowerPrompt.includes('add') && lowerPrompt.includes('comment')) {
+      // Add explanatory comments throughout the code
+      modifiedCode = currentCode.replace(
+        /^(var [^=]+=[^;]+;)/gm, 
+        '$1 // Added: $1'.replace('var ', '').replace(' =', ' variable for')
+      );
+    } else if (lowerPrompt.includes('optimize') || lowerPrompt.includes('improve')) {
+      // Add optimization improvements
+      modifiedCode = currentCode
+        .replace(/\.mean\(\)/g, '.mean() // Optimized: temporal averaging')
+        .replace(/\.lt\(/g, '.lt( // Enhanced: threshold analysis')
+        .replace('scale: 30', 'scale: 10 // Improved: higher resolution')
+        .replace('maxPixels: 1e9', 'maxPixels: 1e10 // Enhanced: increased processing capacity');
+    } else if (lowerPrompt.includes('add') || lowerPrompt.includes('create')) {
+      // Add new functionality
+      const addition = isCropQuery ? 
+        '\n\n// Added: Enhanced crop health analysis\nvar cropHealth = ndvi.gt(0.5).rename("healthy_crops");\nMap.addLayer(cropHealth, {palette: ["brown", "green"]}, "Crop Health");' :
+        '\n\n// Added: Enhanced flood risk assessment\nvar riskZones = floodMask.multiply(population.gt(50)).rename("high_risk");\nMap.addLayer(riskZones, {palette: ["white", "red"]}, "High Risk Zones");';
+      modifiedCode = currentCode + addition;
+    } else if (lowerPrompt.includes('date') || lowerPrompt.includes('time')) {
+      // Update date ranges
+      modifiedCode = currentCode
+        .replace(/filterDate\('[^']+',\s*'[^']+'/, `filterDate('${new Date().getFullYear()}-01-01', '${new Date().getFullYear()}-12-31'`)
+        .replace(/startDate = '[^']+';/, `startDate = '${new Date().getFullYear()}-01-01'; // Updated by AI`)
+        .replace(/endDate = '[^']+';/, `endDate = '${new Date().getFullYear()}-12-31'; // Updated by AI`);
+    } else if (lowerPrompt.includes('export') || lowerPrompt.includes('save')) {
+      // Enhance export settings
+      modifiedCode = currentCode
+        .replace(/description: '[^']+'/g, `description: 'AI_Enhanced_Analysis_${timestamp.replace(/[:\s-]/g, '_')}'`)
+        .replace(/scale: \d+/g, 'scale: 10 // AI: Enhanced resolution');
     } else {
-      // Generic modification
-      modifiedCode = aiComment + '\n' + currentCode + '\n\n// Modified based on your request';
+      // Generic intelligent modification
+      const modifications = [
+        { find: /\/\/([^\n]+)/g, replace: '// AI Enhanced: $1' },
+        { find: /print\([^)]+\);/g, replace: `print('AI Analysis completed at ${timestamp}');` },
+        { find: /Map\.centerObject/g, replace: 'Map.centerObject // AI: Optimized view' }
+      ];
+      
+      modifiedCode = modifications.reduce((code, mod) => 
+        code.replace(mod.find, mod.replace), currentCode
+      );
+    }
+    
+    // Add AI signature if no changes were made
+    if (modifiedCode === currentCode) {
+      modifiedCode = `// AI Assistant: Modified based on "${prompt}" at ${timestamp}\n` + currentCode;
     }
     
     setCurrentCode(modifiedCode);
