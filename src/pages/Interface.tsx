@@ -236,15 +236,13 @@ const Interface = () => {
               {getPageSubtitle()}
             </p>
             
-            {/* Simulated Product UX Notice - Hidden for now */}
-            {false && (
-              <div className="flex items-center space-x-2 px-3 py-2 bg-amber-500/10 border border-amber-400/20 rounded-lg">
-                <Info className="h-4 w-4 text-amber-400 flex-shrink-0" />
-                <p className="text-amber-200 text-sm">
-                  <strong>Note:</strong> This is a simulated product UX demonstration. Try one of the sample queries below to explore the interface.
-                </p>
-              </div>
-            )}
+            {/* Simulated Product UX Notice */}
+            <div className="flex items-center space-x-2 px-3 py-2 bg-amber-500/10 border border-amber-400/20 rounded-lg">
+              <Info className="h-4 w-4 text-amber-400 flex-shrink-0" />
+              <p className="text-amber-200 text-sm">
+                <strong>Note:</strong> This is a simulated product UX demonstration. Try one of the sample queries below to explore the interface.
+              </p>
+            </div>
           </div>
 
           {!showOutput ? (
@@ -266,21 +264,19 @@ const Interface = () => {
                     <div className="absolute inset-0 rounded-xl bg-gradient-to-r from-cyan-500/10 via-transparent to-blue-500/10 opacity-0 group-hover:opacity-100 transition-opacity duration-300 pointer-events-none"></div>
                   </div>
 
-                  {/* Sample Queries - Hidden for now */}
-                  {false && (
-                    <div className="mt-4 space-y-2">
-                      <p className="text-sm text-gray-400 mb-3">Try these sample queries:</p>
-                      {sampleQueries.map((sampleQuery, index) => (
-                        <button
-                          key={index}
-                          onClick={() => handleSampleQueryClick(sampleQuery)}
-                          className="block w-full text-left px-4 py-3 bg-slate-800/30 hover:bg-slate-700/50 border border-slate-600/30 rounded-lg text-gray-300 hover:text-white transition-all duration-300 text-sm"
-                        >
-                          {sampleQuery}
-                        </button>
-                      ))}
-                    </div>
-                  )}
+                  {/* Sample Queries */}
+                  <div className="mt-4 space-y-2">
+                    <p className="text-sm text-gray-400 mb-3">Try these sample queries:</p>
+                    {sampleQueries.map((sampleQuery, index) => (
+                      <button
+                        key={index}
+                        onClick={() => handleSampleQueryClick(sampleQuery)}
+                        className="block w-full text-left px-4 py-3 bg-slate-800/30 hover:bg-slate-700/50 border border-slate-600/30 rounded-lg text-gray-300 hover:text-white transition-all duration-300 text-sm"
+                      >
+                        {sampleQuery}
+                      </button>
+                    ))}
+                  </div>
 
                   <div className="mt-6 flex items-center space-x-4">
                     <Button 
